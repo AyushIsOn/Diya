@@ -1,75 +1,56 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="800"
-             x:Class="DiyaMeditation.Views.HomeView">
+             x:Class="DiyaMeditation.Views.HomeView"
+             Background="White">
 
-    <!-- Calming full-bleed background -->
-    <Grid>
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                <GradientStop Color="#1A1330" Offset="0" />
-                <GradientStop Color="#0E0B16" Offset="1" />
-            </LinearGradientBrush>
-        </Grid.Background>
+    <Grid ColumnDefinitions="*,*" Margin="56">
 
-        <!-- Centered card -->
-        <Border MaxWidth="560"
-                Margin="24"
-                Padding="48"
-                CornerRadius="24"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Background="#231A3D"
-                BoxShadow="0 16 48 0 #66000000">
-            <StackPanel Spacing="20" HorizontalAlignment="Stretch">
+        <!-- Left panel: Welcome + Start -->
+        <Border Grid.Column="0" Margin="0,0,20,0" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="56">
+            <StackPanel VerticalAlignment="Center" Spacing="32">
+                <TextBlock Text="Welcome" FontSize="52" FontWeight="Bold" Foreground="#1F2A37" />
+                <Button Content="Start Calibration" Click="OnStartCalibration"
+                        Background="#111827" Foreground="White" FontSize="18" FontWeight="SemiBold"
+                        Padding="32,18" CornerRadius="8" HorizontalAlignment="Left" />
+            </StackPanel>
+        </Border>
 
-                <!-- Placeholder image -->
-                <Border CornerRadius="16" ClipToBounds="True"
-                        Height="220" HorizontalAlignment="Stretch">
-                    <Image Source="/Assets/diya-placeholder.png"
-                           Stretch="UniformToFill" />
+        <!-- Right panel: Camera + Name -->
+        <Border Grid.Column="1" Margin="20,0,0,0" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="40">
+            <StackPanel VerticalAlignment="Center" Spacing="28">
+
+                <!-- Camera placeholder -->
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Height="220">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
+                        <Viewbox Width="46" Height="46">
+                            <Canvas Width="24" Height="24">
+                                <Path Stroke="#9CA3AF" StrokeThickness="1.6"
+                                      Data="M3,9 a1,1 0 0 1 1,-1 h3 l1.5,-2 h7 l1.5,2 h3 a1,1 0 0 1 1,1 v9 a1,1 0 0 1 -1,1 h-16 a1,1 0 0 1 -1,-1 z" />
+                                <Ellipse Canvas.Left="8.5" Canvas.Top="9.5" Width="7" Height="7"
+                                         Stroke="#9CA3AF" StrokeThickness="1.6" />
+                            </Canvas>
+                        </Viewbox>
+                        <TextBlock Text="Camera" FontSize="16" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                    </StackPanel>
                 </Border>
 
-                <TextBlock Text="Diya Meditation"
-                           FontSize="34"
-                           FontWeight="SemiBold"
-                           Foreground="#F4F0FF"
-                           HorizontalAlignment="Center" />
+                <!-- Name field -->
+                <StackPanel Spacing="10">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Viewbox Width="18" Height="18">
+                            <Canvas Width="24" Height="24">
+                                <Ellipse Canvas.Left="8" Canvas.Top="4" Width="8" Height="8"
+                                         Stroke="#374151" StrokeThickness="1.6" />
+                                <Path Stroke="#374151" StrokeThickness="1.6"
+                                      Data="M5,20 c0,-4 3.5,-6 7,-6 s7,2 7,6" />
+                            </Canvas>
+                        </Viewbox>
+                        <TextBlock Text="Your Name" FontSize="16" FontWeight="SemiBold" Foreground="#374151" />
+                    </StackPanel>
+                    <TextBox Name="NameBox" Watermark="Enter your name" FontSize="16"
+                             Padding="14,12" CornerRadius="8" BorderBrush="#E5E7EB" />
+                </StackPanel>
 
-                <TextBlock Text="Enter your name to begin your session"
-                           FontSize="16"
-                           Foreground="#B4A9D6"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"
-                           HorizontalAlignment="Center" />
-
-                <TextBox Name="NameBox"
-                         Watermark="Your name"
-                         FontSize="18"
-                         Padding="14,12"
-                         CornerRadius="12"
-                         HorizontalAlignment="Stretch" />
-
-                <Button Name="StartButton"
-                        Content="Start Calibration"
-                        FontSize="18"
-                        FontWeight="SemiBold"
-                        Foreground="#1A1330"
-                        Background="#E9B872"
-                        Padding="16,14"
-                        CornerRadius="12"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        Click="OnStartCalibration" />
-
-                <TextBlock Name="StatusText"
-                           FontSize="14"
-                           Foreground="#9C8FC7"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"
-                           HorizontalAlignment="Center" />
             </StackPanel>
         </Border>
     </Grid>
