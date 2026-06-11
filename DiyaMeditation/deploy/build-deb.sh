@@ -7,14 +7,25 @@
 # machine does NOT need .NET installed.
 #
 # Usage:
-#   ./deploy/build-deb.sh [version]      # default version: 1.0.0
+#   ./deploy/build-deb.sh [version] [arch]
+#     version : package version           (default: 1.0.0)
+#     arch    : amd64 (x86 PCs) | arm64   (default: amd64)
+#
+# Examples:
+#   ./deploy/build-deb.sh                 # 1.0.0, amd64 (x86 museum PC)
+#   ./deploy/build-deb.sh 1.0.0 arm64     # arm64 (Apple Silicon VM / Raspberry Pi)
 #
 set -euo pipefail
 
 VERSION="${1:-1.0.0}"
-ARCH="amd64"
-RID="linux-x64"
+ARCH="${2:-amd64}"
 PKG="diya-meditation"
+
+case "${ARCH}" in
+  amd64) RID="linux-x64" ;;
+  arm64) RID="linux-arm64" ;;
+  *) echo "ERROR: unsupported arch '${ARCH}' (use amd64 or arm64)"; exit 1 ;;
+esac
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"   # the project directory
 BUILD="${ROOT}/build"
