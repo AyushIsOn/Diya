@@ -1,0 +1,76 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="800"
+             x:Class="DiyaMeditation.Views.HomeView">
+
+    <!-- Calming full-bleed background -->
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#1A1330" Offset="0" />
+                <GradientStop Color="#0E0B16" Offset="1" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Centered card -->
+        <Border MaxWidth="560"
+                Margin="24"
+                Padding="48"
+                CornerRadius="24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="#231A3D"
+                BoxShadow="0 16 48 0 #66000000">
+            <StackPanel Spacing="20" HorizontalAlignment="Stretch">
+
+                <!-- Placeholder image -->
+                <Border CornerRadius="16" ClipToBounds="True"
+                        Height="220" HorizontalAlignment="Stretch">
+                    <Image Source="/Assets/diya-placeholder.png"
+                           Stretch="UniformToFill" />
+                </Border>
+
+                <TextBlock Text="Diya Meditation"
+                           FontSize="34"
+                           FontWeight="SemiBold"
+                           Foreground="#F4F0FF"
+                           HorizontalAlignment="Center" />
+
+                <TextBlock Text="Enter your name to begin your session"
+                           FontSize="16"
+                           Foreground="#B4A9D6"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center" />
+
+                <TextBox Name="NameBox"
+                         Watermark="Your name"
+                         FontSize="18"
+                         Padding="14,12"
+                         CornerRadius="12"
+                         HorizontalAlignment="Stretch" />
+
+                <Button Name="StartButton"
+                        Content="Start Calibration"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Foreground="#1A1330"
+                        Background="#E9B872"
+                        Padding="16,14"
+                        CornerRadius="12"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        Click="OnStartCalibration" />
+
+                <TextBlock Name="StatusText"
+                           FontSize="14"
+                           Foreground="#9C8FC7"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
