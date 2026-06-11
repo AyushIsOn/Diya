@@ -1,3 +1,5 @@
+using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
@@ -27,6 +29,28 @@ public partial class MainWindow : Window
         // Listen for the secret exit shortcut at the window level (tunnel so it fires
         // even if a child control, e.g. the name field, currently has focus).
         AddHandler(KeyDownEvent, OnGlobalKeyDown, RoutingStrategies.Tunnel);
+    }
+
+    protected override void OnOpened(EventArgs e)
+    {
+        base.OnOpened(e);
+        // Apply fullscreen here (not in XAML): doing it after the window is shown is
+        // reliable across Linux and macOS, where XAML-time fullscreen often doesn't stick.
+        WindowState = WindowState.FullScreen;
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        // Keep the kiosk locked in fullscreen: if anything minimizes/restores the
+        // window, snap it straight back (unless we're intentionally exiting).
+        if (change.Property == WindowStateProperty
+            && !_allowClose
+            && WindowState != WindowState.FullScreen)
+        {
+            WindowState = WindowState.FullScreen;
+        }
     }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
