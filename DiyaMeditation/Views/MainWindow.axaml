@@ -12,7 +12,7 @@
         CanResize="False"
         ShowInTaskbar="False"
         Topmost="True"
-        Background="#0E0B16">
+        Background="White">
 
     <!-- The kiosk shell hosts the current screen. For now: the Home screen. -->
     <ContentControl Name="ContentHost">
