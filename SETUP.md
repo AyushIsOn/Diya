@@ -42,14 +42,17 @@ Secret shortcut: **`Ctrl + Shift + Alt + Q`**
 
 ## 4. Auto-start on boot
 
-### a) Create the autostart entry
+### a) Create the autostart entry (with a startup delay + log)
+The `sleep 4` waits for the Wayland desktop session to be ready (otherwise the app
+can launch too early and fail silently). The log helps diagnose any failure.
+
 ```bash
 mkdir -p ~/.config/autostart
 cat > ~/.config/autostart/diya-meditation.desktop <<'EOF'
 [Desktop Entry]
 Type=Application
 Name=Diya Meditation
-Exec=/opt/diya-meditation/DiyaMeditation
+Exec=sh -c 'sleep 4; /opt/diya-meditation/DiyaMeditation > /tmp/diya.log 2>&1'
 X-GNOME-Autostart-enabled=true
 Terminal=false
 EOF
@@ -74,12 +77,28 @@ reboot
 
 ---
 
-## 5. Verify / troubleshoot
+## 5. Troubleshooting auto-start
+
+If the app does not appear after reboot, run this and read the output:
 
 ```bash
-# Is the app installed where expected?
-ls -l /opt/diya-meditation/DiyaMeditation
+echo "--- did it start? ---"; pgrep -fa DiyaMeditation || echo "NOT running"
+echo "--- startup log ---"; cat /tmp/diya.log 2>/dev/null || echo "no log file"
+echo "--- autostart entry ---"; cat ~/.config/autostart/diya-meditation.desktop
+echo "--- autologin config ---"; grep -iA3 daemon /etc/gdm3/custom.conf 2>/dev/null
+echo "--- binary present? ---"; ls -l /opt/diya-meditation/DiyaMeditation
+```
 
+What it tells you:
+- **NOT running + a log error** -> the app crashed on launch; the log shows why.
+- **NOT running + no log** -> the autostart entry never fired (check auto-login actually boots to the desktop without a password prompt).
+- **binary missing** -> the v1.0.2 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.0.2_amd64.deb`.
+
+---
+
+## 6. General checks
+
+```bash
 # What's my session type? (wayland or x11)
 echo $XDG_SESSION_TYPE
 
@@ -90,17 +109,16 @@ dpkg --print-architecture
 diya-meditation
 ```
 
-## 6. Uninstall
+## 7. Uninstall
 
 ```bash
 sudo apt remove diya-meditation
-# remove autostart entry too
 rm -f ~/.config/autostart/diya-meditation.desktop
 ```
 
 ---
 
-## 7. Build the .deb from source (optional)
+## 8. Build the .deb from source (optional)
 
 Requires the .NET 8 SDK.
 
