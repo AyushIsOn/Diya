@@ -35,6 +35,7 @@ public partial class MainWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
+        Console.WriteLine("[Diya] v1.0.1 OnOpened — applying fullscreen");
         // Apply fullscreen here (not in XAML): doing it after the window is shown is
         // reliable across Linux and macOS, where XAML-time fullscreen often doesn't stick.
         GoFullScreen();
@@ -47,7 +48,7 @@ public partial class MainWindow : Window
         timer.Tick += (_, _) =>
         {
             GoFullScreen();
-            if (++attempts >= 4)
+            if (++attempts >= 6)
                 timer.Stop();
         };
         timer.Start();
@@ -55,8 +56,10 @@ public partial class MainWindow : Window
 
     private void GoFullScreen()
     {
-        if (!_allowClose && WindowState != WindowState.FullScreen)
+        if (_allowClose) return;
+        if (WindowState != WindowState.FullScreen)
             WindowState = WindowState.FullScreen;
+        Console.WriteLine($"[Diya] fullscreen check -> WindowState={WindowState}, ClientSize={ClientSize}");
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
