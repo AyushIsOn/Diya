@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="800"
         x:Class="DiyaMeditation.Views.MainWindow"
         Title="Diya Meditation"
-        CanResize="False"
+        CanResize="True"
         ShowInTaskbar="False"
         Topmost="True"
         Background="White">

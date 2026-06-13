@@ -35,7 +35,7 @@ public partial class MainWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        Console.WriteLine("[Diya] v1.0.1 OnOpened — applying fullscreen");
+        Console.WriteLine("[Diya] v1.0.2 OnOpened — applying fullscreen");
         // Apply fullscreen here (not in XAML): doing it after the window is shown is
         // reliable across Linux and macOS, where XAML-time fullscreen often doesn't stick.
         GoFullScreen();
