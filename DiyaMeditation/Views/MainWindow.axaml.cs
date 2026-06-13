@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 
 namespace DiyaMeditation.Views;
 
@@ -36,7 +37,26 @@ public partial class MainWindow : Window
         base.OnOpened(e);
         // Apply fullscreen here (not in XAML): doing it after the window is shown is
         // reliable across Linux and macOS, where XAML-time fullscreen often doesn't stick.
-        WindowState = WindowState.FullScreen;
+        GoFullScreen();
+
+        // Some Linux compositors (GNOME/Wayland/XWayland) map the window in a normal
+        // state first and only honor the fullscreen request a moment later. Re-assert
+        // it a few times shortly after opening so it reliably lands fullscreen.
+        var attempts = 0;
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+        timer.Tick += (_, _) =>
+        {
+            GoFullScreen();
+            if (++attempts >= 4)
+                timer.Stop();
+        };
+        timer.Start();
+    }
+
+    private void GoFullScreen()
+    {
+        if (!_allowClose && WindowState != WindowState.FullScreen)
+            WindowState = WindowState.FullScreen;
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
