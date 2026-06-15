@@ -12,6 +12,7 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 
 ## 1. Install on Ubuntu
 
+### a) Download from GitHub and install
 ```bash
 cd ~
 rm -f diya-meditation_1.0.2_amd64.deb
@@ -20,10 +21,24 @@ sudo dpkg -i ./diya-meditation_1.0.2_amd64.deb
 ```
 
 If it ever complains about a missing dependency:
-
 ```bash
 sudo apt -f install
 ```
+
+### b) Already have the .deb file? (offline / no GitHub)
+If the `.deb` is already on the machine (USB stick, shared folder, scp, etc.),
+skip the download and install the local file directly. No internet needed —
+the package is self-contained:
+
+```bash
+sudo dpkg -i ./diya-meditation_1.0.2_amd64.deb
+sudo apt -f install     # only if it reports a missing dependency
+```
+
+Ways to get the file onto the machine without GitHub:
+- **USB drive** — copy the `.deb` over and plug it in
+- **VM shared folder** — drop it in the shared folder from the host
+- **scp** — `scp diya-meditation_1.0.2_amd64.deb user@machine:~/`
 
 ## 2. Run it
 
