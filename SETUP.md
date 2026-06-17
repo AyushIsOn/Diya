@@ -1,7 +1,7 @@
 # Diya Meditation — Setup & Commands
 
 All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
-**Latest version: 1.0.2**
+**Latest version: 1.1.0**
 
 > Pick the package matching your machine's architecture
 > (check with `dpkg --print-architecture`):
@@ -15,9 +15,9 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 ### a) Download from GitHub and install
 ```bash
 cd ~
-rm -f diya-meditation_1.0.2_amd64.deb
-wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.0.2_amd64.deb
-sudo dpkg -i ./diya-meditation_1.0.2_amd64.deb
+rm -f diya-meditation_1.1.0_amd64.deb
+wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.1.0_amd64.deb
+sudo dpkg -i ./diya-meditation_1.1.0_amd64.deb
 ```
 
 If it ever complains about a missing dependency:
@@ -31,14 +31,14 @@ skip the download and install the local file directly. No internet needed —
 the package is self-contained:
 
 ```bash
-sudo dpkg -i ./diya-meditation_1.0.2_amd64.deb
+sudo dpkg -i ./diya-meditation_1.1.0_amd64.deb
 sudo apt -f install     # only if it reports a missing dependency
 ```
 
 Ways to get the file onto the machine without GitHub:
 - **USB drive** — copy the `.deb` over and plug it in
 - **VM shared folder** — drop it in the shared folder from the host
-- **scp** — `scp diya-meditation_1.0.2_amd64.deb user@machine:~/`
+- **scp** — `scp diya-meditation_1.1.0_amd64.deb user@machine:~/`
 
 ## 2. Run it
 
@@ -107,7 +107,7 @@ echo "--- binary present? ---"; ls -l /opt/diya-meditation/DiyaMeditation
 What it tells you:
 - **NOT running + a log error** -> the app crashed on launch; the log shows why.
 - **NOT running + no log** -> the autostart entry never fired (check auto-login actually boots to the desktop without a password prompt).
-- **binary missing** -> the v1.0.2 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.0.2_amd64.deb`.
+- **binary missing** -> the v1.1.0 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.1.0_amd64.deb`.
 
 ---
 
@@ -139,9 +139,9 @@ Requires the .NET 8 SDK.
 
 ```bash
 cd DiyaMeditation
-./deploy/build-deb.sh 1.0.2 amd64     # x86 PCs
-./deploy/build-deb.sh 1.0.2 arm64     # ARM devices / Apple Silicon VMs
-# output: build/diya-meditation_1.0.2_<arch>.deb
+./deploy/build-deb.sh 1.1.0 amd64     # x86 PCs
+./deploy/build-deb.sh 1.1.0 arm64     # ARM devices / Apple Silicon VMs
+# output: build/diya-meditation_1.1.0_<arch>.deb
 ```
 
 <!-- push test -->
