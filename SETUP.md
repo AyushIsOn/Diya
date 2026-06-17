@@ -143,3 +143,5 @@ cd DiyaMeditation
 ./deploy/build-deb.sh 1.0.2 arm64     # ARM devices / Apple Silicon VMs
 # output: build/diya-meditation_1.0.2_<arch>.deb
 ```
+
+<!-- push test -->
