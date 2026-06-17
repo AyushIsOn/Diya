@@ -10,6 +10,19 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 
 ---
 
+## Which should I use? (.deb vs Docker)
+
+- **`.deb` install (Section 1)** — the **real kiosk deployment**. Use this on the
+  actual museum/Ubuntu machine. Gives true fullscreen, auto-start on boot,
+  auto-restart on crash, and GNOME lockdown.
+- **Docker (Section 9)** — **UI preview only**, viewed in a browser via noVNC.
+  Handy for a quick look without installing anything system-wide. NOT a real
+  kiosk: no boot autostart, no lockdown, no crash-restart.
+
+**On a real Ubuntu machine, use the `.deb`.**
+
+---
+
 ## 1. Install on Ubuntu
 
 ### a) Download from GitHub and install
