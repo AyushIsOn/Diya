@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diya Meditation — Visitor Registration</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1330, #0e0b16); color: #f4f0ff; padding: 24px;
+    }
+    .card {
+      width: 100%; max-width: 420px; background: #231a3d; border-radius: 20px;
+      padding: 32px; box-shadow: 0 16px 48px rgba(0,0,0,.4);
+    }
+    h1 { margin: 0 0 4px; font-size: 28px; }
+    p.sub { margin: 0 0 24px; color: #b4a9d6; }
+    label { display: block; font-size: 14px; color: #b4a9d6; margin: 14px 0 6px; }
+    input {
+      width: 100%; padding: 12px 14px; font-size: 16px; border-radius: 10px;
+      border: 1px solid #3a2f5c; background: #1a1330; color: #f4f0ff;
+    }
+    button {
+      width: 100%; margin-top: 22px; padding: 14px; font-size: 16px; font-weight: 600;
+      border: none; border-radius: 10px; background: #e9b872; color: #1a1330; cursor: pointer;
+    }
+    #result { display: none; text-align: center; margin-top: 24px; }
+    #qr { display: inline-block; background: #fff; padding: 14px; border-radius: 12px; }
+    .payload { word-break: break-all; font-size: 11px; color: #6b6188; margin-top: 12px; }
+    .secondary { background: transparent; color: #b4a9d6; border: 1px solid #3a2f5c; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Diya Meditation</h1>
+    <p class="sub">Register to get your entry pass</p>
+
+    <form id="form">
+      <label for="name">Name</label>
+      <input id="name" required autocomplete="name" />
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" />
+      <label for="age">Age</label>
+      <input id="age" type="number" min="1" max="120" />
+      <button type="submit">Generate my pass</button>
+    </form>
+
+    <div id="result">
+      <div id="qr"></div>
+      <p class="sub" style="margin-top:16px">Show this QR code at the Diya kiosk.</p>
+      <div class="payload" id="payload"></div>
+      <button class="secondary" onclick="window.print()">Print pass</button>
+      <button class="secondary" onclick="reset()">Register another</button>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('form');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        age: Number(document.getElementById('age').value) || 0
+      };
+      if (!data.name) return;
+
+      const json = JSON.stringify(data);
+      const b64 = btoa(unescape(encodeURIComponent(json)));
+      const payload = 'DIYA1:' + b64;
+
+      const qr = document.getElementById('qr');
+      qr.innerHTML = '';
+      new QRCode(qr, { text: payload, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M });
+      document.getElementById('payload').textContent = payload;
+
+      form.style.display = 'none';
+      result.style.display = 'block';
+    });
+
+    function reset() {
+      form.reset();
+      form.style.display = 'block';
+      result.style.display = 'none';
+    }
+  </script>
+</body>
+</html>

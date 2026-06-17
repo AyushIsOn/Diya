@@ -5,22 +5,32 @@
 
     <Grid ColumnDefinitions="*,*" Margin="56">
 
-        <!-- Left panel: Welcome + Start -->
+        <!-- Left panel: Welcome + fetched visitor + Start -->
         <Border Grid.Column="0" Margin="0,0,20,0" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="56">
-            <StackPanel VerticalAlignment="Center" Spacing="32">
+            <StackPanel VerticalAlignment="Center" Spacing="24">
                 <TextBlock Text="Welcome" FontSize="52" FontWeight="Bold" Foreground="#1F2A37" />
+
+                <!-- Fetched details (shown after a successful scan) -->
+                <StackPanel Name="DetailsPanel" IsVisible="False" Spacing="4">
+                    <TextBlock Name="NameText" FontSize="24" FontWeight="SemiBold" Foreground="#111827" />
+                    <TextBlock Name="EmailText" FontSize="15" Foreground="#6B7280" />
+                    <TextBlock Name="AgeText" FontSize="15" Foreground="#6B7280" />
+                </StackPanel>
+
                 <Button Content="Start Calibration" Click="OnStartCalibration"
                         Background="#111827" Foreground="White" FontSize="18" FontWeight="SemiBold"
                         Padding="32,18" CornerRadius="8" HorizontalAlignment="Left" />
+
+                <TextBlock Name="StatusText" FontSize="14" Foreground="#9CA3AF" TextWrapping="Wrap" />
             </StackPanel>
         </Border>
 
-        <!-- Right panel: Camera + Name -->
+        <!-- Right panel: Camera preview, then Name OR QR Code -->
         <Border Grid.Column="1" Margin="20,0,0,0" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="40">
             <StackPanel VerticalAlignment="Center" Spacing="28">
 
-                <!-- Camera placeholder -->
-                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Height="220">
+                <!-- Camera preview placeholder -->
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Height="200">
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
                         <Viewbox Width="46" Height="46">
                             <Canvas Width="24" Height="24">
@@ -34,22 +44,51 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Name field -->
-                <StackPanel Spacing="10">
-                    <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Viewbox Width="18" Height="18">
-                            <Canvas Width="24" Height="24">
-                                <Ellipse Canvas.Left="8" Canvas.Top="4" Width="8" Height="8"
-                                         Stroke="#374151" StrokeThickness="1.6" />
-                                <Path Stroke="#374151" StrokeThickness="1.6"
-                                      Data="M5,20 c0,-4 3.5,-6 7,-6 s7,2 7,6" />
-                            </Canvas>
-                        </Viewbox>
-                        <TextBlock Text="Your Name" FontSize="16" FontWeight="SemiBold" Foreground="#374151" />
+                <!-- Your Name  |  or  |  QR Code -->
+                <Grid ColumnDefinitions="*,Auto,Auto">
+
+                    <!-- Your Name -->
+                    <StackPanel Grid.Column="0" Spacing="10" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Viewbox Width="18" Height="18">
+                                <Canvas Width="24" Height="24">
+                                    <Ellipse Canvas.Left="8" Canvas.Top="4" Width="8" Height="8"
+                                             Stroke="#374151" StrokeThickness="1.6" />
+                                    <Path Stroke="#374151" StrokeThickness="1.6"
+                                          Data="M5,20 c0,-4 3.5,-6 7,-6 s7,2 7,6" />
+                                </Canvas>
+                            </Viewbox>
+                            <TextBlock Text="Your Name" FontSize="16" FontWeight="SemiBold" Foreground="#374151" />
+                        </StackPanel>
+                        <TextBox Name="NameBox" Watermark="Enter your name" FontSize="16"
+                                 Padding="14,12" CornerRadius="8" BorderBrush="#E5E7EB" />
                     </StackPanel>
-                    <TextBox Name="NameBox" Watermark="Enter your name" FontSize="16"
-                             Padding="14,12" CornerRadius="8" BorderBrush="#E5E7EB" />
-                </StackPanel>
+
+                    <!-- or -->
+                    <TextBlock Grid.Column="1" Text="or" FontSize="15" Foreground="#9CA3AF"
+                               VerticalAlignment="Center" Margin="22,0" />
+
+                    <!-- QR Code -->
+                    <StackPanel Grid.Column="2" Spacing="10" VerticalAlignment="Top">
+                        <TextBlock Text="QR Code" FontSize="16" FontWeight="SemiBold" Foreground="#374151" />
+                        <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8"
+                                Width="140" Height="140" Padding="22">
+                            <Viewbox>
+                                <Canvas Width="24" Height="24">
+                                    <Rectangle Canvas.Left="2" Canvas.Top="2" Width="7" Height="7" Stroke="#374151" StrokeThickness="1.6" />
+                                    <Rectangle Canvas.Left="15" Canvas.Top="2" Width="7" Height="7" Stroke="#374151" StrokeThickness="1.6" />
+                                    <Rectangle Canvas.Left="2" Canvas.Top="15" Width="7" Height="7" Stroke="#374151" StrokeThickness="1.6" />
+                                    <Rectangle Canvas.Left="15" Canvas.Top="15" Width="2.5" Height="2.5" Fill="#374151" />
+                                    <Rectangle Canvas.Left="19" Canvas.Top="15" Width="2.5" Height="2.5" Fill="#374151" />
+                                    <Rectangle Canvas.Left="15" Canvas.Top="19" Width="2.5" Height="2.5" Fill="#374151" />
+                                    <Rectangle Canvas.Left="19" Canvas.Top="19" Width="2.5" Height="2.5" Fill="#374151" />
+                                </Canvas>
+                            </Viewbox>
+                        </Border>
+                        <TextBox Name="QrBox" Watermark="Scan / paste code" KeyDown="OnQrKeyDown"
+                                 FontSize="13" Width="140" Padding="10,8" CornerRadius="8" BorderBrush="#E5E7EB" />
+                    </StackPanel>
+                </Grid>
 
             </StackPanel>
         </Border>
