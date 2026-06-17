@@ -135,8 +135,24 @@ rm -f ~/.config/autostart/diya-meditation.desktop
 
 ## 8. Build the .deb from source (optional)
 
-Requires the .NET 8 SDK.
+### a) Install the .NET 8 SDK on Ubuntu (one time)
+```bash
+sudo apt update
+sudo apt install -y dotnet-sdk-8.0
+dotnet --version        # should print 8.0.x
+```
 
+> If `dotnet-sdk-8.0` is not found in the default repos on your Ubuntu version,
+> add Microsoft's feed first:
+> ```bash
+> sudo apt install -y wget
+> wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O /tmp/ms.deb
+> sudo dpkg -i /tmp/ms.deb
+> sudo apt update
+> sudo apt install -y dotnet-sdk-8.0
+> ```
+
+### b) Build the package
 ```bash
 cd DiyaMeditation
 ./deploy/build-deb.sh 1.1.0 amd64     # x86 PCs
@@ -144,4 +160,56 @@ cd DiyaMeditation
 # output: build/diya-meditation_1.1.0_<arch>.deb
 ```
 
-<!-- push test -->
+> Note: `build-deb.sh` wipes the `build/` directory at the start of every run,
+> so if you build both architectures, copy the first `.deb` out before building
+> the second (otherwise the first one gets deleted).
+
+### c) Run directly from source (no packaging)
+```bash
+cd DiyaMeditation
+dotnet run            # builds + launches fullscreen
+```
+
+---
+
+## 9. Run with Docker (browser preview — dev only)
+
+This runs the app on a virtual display (Xvfb) exposed through noVNC, so you can
+view it in a web browser. This is for **previewing the UI only** — it is NOT the
+real kiosk deployment (use the `.deb` for that).
+
+### a) Install Docker Engine on Ubuntu (one time)
+```bash
+# Quick install via Docker's convenience script
+curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+sudo sh /tmp/get-docker.sh
+
+# Allow running docker without sudo (log out / back in after this)
+sudo usermod -aG docker "$USER"
+newgrp docker            # apply the group in the current shell
+
+docker --version         # verify
+```
+
+### b) Build the image
+```bash
+cd DiyaMeditation
+docker build -t diya-preview -f docker/Dockerfile .
+```
+
+### c) Run the container
+```bash
+docker run --rm -p 8080:8080 diya-preview
+```
+
+### d) View it
+Open in a browser on the same machine:
+
+```
+http://localhost:8080/vnc.html
+```
+
+Click **Connect**. Exit the app inside the view with **`Ctrl + Shift + Alt + Q`**.
+
+To stop the container: press `Ctrl + C` in the terminal running it (the `--rm`
+flag removes it automatically on exit).
