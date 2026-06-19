@@ -58,4 +58,38 @@ public static class VisitorQr
         }
         return Convert.FromBase64String(s);
     }
+
+    /// <summary>
+    /// Extracts the short visitor id from a scanned QR payload. Accepts:
+    ///   - a bare id            ("7F3KM9AC")
+    ///   - a prefixed id        ("DIYA1:7F3KM9AC")
+    ///   - a full URL           ("https://.../v/7F3KM9AC")
+    /// Returns the normalised (upper-case) id, or null if it doesn't look like an id.
+    /// </summary>
+    public static string? ExtractId(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            return null;
+
+        var s = raw.Trim();
+
+        if (s.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase))
+            s = s.Substring(Prefix.Length).Trim();
+
+        // If it's a URL, take the last non-empty path segment.
+        var slash = s.LastIndexOf('/');
+        if (slash >= 0 && slash < s.Length - 1)
+            s = s.Substring(slash + 1);
+
+        s = s.Trim().ToUpperInvariant();
+
+        if (s.Length == 0 || s.Length > 64)
+            return null;
+
+        foreach (var c in s)
+            if (!char.IsLetterOrDigit(c))
+                return null;
+
+        return s;
+    }
 }
