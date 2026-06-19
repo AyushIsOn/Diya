@@ -12,6 +12,9 @@ ExecStart=/opt/diya-meditation/DiyaMeditation
 Restart=always
 RestartSec=2
 Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
+# Online registration API base URL (the kiosk fetches scanned passes from here).
+# Change this to your deployed Render/Neon service URL.
+Environment=DIYA_API_BASE=https://diya-registration.onrender.com
 
 [Install]
 WantedBy=graphical-session.target
