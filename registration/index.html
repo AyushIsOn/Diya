@@ -27,9 +27,13 @@
       width: 100%; margin-top: 22px; padding: 14px; font-size: 16px; font-weight: 600;
       border: none; border-radius: 10px; background: #e9b872; color: #1a1330; cursor: pointer;
     }
+    button:disabled { opacity: .6; cursor: default; }
     #result { display: none; text-align: center; margin-top: 24px; }
     #qr { display: inline-block; background: #fff; padding: 14px; border-radius: 12px; }
-    .payload { word-break: break-all; font-size: 11px; color: #6b6188; margin-top: 12px; }
+    .passid {
+      font-size: 22px; font-weight: 700; letter-spacing: 3px; margin-top: 14px; color: #e9b872;
+    }
+    .error { color: #ff9a9a; font-size: 14px; margin-top: 12px; min-height: 18px; }
     .secondary { background: transparent; color: #b4a9d6; border: 1px solid #3a2f5c; }
   </style>
 </head>
@@ -45,46 +49,80 @@
       <input id="email" type="email" autocomplete="email" />
       <label for="age">Age</label>
       <input id="age" type="number" min="1" max="120" />
-      <button type="submit">Generate my pass</button>
+      <button type="submit" id="submitBtn">Generate my pass</button>
+      <div class="error" id="formError"></div>
     </form>
 
     <div id="result">
       <div id="qr"></div>
+      <div class="passid" id="passId"></div>
       <p class="sub" style="margin-top:16px">Show this QR code at the Diya kiosk.</p>
-      <div class="payload" id="payload"></div>
       <button class="secondary" onclick="window.print()">Print pass</button>
-      <button class="secondary" onclick="reset()">Register another</button>
+      <button class="secondary" onclick="resetForm()">Register another</button>
     </div>
   </div>
 
   <script>
+    // If the registration site is served by the API itself (same Render service),
+    // leave this empty so requests go to the same origin. If you host the site
+    // separately (e.g. Netlify), set it to your API URL, e.g.
+    //   const API_BASE = 'https://diya-registration.onrender.com';
+    const API_BASE = '';
+
     const form = document.getElementById('form');
     const result = document.getElementById('result');
+    const submitBtn = document.getElementById('submitBtn');
+    const formError = document.getElementById('formError');
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      formError.textContent = '';
+
       const data = {
         name: document.getElementById('name').value.trim(),
         email: document.getElementById('email').value.trim(),
         age: Number(document.getElementById('age').value) || 0
       };
-      if (!data.name) return;
+      if (!data.name) { formError.textContent = 'Please enter your name.'; return; }
 
-      const json = JSON.stringify(data);
-      const b64 = btoa(unescape(encodeURIComponent(json)));
-      const payload = 'DIYA1:' + b64;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
 
-      const qr = document.getElementById('qr');
-      qr.innerHTML = '';
-      new QRCode(qr, { text: payload, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M });
-      document.getElementById('payload').textContent = payload;
+      try {
+        const resp = await fetch(`${API_BASE}/api/visitors`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
 
-      form.style.display = 'none';
-      result.style.display = 'block';
+        if (!resp.ok) {
+          const body = await resp.json().catch(() => ({}));
+          throw new Error(body.error || `Server error (${resp.status})`);
+        }
+
+        const { id } = await resp.json();
+        if (!id) throw new Error('Server did not return an id.');
+
+        // The QR encodes ONLY the id. The kiosk scans it and fetches the
+        // visitor's details from the API.
+        const qr = document.getElementById('qr');
+        qr.innerHTML = '';
+        new QRCode(qr, { text: id, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M });
+        document.getElementById('passId').textContent = id;
+
+        form.style.display = 'none';
+        result.style.display = 'block';
+      } catch (err) {
+        formError.textContent = err.message || 'Could not reach the server. Try again.';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Generate my pass';
+      }
     });
 
-    function reset() {
+    function resetForm() {
       form.reset();
+      formError.textContent = '';
       form.style.display = 'block';
       result.style.display = 'none';
     }
