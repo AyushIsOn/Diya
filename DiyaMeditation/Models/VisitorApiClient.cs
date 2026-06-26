@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,6 +17,16 @@ public enum FetchStatus
 
 public sealed record FetchResult(FetchStatus Status, VisitorData? Visitor);
 
+public enum SessionState
+{
+    Pending,
+    Claimed,
+    NotFound,
+    NetworkError
+}
+
+public sealed record SessionStatusResult(SessionState State, VisitorData? Visitor);
+
 /// <summary>
 /// Looks up a visitor by the id encoded in their QR pass.
 /// Base URL is configurable via the DIYA_API_BASE environment variable, e.g.
@@ -23,7 +34,7 @@ public sealed record FetchResult(FetchStatus Status, VisitorData? Visitor);
 /// </summary>
 public static class VisitorApiClient
 {
-    private static readonly string BaseUrl =
+    public static readonly string BaseUrl =
         (Environment.GetEnvironmentVariable("DIYA_API_BASE")
          ?? "https://diya-registration.onrender.com").TrimEnd('/');
 
@@ -60,5 +71,72 @@ public static class VisitorApiClient
             // timeout, DNS failure, no network, etc.
             return new FetchResult(FetchStatus.NetworkError, null);
         }
+    }
+
+    // ---- Sessions (Model B) ------------------------------------------------
+
+    /// <summary>Kiosk starts a session. Returns the token, or null on failure.</summary>
+    public static async Task<string?> CreateSessionAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            using var content = new StringContent("{}", Encoding.UTF8, "application/json");
+            using var resp = await Http.PostAsync($"{BaseUrl}/api/sessions", content, ct);
+            if (!resp.IsSuccessStatusCode)
+                return null;
+
+            var doc = await resp.Content.ReadFromJsonAsync<SessionCreateResponse>(ct);
+            return string.IsNullOrWhiteSpace(doc?.Token) ? null : doc!.Token;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>Kiosk polls a session until the visitor registers on their phone.</summary>
+    public static async Task<SessionStatusResult> GetSessionAsync(string token, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            return new SessionStatusResult(SessionState.NotFound, null);
+
+        try
+        {
+            using var resp = await Http.GetAsync(
+                $"{BaseUrl}/api/sessions/{Uri.EscapeDataString(token)}", ct);
+
+            if (resp.StatusCode == HttpStatusCode.NotFound)
+                return new SessionStatusResult(SessionState.NotFound, null);
+            if (!resp.IsSuccessStatusCode)
+                return new SessionStatusResult(SessionState.NetworkError, null);
+
+            var doc = await resp.Content.ReadFromJsonAsync<SessionStatusResponse>(ct);
+            if (doc is null)
+                return new SessionStatusResult(SessionState.NetworkError, null);
+
+            if (string.Equals(doc.Status, "claimed", StringComparison.OrdinalIgnoreCase)
+                && doc.Visitor is not null
+                && !string.IsNullOrWhiteSpace(doc.Visitor.Name))
+            {
+                return new SessionStatusResult(SessionState.Claimed, doc.Visitor);
+            }
+
+            return new SessionStatusResult(SessionState.Pending, null);
+        }
+        catch
+        {
+            return new SessionStatusResult(SessionState.NetworkError, null);
+        }
+    }
+
+    private sealed class SessionCreateResponse
+    {
+        public string? Token { get; set; }
+    }
+
+    private sealed class SessionStatusResponse
+    {
+        public string? Status { get; set; }
+        public VisitorData? Visitor { get; set; }
     }
 }

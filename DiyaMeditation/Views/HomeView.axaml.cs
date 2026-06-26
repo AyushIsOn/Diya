@@ -1,63 +1,104 @@
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using DiyaMeditation.Models;
+using QRCoder;
 
 namespace DiyaMeditation.Views;
 
 public partial class HomeView : UserControl
 {
     private VisitorData? _visitor;
+    private string? _sessionToken;
+    private DispatcherTimer? _pollTimer;
+    private bool _claimed;
+    private bool _busy;
 
     public HomeView()
     {
         InitializeComponent();
-        Loaded += (_, _) => QrBox.Focus();
+        Loaded += async (_, _) => await StartNewSessionAsync();
+        Unloaded += (_, _) => _pollTimer?.Stop();
     }
 
-    private async void OnQrKeyDown(object? sender, KeyEventArgs e)
+    /// <summary>Create a fresh session, show its QR, and start polling for a claim.</summary>
+    private async Task StartNewSessionAsync()
     {
-        if (e.Key != Key.Enter && e.Key != Key.Return)
+        if (_busy) return;
+        _busy = true;
+        try
+        {
+            _pollTimer?.Stop();
+            _claimed = false;
+            _visitor = null;
+
+            DetailsPanel.IsVisible = false;
+            QrImage.Source = null;
+            QrPlaceholder.IsVisible = true;
+            QrPlaceholder.Text = "Connecting…";
+            ScanHint.Text = "Scan this code with your phone camera to register.";
+            LiveStatus.Foreground = Brush.Parse("#9CA3AF");
+            LiveStatus.Text = "Waking up the server…";
+            StatusText.Text = "";
+
+            string? token = null;
+            for (var attempt = 0; attempt < 3 && token is null; attempt++)
+                token = await VisitorApiClient.CreateSessionAsync();
+
+            if (token is null)
+            {
+                QrPlaceholder.Text = "Offline";
+                LiveStatus.Foreground = Brushes.IndianRed;
+                LiveStatus.Text = "Couldn't reach the server. Tap \"New code\" to retry.";
+                return;
+            }
+
+            _sessionToken = token;
+            var url = $"{VisitorApiClient.BaseUrl}/?session={token}";
+
+            try
+            {
+                QrImage.Source = RenderQr(url);
+                QrPlaceholder.IsVisible = false;
+            }
+            catch
+            {
+                QrPlaceholder.IsVisible = true;
+                QrPlaceholder.Text = "QR error";
+            }
+
+            LiveStatus.Foreground = Brush.Parse("#9CA3AF");
+            LiveStatus.Text = "Waiting for you to register…";
+
+            _pollTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(2) };
+            _pollTimer.Tick += async (_, _) => await PollAsync();
+            _pollTimer.Start();
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task PollAsync()
+    {
+        if (_sessionToken is null || _claimed)
             return;
 
-        e.Handled = true;
+        var result = await VisitorApiClient.GetSessionAsync(_sessionToken);
 
-        var raw = QrBox.Text;
-        QrBox.Text = "";
-
-        // Backward-compat / offline testing: a QR (or pasted text) that contains
-        // the full visitor JSON embedded as DIYA1:<base64> or raw {json}.
-        if (VisitorQr.TryParse(raw, out var embedded) && embedded is not null)
+        if (result.State == SessionState.Claimed && result.Visitor is not null)
         {
-            ApplyVisitor(embedded);
-            return;
+            _claimed = true;
+            _pollTimer?.Stop();
+            ApplyVisitor(result.Visitor);
         }
-
-        // Normal path: the QR holds only the id -> look the visitor up via the API.
-        var id = VisitorQr.ExtractId(raw);
-        if (id is null)
-        {
-            ShowError("Unrecognized code. Try again or enter your name.");
-            return;
-        }
-
-        StatusText.Foreground = Brush.Parse("#6B7280");
-        StatusText.Text = "Looking up your pass...";
-
-        var result = await VisitorApiClient.FetchAsync(id);
-        switch (result.Status)
-        {
-            case FetchStatus.Found:
-                ApplyVisitor(result.Visitor!);
-                break;
-            case FetchStatus.NotFound:
-                ShowError("Pass not recognized. Try again or enter your name.");
-                break;
-            default:
-                ShowError("Couldn't reach the server. Check the connection and try again.");
-                break;
-        }
+        // pending / transient network errors: keep polling silently
     }
 
     private void ApplyVisitor(VisitorData v)
@@ -69,15 +110,16 @@ public partial class HomeView : UserControl
         DetailsPanel.IsVisible = true;
         NameBox.Text = v.Name;
 
+        LiveStatus.Foreground = Brush.Parse("#16A34A");
+        LiveStatus.Text = $"Registered! Welcome, {v.Name}.";
+        ScanHint.Text = "You're all set — press Start Calibration.";
+
         StatusText.Foreground = Brush.Parse("#16A34A");
         StatusText.Text = "Pass scanned successfully.";
     }
 
-    private void ShowError(string message)
-    {
-        StatusText.Foreground = Brushes.IndianRed;
-        StatusText.Text = message;
-    }
+    private async void OnNewCode(object? sender, RoutedEventArgs e)
+        => await StartNewSessionAsync();
 
     private void OnStartCalibration(object? sender, RoutedEventArgs e)
     {
@@ -88,12 +130,20 @@ public partial class HomeView : UserControl
         if (string.IsNullOrWhiteSpace(name))
         {
             StatusText.Foreground = Brushes.IndianRed;
-            StatusText.Text = "Please scan your pass or enter your name.";
-            QrBox.Focus();
+            StatusText.Text = "Scan the QR with your phone, or enter your name.";
             return;
         }
 
         StatusText.Foreground = Brush.Parse("#16A34A");
-        StatusText.Text = $"Starting calibration for {name}...";
+        StatusText.Text = $"Starting calibration for {name}…";
+    }
+
+    private static Bitmap RenderQr(string text)
+    {
+        using var generator = new QRCodeGenerator();
+        using var data = generator.CreateQrCode(text, QRCodeGenerator.ECCLevel.M);
+        var png = new PngByteQRCode(data).GetGraphic(10);
+        using var ms = new MemoryStream(png);
+        return new Bitmap(ms);
     }
 }
