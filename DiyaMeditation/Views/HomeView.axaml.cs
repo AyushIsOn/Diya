@@ -7,6 +7,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using DiyaMeditation.Models;
+using DiyaMeditation.Services;
 using QRCoder;
 
 namespace DiyaMeditation.Views;
@@ -121,21 +122,57 @@ public partial class HomeView : UserControl
     private async void OnNewCode(object? sender, RoutedEventArgs e)
         => await StartNewSessionAsync();
 
-    private void OnStartCalibration(object? sender, RoutedEventArgs e)
+    private async void OnStartCalibration(object? sender, RoutedEventArgs e)
     {
-        var name = _visitor?.Name;
-        if (string.IsNullOrWhiteSpace(name))
-            name = NameBox.Text?.Trim();
-
-        if (string.IsNullOrWhiteSpace(name))
+        // Resolve the visitor: a scanned/registered one wins, otherwise build one
+        // from the manual name/email/age fields.
+        if (_visitor is null)
         {
-            StatusText.Foreground = Brushes.IndianRed;
-            StatusText.Text = "Scan the QR with your phone, or enter your name.";
-            return;
+            var typedName = NameBox.Text?.Trim();
+            if (string.IsNullOrWhiteSpace(typedName))
+            {
+                StatusText.Foreground = Brushes.IndianRed;
+                StatusText.Text = "Scan the QR with your phone, or enter your name.";
+                return;
+            }
+
+            _visitor = new VisitorData
+            {
+                Name = typedName,
+                Email = EmailBox.Text?.Trim() ?? "",
+                Age = int.TryParse(AgeBox.Text?.Trim(), out var a) && a > 0 ? a : 0,
+            };
         }
 
-        StatusText.Foreground = Brush.Parse("#16A34A");
-        StatusText.Text = $"Starting calibration for {name}…";
+        var name = _visitor.Name;
+
+        // Run the calibration script. If it produces any output, calibration started.
+        StatusText.Foreground = Brush.Parse("#6B7280");
+        StatusText.Text = "Starting calibration…";
+
+        var button = sender as Button;
+        if (button is not null) button.IsEnabled = false;
+
+        try
+        {
+            var result = await CalibrationRunner.RunAsync();
+            if (result.Started)
+            {
+                StatusText.Foreground = Brush.Parse("#16A34A");
+                StatusText.Text = $"Starting calibration for {name}…";
+            }
+            else
+            {
+                StatusText.Foreground = Brushes.IndianRed;
+                StatusText.Text = string.IsNullOrWhiteSpace(result.Error)
+                    ? "Calibration did not start (no output from the script)."
+                    : $"Calibration could not start: {result.Error}";
+            }
+        }
+        finally
+        {
+            if (button is not null) button.IsEnabled = true;
+        }
     }
 
     private static Bitmap RenderQr(string text)
