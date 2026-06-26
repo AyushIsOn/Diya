@@ -68,7 +68,7 @@ Version: ${VERSION}
 Section: utils
 Priority: optional
 Architecture: ${ARCH}
-Depends: libx11-6, libice6, libsm6, libfontconfig1
+Depends: libx11-6, libice6, libsm6, libfontconfig1, python3
 Installed-Size: ${SIZE}
 Maintainer: Ayush <ayush@example.com>
 Description: Diya Meditation kiosk

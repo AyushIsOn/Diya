@@ -22,4 +22,12 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
+  <!-- Bundle the Python calibration scripts next to the app (dev output + published .deb). -->
+  <ItemGroup>
+    <Content Include="calibration\*.py">
+      <Link>calibration\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

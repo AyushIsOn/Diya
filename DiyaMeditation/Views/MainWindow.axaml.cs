@@ -26,7 +26,7 @@ public partial class MainWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        Console.WriteLine("[Diya] v1.3.0 OnOpened — applying fullscreen");
+        Console.WriteLine("[Diya] v1.4.0 OnOpened — applying fullscreen");
         GoFullScreen();
 
         var attempts = 0;

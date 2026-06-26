@@ -1,7 +1,7 @@
 # Diya Meditation — Setup & Commands
 
 All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
-**Latest version: 1.3.0**
+**Latest version: 1.4.0**
 
 > Pick the package matching your machine's architecture
 > (check with `dpkg --print-architecture`):
@@ -21,7 +21,7 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 
 **On a real Ubuntu machine, use the `.deb`.**
 
-> **Online registration (v1.3.0+):** the kiosk shows a **QR code on screen**. The
+> **Online registration (v1.4.0+):** the kiosk shows a **QR code on screen**. The
 > visitor scans it with their **phone**, fills in the registration form on their
 > phone, and the kiosk **advances automatically** once they submit. No QR scanner
 > or camera is needed at the kiosk — but the kiosk **must have internet** and know
@@ -34,9 +34,9 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 ### a) Download from GitHub and install
 ```bash
 cd ~
-rm -f diya-meditation_1.3.0_amd64.deb
-wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.3.0_amd64.deb
-sudo dpkg -i ./diya-meditation_1.3.0_amd64.deb
+rm -f diya-meditation_1.4.0_amd64.deb
+wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.4.0_amd64.deb
+sudo dpkg -i ./diya-meditation_1.4.0_amd64.deb
 ```
 
 If it ever complains about a missing dependency:
@@ -50,14 +50,14 @@ skip the download and install the local file directly — the package itself is
 self-contained (bundles the .NET runtime):
 
 ```bash
-sudo dpkg -i ./diya-meditation_1.3.0_amd64.deb
+sudo dpkg -i ./diya-meditation_1.4.0_amd64.deb
 sudo apt -f install     # only if it reports a missing dependency
 ```
 
 Ways to get the file onto the machine without GitHub:
 - **USB drive** — copy the `.deb` over and plug it in
 - **VM shared folder** — drop it in the shared folder from the host
-- **scp** — `scp diya-meditation_1.3.0_amd64.deb user@machine:~/`
+- **scp** — `scp diya-meditation_1.4.0_amd64.deb user@machine:~/`
 
 ## 2. Run it
 
@@ -199,7 +199,7 @@ echo "--- binary present? ---"; ls -l /opt/diya-meditation/DiyaMeditation
 What it tells you:
 - **NOT running + a log error** -> the app crashed on launch; the log shows why.
 - **NOT running + no log** -> the autostart entry never fired (check auto-login actually boots to the desktop without a password prompt).
-- **binary missing** -> the v1.3.0 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.3.0_amd64.deb`.
+- **binary missing** -> the v1.4.0 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.4.0_amd64.deb`.
 - **scans say "Couldn't reach the server"** -> the kiosk has no internet or
   `DIYA_API_BASE` is wrong (Section 4); test with the `curl .../api/health` check.
 
@@ -249,9 +249,9 @@ dotnet --version        # should print 8.0.x
 ### b) Build the package
 ```bash
 cd DiyaMeditation
-./deploy/build-deb.sh 1.3.0 amd64     # x86 PCs
-./deploy/build-deb.sh 1.3.0 arm64     # ARM devices / Apple Silicon VMs
-# output: build/diya-meditation_1.3.0_<arch>.deb
+./deploy/build-deb.sh 1.4.0 amd64     # x86 PCs
+./deploy/build-deb.sh 1.4.0 arm64     # ARM devices / Apple Silicon VMs
+# output: build/diya-meditation_1.4.0_<arch>.deb
 ```
 
 > Note: `build-deb.sh` wipes the `build/` directory at the start of every run,
@@ -263,6 +263,39 @@ cd DiyaMeditation
 cd DiyaMeditation
 dotnet run            # builds + launches fullscreen
 ```
+
+### d) Update the calibration script & repackage
+
+When "Start Calibration" is pressed, the kiosk runs a Python script and treats any
+output it prints as "calibration started". The scripts live in:
+
+```
+DiyaMeditation/calibration/
+├── camera_utils.py        # camera discovery helpers (your hardware code)
+└── start_calibration.py   # entry point the kiosk runs; prints status / drives hardware
+```
+
+These are bundled into the package at **`/opt/diya-meditation/calibration/`** and run
+with `python3`. To change the calibration/hardware behaviour:
+
+1. Edit the scripts in `DiyaMeditation/calibration/` (put camera/servo/serial logic in
+   `start_calibration.py`, or in new modules it imports).
+2. Rebuild the package — that's the whole "repackage" step:
+   ```bash
+   cd DiyaMeditation
+   ./deploy/build-deb.sh 1.4.0 amd64
+   ```
+3. Reinstall on the kiosk: `sudo dpkg -i ./diya-meditation_1.4.0_amd64.deb`.
+
+Notes:
+- Requires **python3 ≥ 3.10** on the kiosk (Ubuntu 26.04 ships 3.12). The `.deb`
+  declares `python3` as a dependency.
+- For real USB camera detection install **v4l-utils** (`sudo apt install -y v4l-utils`);
+  without it the script still runs and just reports no cameras.
+- Override the script path or interpreter without rebuilding via env vars:
+  `DIYA_CALIBRATION_SCRIPT=/path/to/script.py` and `DIYA_PYTHON=python3.12`.
+- The kiosk shows "Starting calibration…" as long as the script prints **any** output;
+  if it prints nothing (or python3 is missing) it shows a failure message instead.
 
 ---
 

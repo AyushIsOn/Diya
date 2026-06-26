@@ -54,9 +54,13 @@
                         HorizontalAlignment="Center" />
 
                 <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,4,0,0">
-                    <TextBlock Text="or just enter your name" FontSize="13" Foreground="#9CA3AF"
+                    <TextBlock Text="or just enter your details" FontSize="13" Foreground="#9CA3AF"
                                HorizontalAlignment="Center" />
                     <TextBox Name="NameBox" Watermark="Your name" FontSize="15" Width="240"
+                             Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB" />
+                    <TextBox Name="EmailBox" Watermark="Email (Gmail)" FontSize="15" Width="240"
+                             Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB" />
+                    <TextBox Name="AgeBox" Watermark="Age" FontSize="15" Width="240"
                              Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB" />
                 </StackPanel>
 
