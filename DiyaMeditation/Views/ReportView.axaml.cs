@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -21,8 +22,27 @@ public partial class ReportView : UserControl
         _ctx = ctx;
         InitializeComponent();
         Populate();
-        Loaded += (_, _) => StartAutoReturn();
+        Loaded += (_, _) =>
+        {
+            StartAutoReturn();
+            _ = SaveReportAsync();
+        };
         Unloaded += (_, _) => _autoReturn?.Stop();
+    }
+
+    private async Task SaveReportAsync()
+    {
+        SavedText.Text = "Saving report…";
+        try
+        {
+            var path = await Task.Run(() => ReportStore.Save(_ctx));
+            SavedText.Text = $"Report saved: {path}";
+        }
+        catch (Exception ex)
+        {
+            SavedText.Text = "Could not save the report PDF.";
+            Console.WriteLine("[report] PDF save failed: " + ex);
+        }
     }
 
     private void Populate()

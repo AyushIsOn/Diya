@@ -41,6 +41,8 @@
                     Padding="40,16" CornerRadius="8" HorizontalAlignment="Center" />
 
             <TextBlock Name="AutoText" FontSize="12" Foreground="#C4C4C4" HorizontalAlignment="Center" />
+            <TextBlock Name="SavedText" FontSize="11" Foreground="#C4C4C4" HorizontalAlignment="Center"
+                       TextAlignment="Center" TextWrapping="Wrap" MaxWidth="520" />
         </StackPanel>
     </Grid>
 </UserControl>
