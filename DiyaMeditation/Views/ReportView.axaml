@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DiyaMeditation.Views.ReportView"
+             Background="White">
+
+    <Grid Margin="56">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20" MaxWidth="560">
+
+            <TextBlock Name="TitleText" Text="Your session" FontSize="40" FontWeight="Bold"
+                       Foreground="#1F2A37" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
+
+            <TextBlock Name="MessageText" FontSize="16" Foreground="#6B7280"
+                       HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" />
+
+            <Border Background="#111827" CornerRadius="16" Padding="32" HorizontalAlignment="Center">
+                <StackPanel Spacing="2" HorizontalAlignment="Center">
+                    <TextBlock Text="SESSION SCORE" FontSize="12" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                    <TextBlock Name="ScoreText" FontSize="64" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*,*" Width="520">
+                <StackPanel Grid.Column="0" Spacing="2" HorizontalAlignment="Center">
+                    <TextBlock Name="CalmText" FontSize="26" FontWeight="SemiBold" Foreground="#111827" HorizontalAlignment="Center" />
+                    <TextBlock Text="Calmness" FontSize="13" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="2" HorizontalAlignment="Center">
+                    <TextBlock Name="FocusText" FontSize="26" FontWeight="SemiBold" Foreground="#111827" HorizontalAlignment="Center" />
+                    <TextBlock Text="Focus" FontSize="13" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="2" HorizontalAlignment="Center">
+                    <TextBlock Name="HrText" FontSize="26" FontWeight="SemiBold" Foreground="#111827" HorizontalAlignment="Center" />
+                    <TextBlock Text="Avg HR" FontSize="13" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Name="DurationText" FontSize="13" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+
+            <Button Content="Done" Click="OnDone"
+                    Background="#111827" Foreground="White" FontSize="18" FontWeight="SemiBold"
+                    Padding="40,16" CornerRadius="8" HorizontalAlignment="Center" />
+
+            <TextBlock Name="AutoText" FontSize="12" Foreground="#C4C4C4" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -14,14 +14,16 @@ namespace DiyaMeditation.Views;
 
 public partial class HomeView : UserControl
 {
+    private readonly IKioskNavigator _nav;
     private VisitorData? _visitor;
     private string? _sessionToken;
     private DispatcherTimer? _pollTimer;
     private bool _claimed;
     private bool _busy;
 
-    public HomeView()
+    public HomeView(IKioskNavigator nav)
     {
+        _nav = nav;
         InitializeComponent();
         Loaded += async (_, _) => await StartNewSessionAsync();
         Unloaded += (_, _) => _pollTimer?.Stop();
@@ -122,7 +124,7 @@ public partial class HomeView : UserControl
     private async void OnNewCode(object? sender, RoutedEventArgs e)
         => await StartNewSessionAsync();
 
-    private async void OnStartCalibration(object? sender, RoutedEventArgs e)
+    private void OnStartCalibration(object? sender, RoutedEventArgs e)
     {
         // Resolve the visitor: a scanned/registered one wins, otherwise build one
         // from the manual name/email/age fields.
@@ -144,35 +146,9 @@ public partial class HomeView : UserControl
             };
         }
 
-        var name = _visitor.Name;
-
-        // Run the calibration script. If it produces any output, calibration started.
-        StatusText.Foreground = Brush.Parse("#6B7280");
-        StatusText.Text = "Starting calibration…";
-
-        var button = sender as Button;
-        if (button is not null) button.IsEnabled = false;
-
-        try
-        {
-            var result = await CalibrationRunner.RunAsync();
-            if (result.Started)
-            {
-                StatusText.Foreground = Brush.Parse("#16A34A");
-                StatusText.Text = $"Starting calibration for {name}…";
-            }
-            else
-            {
-                StatusText.Foreground = Brushes.IndianRed;
-                StatusText.Text = string.IsNullOrWhiteSpace(result.Error)
-                    ? "Calibration did not start (no output from the script)."
-                    : $"Calibration could not start: {result.Error}";
-            }
-        }
-        finally
-        {
-            if (button is not null) button.IsEnabled = true;
-        }
+        // Hand off to the calibration screen with a fresh session context.
+        _pollTimer?.Stop();
+        _nav.GoToCalibration(new SessionContext(_visitor));
     }
 
     private static Bitmap RenderQr(string text)
