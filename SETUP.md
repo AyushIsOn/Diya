@@ -1,12 +1,56 @@
 # Diya Meditation — Setup & Commands
 
 All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
-**Latest version: 1.3.0**
+**Latest version: 1.5.0**
 
 > Pick the package matching your machine's architecture
 > (check with `dpkg --print-architecture`):
 > - `amd64` -> normal x86 PCs
 > - `arm64` -> Apple Silicon VMs / ARM devices
+
+---
+
+## Offline people-list mode (this build)
+
+> This is the **offline** variant. No internet, no Render, no webpage. The kiosk
+> loads a **fixed list of people** from a local **CSV or Excel (.xlsx)** file, and
+> a person is identified by **scanning their pass** (USB QR scanner) or **typing
+> their name**. Their details come straight from the file.
+
+**How it works, end to end:**
+
+1. **You prepare a list** — a CSV or `.xlsx` with a header row. Columns (any order,
+   case-insensitive): `Id, Name, Email, Age`. `Id` is the value encoded in the QR.
+   ```csv
+   Id,Name,Email,Age
+   P001,Asha Rao,asha@example.com,29
+   P002,Maya Iyer,maya@example.com,31
+   ```
+2. **Generate the passes** (one QR per person) with the included tool:
+   ```bash
+   cd tools/PassGenerator
+   dotnet run -- /path/to/people.csv ./passes
+   # writes passes/<Id>_<Name>.png + passes/index.html (open it to print them all)
+   ```
+   Print the passes (or show them on a phone screen).
+3. **Tell the kiosk which file to use.** Put your file where the app looks, or point
+   to it explicitly (highest priority):
+   ```bash
+   DIYA_PEOPLE_FILE=/home/USER/people.csv diya-meditation
+   ```
+   Without the env var it searches: the current dir, then `/opt/diya-meditation/people.csv`
+   (a sample ships there), then `~/diya-people.csv`.
+4. **At the kiosk**, the person scans their pass with a **USB QR scanner** (it types
+   the code + Enter into the focused box) — or types their name and presses Enter.
+   Their details load instantly from the file.
+
+**Testing on a VirtualBox / Ubuntu VM (no scanner handy):**
+- A USB QR scanner acts as a keyboard — you can simulate it by just **typing the Id**
+  (e.g. `P001`) into the scan box and pressing Enter.
+- Drop your `people.csv` into the VM (shared folder / drag-drop) and launch with
+  `DIYA_PEOPLE_FILE=/path/to/people.csv diya-meditation`.
+- The bottom of the right panel shows **"Loaded N people from <file>"** so you can
+  confirm the list was read.
 
 ---
 
@@ -21,7 +65,7 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 
 **On a real Ubuntu machine, use the `.deb`.**
 
-> **Online registration (v1.3.0+):** the kiosk shows a **QR code on screen**. The
+> **Online registration (v1.5.0+):** the kiosk shows a **QR code on screen**. The
 > visitor scans it with their **phone**, fills in the registration form on their
 > phone, and the kiosk **advances automatically** once they submit. No QR scanner
 > or camera is needed at the kiosk — but the kiosk **must have internet** and know
@@ -34,9 +78,9 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 ### a) Download from GitHub and install
 ```bash
 cd ~
-rm -f diya-meditation_1.3.0_amd64.deb
-wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.3.0_amd64.deb
-sudo dpkg -i ./diya-meditation_1.3.0_amd64.deb
+rm -f diya-meditation_1.5.0_amd64.deb
+wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.5.0_amd64.deb
+sudo dpkg -i ./diya-meditation_1.5.0_amd64.deb
 ```
 
 If it ever complains about a missing dependency:
@@ -50,14 +94,14 @@ skip the download and install the local file directly — the package itself is
 self-contained (bundles the .NET runtime):
 
 ```bash
-sudo dpkg -i ./diya-meditation_1.3.0_amd64.deb
+sudo dpkg -i ./diya-meditation_1.5.0_amd64.deb
 sudo apt -f install     # only if it reports a missing dependency
 ```
 
 Ways to get the file onto the machine without GitHub:
 - **USB drive** — copy the `.deb` over and plug it in
 - **VM shared folder** — drop it in the shared folder from the host
-- **scp** — `scp diya-meditation_1.3.0_amd64.deb user@machine:~/`
+- **scp** — `scp diya-meditation_1.5.0_amd64.deb user@machine:~/`
 
 ## 2. Run it
 
@@ -199,7 +243,7 @@ echo "--- binary present? ---"; ls -l /opt/diya-meditation/DiyaMeditation
 What it tells you:
 - **NOT running + a log error** -> the app crashed on launch; the log shows why.
 - **NOT running + no log** -> the autostart entry never fired (check auto-login actually boots to the desktop without a password prompt).
-- **binary missing** -> the v1.3.0 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.3.0_amd64.deb`.
+- **binary missing** -> the v1.5.0 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.5.0_amd64.deb`.
 - **scans say "Couldn't reach the server"** -> the kiosk has no internet or
   `DIYA_API_BASE` is wrong (Section 4); test with the `curl .../api/health` check.
 
@@ -249,9 +293,9 @@ dotnet --version        # should print 8.0.x
 ### b) Build the package
 ```bash
 cd DiyaMeditation
-./deploy/build-deb.sh 1.3.0 amd64     # x86 PCs
-./deploy/build-deb.sh 1.3.0 arm64     # ARM devices / Apple Silicon VMs
-# output: build/diya-meditation_1.3.0_<arch>.deb
+./deploy/build-deb.sh 1.5.0 amd64     # x86 PCs
+./deploy/build-deb.sh 1.5.0 arm64     # ARM devices / Apple Silicon VMs
+# output: build/diya-meditation_1.5.0_<arch>.deb
 ```
 
 > Note: `build-deb.sh` wipes the `build/` directory at the start of every run,

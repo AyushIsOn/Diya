@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>diya-passgen</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+  </ItemGroup>
+
+  <!-- Reuse the kiosk's people loader + model so the IDs match exactly. -->
+  <ItemGroup>
+    <Compile Include="../../DiyaMeditation/Models/VisitorData.cs" />
+    <Compile Include="../../DiyaMeditation/Models/PeopleDirectory.cs" />
+  </ItemGroup>
+</Project>

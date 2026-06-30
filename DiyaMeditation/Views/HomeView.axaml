@@ -5,7 +5,7 @@
 
     <Grid ColumnDefinitions="*,*" Margin="56">
 
-        <!-- Left panel: Welcome + registered visitor + Start -->
+        <!-- Left panel: Welcome + selected person + Start -->
         <Border Grid.Column="0" Margin="0,0,20,0" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="56">
             <StackPanel VerticalAlignment="Center" Spacing="24">
                 <TextBlock Text="Welcome" FontSize="52" FontWeight="Bold" Foreground="#1F2A37" />
@@ -14,6 +14,7 @@
                     <TextBlock Name="NameText" FontSize="24" FontWeight="SemiBold" Foreground="#111827" />
                     <TextBlock Name="EmailText" FontSize="15" Foreground="#6B7280" />
                     <TextBlock Name="AgeText" FontSize="15" Foreground="#6B7280" />
+                    <TextBlock Name="IdText" FontSize="13" Foreground="#9CA3AF" />
                 </StackPanel>
 
                 <Button Content="Start Calibration" Click="OnStartCalibration"
@@ -24,41 +25,47 @@
             </StackPanel>
         </Border>
 
-        <!-- Right panel: kiosk-displayed QR (scan with phone) + live status + name fallback -->
+        <!-- Right panel: scan a pass (USB scanner) or search the loaded list -->
         <Border Grid.Column="1" Margin="20,0,0,0" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="40">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="18">
+            <StackPanel VerticalAlignment="Center" Spacing="22">
 
-                <TextBlock Text="Register with your phone" FontSize="22" FontWeight="SemiBold"
+                <TextBlock Text="Scan your pass" FontSize="22" FontWeight="SemiBold"
                            Foreground="#1F2A37" HorizontalAlignment="Center" />
 
-                <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="12"
-                        Padding="16" HorizontalAlignment="Center">
-                    <Panel Width="220" Height="220">
-                        <Image Name="QrImage" Width="220" Height="220" />
-                        <TextBlock Name="QrPlaceholder" Text="Connecting…"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#9CA3AF" />
-                    </Panel>
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="12"
+                        Padding="22" Width="150" Height="150" HorizontalAlignment="Center">
+                    <Viewbox>
+                        <Canvas Width="24" Height="24">
+                            <Rectangle Canvas.Left="2" Canvas.Top="2" Width="7" Height="7" Stroke="#374151" StrokeThickness="1.6" />
+                            <Rectangle Canvas.Left="15" Canvas.Top="2" Width="7" Height="7" Stroke="#374151" StrokeThickness="1.6" />
+                            <Rectangle Canvas.Left="2" Canvas.Top="15" Width="7" Height="7" Stroke="#374151" StrokeThickness="1.6" />
+                            <Rectangle Canvas.Left="15" Canvas.Top="15" Width="2.5" Height="2.5" Fill="#374151" />
+                            <Rectangle Canvas.Left="19" Canvas.Top="15" Width="2.5" Height="2.5" Fill="#374151" />
+                            <Rectangle Canvas.Left="15" Canvas.Top="19" Width="2.5" Height="2.5" Fill="#374151" />
+                            <Rectangle Canvas.Left="19" Canvas.Top="19" Width="2.5" Height="2.5" Fill="#374151" />
+                        </Canvas>
+                    </Viewbox>
                 </Border>
 
-                <TextBlock Name="ScanHint" Text="Scan this code with your phone camera to register."
-                           FontSize="14" Foreground="#6B7280" TextWrapping="Wrap"
-                           TextAlignment="Center" HorizontalAlignment="Center" MaxWidth="300" />
+                <TextBox Name="ScanBox" Watermark="Scan or type your pass code" KeyDown="OnScanKeyDown"
+                         FontSize="15" Width="280" Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB"
+                         HorizontalAlignment="Center" />
 
-                <TextBlock Name="LiveStatus" Text="Waiting for you to register…"
-                           FontSize="15" FontWeight="SemiBold" Foreground="#9CA3AF"
-                           TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="320" />
+                <TextBlock Name="ScanHint" FontSize="13" Foreground="#9CA3AF" TextWrapping="Wrap"
+                           TextAlignment="Center" HorizontalAlignment="Center" MaxWidth="300"
+                           Text="Hold your pass to the scanner, or type the code and press Enter." />
 
-                <Button Name="NewCodeButton" Content="New code" Click="OnNewCode"
-                        Background="Transparent" Foreground="#6B7280" FontSize="13"
-                        BorderBrush="#E5E7EB" BorderThickness="1" Padding="14,8" CornerRadius="8"
-                        HorizontalAlignment="Center" />
+                <Border Height="1" Background="#F3F4F6" Margin="0,2" />
 
-                <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,4,0,0">
-                    <TextBlock Text="or just enter your name" FontSize="13" Foreground="#9CA3AF"
-                               HorizontalAlignment="Center" />
-                    <TextBox Name="NameBox" Watermark="Your name" FontSize="15" Width="240"
-                             Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB" />
+                <!-- Find by name (fallback if no scanner) -->
+                <StackPanel Spacing="8" HorizontalAlignment="Center">
+                    <TextBlock Text="or find your name" FontSize="13" Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                    <TextBox Name="NameBox" Watermark="Type your name, press Enter" KeyDown="OnNameSearchKeyDown"
+                             FontSize="15" Width="280" Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB" />
                 </StackPanel>
+
+                <TextBlock Name="DirectoryStatus" FontSize="12" Foreground="#9CA3AF"
+                           TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="320" />
 
             </StackPanel>
         </Border>
