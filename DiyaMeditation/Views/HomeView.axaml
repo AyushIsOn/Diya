@@ -3,14 +3,15 @@
              x:Class="DiyaMeditation.Views.HomeView"
              Background="White">
 
-    <Grid ColumnDefinitions="*,*" Margin="56">
+    <Grid ColumnDefinitions="*,*" Margin="64">
 
         <!-- Left panel: Welcome + registered visitor + Start -->
-        <Border Grid.Column="0" Margin="0,0,20,0" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="56">
-            <StackPanel VerticalAlignment="Center" Spacing="24">
-                <TextBlock Text="Welcome" FontSize="52" FontWeight="Bold" Foreground="#1F2A37" />
+        <Border Grid.Column="0" Margin="0,0,24,0" BorderBrush="#EEF0F3" BorderThickness="1" CornerRadius="16" Padding="64">
+            <StackPanel VerticalAlignment="Center" Spacing="16">
+                <TextBlock Text="Welcome" FontSize="56" FontWeight="Bold" Foreground="#1F2A37" />
+                <TextBlock Text="Take a moment for yourself." FontSize="18" Foreground="#9CA3AF" />
 
-                <StackPanel Name="DetailsPanel" IsVisible="False" Spacing="4">
+                <StackPanel Name="DetailsPanel" IsVisible="False" Spacing="4" Margin="0,12,0,0">
                     <TextBlock Name="NameText" FontSize="24" FontWeight="SemiBold" Foreground="#111827"
                                TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" />
                     <TextBlock Name="EmailText" FontSize="15" Foreground="#6B7280"
@@ -20,51 +21,53 @@
 
                 <Button Content="Start Calibration" Click="OnStartCalibration"
                         Background="#111827" Foreground="White" FontSize="18" FontWeight="SemiBold"
-                        Padding="32,18" CornerRadius="8" HorizontalAlignment="Left" />
+                        Padding="36,18" CornerRadius="10" HorizontalAlignment="Left" Margin="0,8,0,0" />
 
                 <TextBlock Name="StatusText" FontSize="14" Foreground="#9CA3AF" TextWrapping="Wrap" />
             </StackPanel>
         </Border>
 
-        <!-- Right panel: kiosk-displayed QR (scan with phone) + live status + name fallback -->
-        <Border Grid.Column="1" Margin="20,0,0,0" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="40">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="18">
+        <!-- Right panel: the QR is the hero. Manual entry is tucked away. -->
+        <Border Grid.Column="1" Margin="24,0,0,0" BorderBrush="#EEF0F3" BorderThickness="1" CornerRadius="16" Padding="48">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="20">
 
-                <TextBlock Text="Register with your phone" FontSize="22" FontWeight="SemiBold"
-                           Foreground="#1F2A37" HorizontalAlignment="Center" />
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Scan to begin" FontSize="24" FontWeight="SemiBold"
+                               Foreground="#1F2A37" HorizontalAlignment="Center" />
+                    <TextBlock Name="ScanHint" Text="Point your phone camera at the code to register."
+                               FontSize="14" Foreground="#9CA3AF" TextWrapping="Wrap"
+                               TextAlignment="Center" HorizontalAlignment="Center" MaxWidth="300" />
+                </StackPanel>
 
-                <Border Background="White" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="12"
-                        Padding="16" HorizontalAlignment="Center">
-                    <Panel Width="220" Height="220">
-                        <Image Name="QrImage" Width="220" Height="220" />
+                <Border Background="White" BorderBrush="#EEF0F3" BorderThickness="1" CornerRadius="16"
+                        Padding="18" HorizontalAlignment="Center" BoxShadow="0 8 28 0 #11000000">
+                    <Panel Width="230" Height="230">
+                        <Image Name="QrImage" Width="230" Height="230" />
                         <TextBlock Name="QrPlaceholder" Text="Connecting…"
                                    HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#9CA3AF" />
                     </Panel>
                 </Border>
 
-                <TextBlock Name="ScanHint" Text="Scan this code with your phone camera to register."
-                           FontSize="14" Foreground="#6B7280" TextWrapping="Wrap"
-                           TextAlignment="Center" HorizontalAlignment="Center" MaxWidth="300" />
-
                 <TextBlock Name="LiveStatus" Text="Waiting for you to register…"
                            FontSize="15" FontWeight="SemiBold" Foreground="#9CA3AF"
                            TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="320" />
 
-                <Button Name="NewCodeButton" Content="New code" Click="OnNewCode"
-                        Background="Transparent" Foreground="#6B7280" FontSize="13"
-                        BorderBrush="#E5E7EB" BorderThickness="1" Padding="14,8" CornerRadius="8"
-                        HorizontalAlignment="Center" />
+                <Button Name="NewCodeButton" Content="Refresh code" Click="OnNewCode"
+                        Background="Transparent" Foreground="#9CA3AF" FontSize="13"
+                        BorderThickness="0" Padding="6,4" HorizontalAlignment="Center" />
 
-                <StackPanel Spacing="8" HorizontalAlignment="Center" Margin="0,4,0,0">
-                    <TextBlock Text="or just enter your details" FontSize="13" Foreground="#9CA3AF"
-                               HorizontalAlignment="Center" />
-                    <TextBox Name="NameBox" Watermark="Your name" FontSize="15" Width="240"
-                             Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB" />
-                    <TextBox Name="EmailBox" Watermark="Email (Gmail)" FontSize="15" Width="240"
-                             Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB" />
-                    <TextBox Name="AgeBox" Watermark="Age" FontSize="15" Width="240"
-                             Padding="12,10" CornerRadius="8" BorderBrush="#E5E7EB" />
-                </StackPanel>
+                <Expander Header="Enter details instead" HorizontalAlignment="Center" Margin="0,4,0,0">
+                    <StackPanel Spacing="10" Margin="0,12,0,0">
+                        <TextBox Name="NameBox" Watermark="Your name" FontSize="15" Width="260"
+                                 Padding="12,10" CornerRadius="10" BorderBrush="#E5E7EB" />
+                        <TextBox Name="EmailBox" Watermark="Email" FontSize="15" Width="260"
+                                 Padding="12,10" CornerRadius="10" BorderBrush="#E5E7EB" />
+                        <TextBox Name="AgeBox" Watermark="Age" FontSize="15" Width="260"
+                                 Padding="12,10" CornerRadius="10" BorderBrush="#E5E7EB" />
+                        <TextBlock Text="Then press Start Calibration." FontSize="12"
+                                   Foreground="#9CA3AF" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Expander>
 
             </StackPanel>
         </Border>

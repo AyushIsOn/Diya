@@ -22,7 +22,11 @@
                            HorizontalAlignment="Center" VerticalAlignment="Center" />
             </Panel>
 
-            <TextBlock Name="TimeText" Text="" FontSize="18" Foreground="#B4A9D6" HorizontalAlignment="Center" />
+            <TextBlock Name="TimeText" Text="" FontSize="15" Foreground="#8A7FB0" HorizontalAlignment="Center" />
+
+            <ProgressBar Name="SessionProgress" Minimum="0" Maximum="1" Value="0"
+                         Width="280" Height="4" CornerRadius="2"
+                         Foreground="#B9AEEA" Background="#3A2F5C" />
 
             <TextBlock Text="Find a comfortable position and follow your breath."
                        FontSize="15" Foreground="#8A7FB0" HorizontalAlignment="Center" />

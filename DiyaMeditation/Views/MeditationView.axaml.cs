@@ -53,7 +53,10 @@ public partial class MeditationView : UserControl
     {
         var elapsed = (DateTime.Now - _start).TotalSeconds;
         var remaining = Math.Max(0, _total - elapsed);
-        TimeText.Text = $"{Math.Ceiling(remaining):0}s remaining";
+        SessionProgress.Value = _total > 0 ? Math.Clamp(elapsed / _total, 0, 1) : 0;
+        TimeText.Text = remaining > 10
+            ? "Relax and breathe"
+            : "Gently coming back…";
 
         // 8-second breathing cycle, smooth ease in/out.
         var phase = (elapsed % 8.0) / 8.0;

@@ -36,7 +36,7 @@ public partial class MainWindow : Window, IKioskNavigator
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        Console.WriteLine("[Diya] v1.7.0 OnOpened — applying fullscreen");
+        Console.WriteLine("[Diya] v1.7.1 OnOpened — applying fullscreen");
         GoFullScreen();
 
         var attempts = 0;

@@ -11,6 +11,11 @@
         Topmost="True"
         Background="White">
 
-    <!-- The kiosk shell hosts the current screen; MainWindow swaps it via IKioskNavigator. -->
-    <ContentControl Name="ContentHost" />
+    <!-- The kiosk shell hosts the current screen; MainWindow swaps it via IKioskNavigator.
+         A gentle cross-fade makes screen changes feel calm rather than abrupt. -->
+    <TransitioningContentControl Name="ContentHost">
+        <TransitioningContentControl.PageTransition>
+            <CrossFade Duration="0:0:0.35" />
+        </TransitioningContentControl.PageTransition>
+    </TransitioningContentControl>
 </Window>

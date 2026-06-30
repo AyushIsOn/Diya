@@ -32,15 +32,16 @@ public partial class ReportView : UserControl
 
     private async Task SaveReportAsync()
     {
-        SavedText.Text = "Saving report…";
+        SavedText.Text = "Saving your report…";
         try
         {
             var path = await Task.Run(() => ReportStore.Save(_ctx));
-            SavedText.Text = $"Report saved: {path}";
+            Console.WriteLine($"[report] saved PDF: {path}");
+            SavedText.Text = "Your session report has been saved.";
         }
         catch (Exception ex)
         {
-            SavedText.Text = "Could not save the report PDF.";
+            SavedText.Text = "We couldn't save the report this time.";
             Console.WriteLine("[report] PDF save failed: " + ex);
         }
     }

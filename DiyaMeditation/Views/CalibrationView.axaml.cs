@@ -36,8 +36,9 @@ public partial class CalibrationView : UserControl
             ContinueButton.IsVisible = false;
             RetryButton.IsVisible = false;
             BackButton.IsVisible = false;
+            CalibProgress.IsVisible = true;
             StatusText.Foreground = Brush.Parse("#6B7280");
-            StatusText.Text = "Calibrating… please hold still.";
+            StatusText.Text = "Preparing your session… please make yourself comfortable.";
             AppendLine("[calibration] starting…");
 
             var result = await CalibrationRunner.RunAsync(
@@ -47,22 +48,24 @@ public partial class CalibrationView : UserControl
 
             _ctx.CalibrationOk = result.Started;
             _ctx.CalibrationLog = result.Output;
+            CalibProgress.IsVisible = false;
 
             if (result.Started)
             {
                 StatusText.Foreground = Brush.Parse("#16A34A");
-                StatusText.Text = "Calibration complete.";
+                StatusText.Text = "All set. Let's begin.";
                 ContinueButton.IsVisible = true;
-                await Task.Delay(1800);
+                await Task.Delay(1500);
                 Advance();
             }
             else
             {
                 StatusText.Foreground = Brushes.IndianRed;
                 StatusText.Text = string.IsNullOrWhiteSpace(result.Error)
-                    ? "Calibration produced no output."
-                    : $"Calibration could not start: {result.Error}";
+                    ? "We couldn't get set up. Please try again or ask a staff member."
+                    : $"We couldn't get set up: {result.Error}";
                 if (!string.IsNullOrWhiteSpace(result.Error)) AppendLine(result.Error!);
+                DetailsExpander.IsExpanded = true;
                 RetryButton.IsVisible = true;
                 BackButton.IsVisible = true;
             }
