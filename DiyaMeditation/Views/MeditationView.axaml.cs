@@ -83,17 +83,7 @@ public partial class MeditationView : UserControl
     private void Finish()
     {
         Cleanup();
-        var n = Math.Max(1, _samples);
-        var calm = _sumCalm / n;
-        var focus = _sumFocus / n;
-        _ctx.Metrics = new MeditationMetrics
-        {
-            DurationSeconds = _total,
-            AvgCalmness = Math.Round(calm, 0),
-            AvgFocus = Math.Round(focus, 0),
-            AvgHeartRate = (int)Math.Round(_sumHr / n),
-            Score = (int)Math.Round(calm * 0.5 + focus * 0.5),
-        };
+        _ctx.Metrics = MeditationMetrics.From(_sumCalm, _sumFocus, _sumHr, _samples, _total);
         _nav.GoToReport(_ctx);
     }
 

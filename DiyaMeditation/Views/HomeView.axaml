@@ -11,8 +11,10 @@
                 <TextBlock Text="Welcome" FontSize="52" FontWeight="Bold" Foreground="#1F2A37" />
 
                 <StackPanel Name="DetailsPanel" IsVisible="False" Spacing="4">
-                    <TextBlock Name="NameText" FontSize="24" FontWeight="SemiBold" Foreground="#111827" />
-                    <TextBlock Name="EmailText" FontSize="15" Foreground="#6B7280" />
+                    <TextBlock Name="NameText" FontSize="24" FontWeight="SemiBold" Foreground="#111827"
+                               TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Name="EmailText" FontSize="15" Foreground="#6B7280"
+                               TextTrimming="CharacterEllipsis" />
                     <TextBlock Name="AgeText" FontSize="15" Foreground="#6B7280" />
                 </StackPanel>
 

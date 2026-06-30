@@ -43,16 +43,8 @@ public partial class ReportView : UserControl
         FocusText.Text = $"{m.AvgFocus:0}%";
         HrText.Text = m.AvgHeartRate.ToString();
         DurationText.Text = $"Session length: {m.DurationSeconds}s";
-        MessageText.Text = MessageFor(m.Score);
+        MessageText.Text = MeditationMetrics.Message(m.Score);
     }
-
-    private static string MessageFor(int score) => score switch
-    {
-        >= 80 => "Beautifully calm and focused — a deeply settled session.",
-        >= 60 => "A calm, steady session — nicely done.",
-        >= 40 => "A good start. With practice it gets easier to settle.",
-        _ => "Thanks for taking a moment for yourself today.",
-    };
 
     private void StartAutoReturn()
     {

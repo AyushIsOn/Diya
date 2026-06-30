@@ -16,6 +16,7 @@ public partial class CalibrationView : UserControl
     private readonly StringBuilder _log = new();
     private bool _advanced;
     private bool _active = true;
+    private bool _running;
 
     public CalibrationView(IKioskNavigator nav, SessionContext ctx)
     {
@@ -28,38 +29,47 @@ public partial class CalibrationView : UserControl
 
     private async Task RunAsync()
     {
-        ContinueButton.IsVisible = false;
-        RetryButton.IsVisible = false;
-        BackButton.IsVisible = false;
-        StatusText.Foreground = Brush.Parse("#6B7280");
-        StatusText.Text = "Calibrating… please hold still.";
-        AppendLine("[calibration] starting…");
-
-        var result = await CalibrationRunner.RunAsync(
-            line => Dispatcher.UIThread.Post(() => AppendLine(line)));
-
-        if (!_active) return;
-
-        _ctx.CalibrationOk = result.Started;
-        _ctx.CalibrationLog = result.Output;
-
-        if (result.Started)
+        if (_running) return;
+        _running = true;
+        try
         {
-            StatusText.Foreground = Brush.Parse("#16A34A");
-            StatusText.Text = "Calibration complete.";
-            ContinueButton.IsVisible = true;
-            await Task.Delay(1800);
-            Advance();
+            ContinueButton.IsVisible = false;
+            RetryButton.IsVisible = false;
+            BackButton.IsVisible = false;
+            StatusText.Foreground = Brush.Parse("#6B7280");
+            StatusText.Text = "Calibrating… please hold still.";
+            AppendLine("[calibration] starting…");
+
+            var result = await CalibrationRunner.RunAsync(
+                line => Dispatcher.UIThread.Post(() => AppendLine(line)));
+
+            if (!_active) return;
+
+            _ctx.CalibrationOk = result.Started;
+            _ctx.CalibrationLog = result.Output;
+
+            if (result.Started)
+            {
+                StatusText.Foreground = Brush.Parse("#16A34A");
+                StatusText.Text = "Calibration complete.";
+                ContinueButton.IsVisible = true;
+                await Task.Delay(1800);
+                Advance();
+            }
+            else
+            {
+                StatusText.Foreground = Brushes.IndianRed;
+                StatusText.Text = string.IsNullOrWhiteSpace(result.Error)
+                    ? "Calibration produced no output."
+                    : $"Calibration could not start: {result.Error}";
+                if (!string.IsNullOrWhiteSpace(result.Error)) AppendLine(result.Error!);
+                RetryButton.IsVisible = true;
+                BackButton.IsVisible = true;
+            }
         }
-        else
+        finally
         {
-            StatusText.Foreground = Brushes.IndianRed;
-            StatusText.Text = string.IsNullOrWhiteSpace(result.Error)
-                ? "Calibration produced no output."
-                : $"Calibration could not start: {result.Error}";
-            if (!string.IsNullOrWhiteSpace(result.Error)) AppendLine(result.Error!);
-            RetryButton.IsVisible = true;
-            BackButton.IsVisible = true;
+            _running = false;
         }
     }
 
