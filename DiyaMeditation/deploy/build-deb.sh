@@ -81,6 +81,8 @@ cat > "${STAGE}/DEBIAN/postinst" <<'EOF'
 set -e
 chmod +x /opt/diya-meditation/DiyaMeditation
 ln -sf /opt/diya-meditation/DiyaMeditation /usr/bin/diya-meditation
+mkdir -p /opt/meditation-app/data
+chmod 1777 /opt/meditation-app/data
 command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database || true
 EOF
 

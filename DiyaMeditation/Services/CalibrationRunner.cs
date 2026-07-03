@@ -31,7 +31,10 @@ public static class CalibrationRunner
         return Path.Combine(AppContext.BaseDirectory, "calibration", "start_calibration.py");
     }
 
-    public static async Task<CalibrationResult> RunAsync(CancellationToken ct = default)
+    public static Task<CalibrationResult> RunAsync(CancellationToken ct = default)
+        => RunAsync(null, ct);
+
+    public static async Task<CalibrationResult> RunAsync(Action<string>? onLine, CancellationToken ct = default)
     {
         var script = ScriptPath();
         if (!File.Exists(script))
@@ -54,6 +57,7 @@ public static class CalibrationRunner
             if (data is null) return;
             lock (output) output.AppendLine(data);
             Console.WriteLine($"[calib] {data}");
+            onLine?.Invoke(data);
         }
 
         try

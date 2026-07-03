@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DiyaMeditation.Views.CalibrationView"
+             Background="White">
+
+    <Grid Margin="56">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="22" MaxWidth="640">
+
+            <TextBlock Text="Calibration" FontSize="40" FontWeight="Bold"
+                       Foreground="#1F2A37" HorizontalAlignment="Center" />
+
+            <TextBlock Name="StatusText" Text="Preparing the cameras…" FontSize="16"
+                       Foreground="#6B7280" HorizontalAlignment="Center"
+                       TextAlignment="Center" TextWrapping="Wrap" />
+
+            <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="10"
+                    Background="#0E0B16" Width="600" Height="240">
+                <TextBox Name="LogBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                         Background="Transparent" Foreground="#8CF08C" BorderThickness="0"
+                         FontSize="13" Padding="14" />
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                <Button Name="ContinueButton" Content="Continue" Click="OnContinue" IsVisible="False"
+                        Background="#111827" Foreground="White" FontSize="16" FontWeight="SemiBold"
+                        Padding="28,12" CornerRadius="8" />
+                <Button Name="RetryButton" Content="Try again" Click="OnRetry" IsVisible="False"
+                        Background="Transparent" Foreground="#374151" BorderBrush="#E5E7EB" BorderThickness="1"
+                        FontSize="16" Padding="22,12" CornerRadius="8" />
+                <Button Name="BackButton" Content="Back" Click="OnBack" IsVisible="False"
+                        Background="Transparent" Foreground="#9CA3AF" BorderBrush="#E5E7EB" BorderThickness="1"
+                        FontSize="16" Padding="22,12" CornerRadius="8" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DiyaMeditation.Views.MeditationView">
+
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#0E0B16" Offset="0" />
+                <GradientStop Color="#241A3D" Offset="1" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="40">
+
+            <Panel Width="320" Height="320">
+                <Ellipse Name="BreathGlow" Width="240" Height="240" Fill="#5B4BD0" Opacity="0.30"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="50%,50%" />
+                <Ellipse Name="BreathCircle" Width="180" Height="180" Fill="#2A2050"
+                         Stroke="#B9AEEA" StrokeThickness="2"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="50%,50%" />
+                <TextBlock Name="BreathText" Text="Breathe in…" FontSize="20" Foreground="#EDE9FF"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Panel>
+
+            <TextBlock Name="TimeText" Text="" FontSize="18" Foreground="#B4A9D6" HorizontalAlignment="Center" />
+
+            <TextBlock Text="Find a comfortable position and follow your breath."
+                       FontSize="15" Foreground="#8A7FB0" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl>

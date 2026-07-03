@@ -5,10 +5,12 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using DiyaMeditation.Models;
+using DiyaMeditation.Services;
 
 namespace DiyaMeditation.Views;
 
-public partial class MainWindow : Window
+public partial class MainWindow : Window, IKioskNavigator
 {
     private const Key ExitKey = Key.Q;
     private const KeyModifiers ExitModifiers =
@@ -21,12 +23,20 @@ public partial class MainWindow : Window
         InitializeComponent();
         Closing += OnClosing;
         AddHandler(KeyDownEvent, OnGlobalKeyDown, RoutingStrategies.Tunnel);
+        GoToHome();
     }
+
+    // ---- IKioskNavigator: swap the hosted screen --------------------------
+
+    public void GoToHome() => ContentHost.Content = new HomeView(this);
+    public void GoToCalibration(SessionContext context) => ContentHost.Content = new CalibrationView(this, context);
+    public void GoToMeditation(SessionContext context) => ContentHost.Content = new MeditationView(this, context);
+    public void GoToReport(SessionContext context) => ContentHost.Content = new ReportView(this, context);
 
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        Console.WriteLine("[Diya] v1.4.0 OnOpened — applying fullscreen");
+        Console.WriteLine("[Diya] v1.7.0 OnOpened — applying fullscreen");
         GoFullScreen();
 
         var attempts = 0;
