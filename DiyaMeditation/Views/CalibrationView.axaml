@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="DiyaMeditation.Views.CalibrationView"
+             Background="White">
+
+    <Grid Margin="64">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="24" MaxWidth="560">
+
+            <TextBlock Text="Getting ready" FontSize="40" FontWeight="Bold"
+                       Foreground="#1F2A37" HorizontalAlignment="Center" />
+
+            <TextBlock Name="StatusText" Text="Preparing your session… please make yourself comfortable."
+                       FontSize="16" Foreground="#6B7280" HorizontalAlignment="Center"
+                       TextAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+
+            <ProgressBar Name="CalibProgress" IsIndeterminate="True" Width="320" Height="6"
+                         CornerRadius="3" Foreground="#111827" Background="#EEF0F3" />
+
+            <Expander Name="DetailsExpander" Header="Show details" HorizontalAlignment="Center">
+                <Border BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="10"
+                        Background="#0E0B16" Width="520" Height="200" Margin="0,12,0,0">
+                    <TextBox Name="LogBox" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap"
+                             Background="Transparent" Foreground="#8CF08C" BorderThickness="0"
+                             FontSize="13" Padding="14" />
+                </Border>
+            </Expander>
+
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                <Button Name="ContinueButton" Content="Continue" Click="OnContinue" IsVisible="False"
+                        Background="#111827" Foreground="White" FontSize="16" FontWeight="SemiBold"
+                        Padding="32,12" CornerRadius="10" />
+                <Button Name="RetryButton" Content="Try again" Click="OnRetry" IsVisible="False"
+                        Background="Transparent" Foreground="#374151" BorderBrush="#E5E7EB" BorderThickness="1"
+                        FontSize="16" Padding="24,12" CornerRadius="10" />
+                <Button Name="BackButton" Content="Back" Click="OnBack" IsVisible="False"
+                        Background="Transparent" Foreground="#9CA3AF" BorderBrush="#E5E7EB" BorderThickness="1"
+                        FontSize="16" Padding="24,12" CornerRadius="10" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
