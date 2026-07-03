@@ -17,3 +17,18 @@ CREATE TABLE IF NOT EXISTS sessions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   claimed_at TIMESTAMPTZ
 );
+
+-- Admin-loaded roster. An admin uploads a sheet (Name / Role / Aadhar / Email Id /
+-- Image); each row becomes a person with a unique "token". That token is their
+-- personal login link (<site>/p/<token>). Opening it and scanning the kiosk QR
+-- claims a session for this pre-known identity. Aadhaar/email are sensitive and
+-- are never exposed by the public /api/people/:token endpoint.
+CREATE TABLE IF NOT EXISTS people (
+  token      TEXT PRIMARY KEY,        -- unguessable per-person URL token
+  name       TEXT NOT NULL,
+  role       TEXT NOT NULL DEFAULT '',
+  aadhar     TEXT NOT NULL DEFAULT '',
+  email      TEXT NOT NULL DEFAULT '',
+  image_url  TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

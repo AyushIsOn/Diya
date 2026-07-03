@@ -43,6 +43,23 @@ async function init() {
       claimed_at TIMESTAMPTZ
     );
   `);
+
+  // Roster of pre-registered people, loaded by an admin from an uploaded sheet.
+  // Each person gets a unique, unguessable "token" that becomes their personal
+  // login URL (<site>/p/<token>). Opening that link, tapping "Proceed", and
+  // scanning the kiosk's on-screen QR claims a session for this known identity.
+  // Aadhaar/email are sensitive and are NEVER returned by the public people API.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS people (
+      token      TEXT PRIMARY KEY,
+      name       TEXT NOT NULL,
+      role       TEXT NOT NULL DEFAULT '',
+      aadhar     TEXT NOT NULL DEFAULT '',
+      email      TEXT NOT NULL DEFAULT '',
+      image_url  TEXT NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
 }
 
 module.exports = { pool, init };
