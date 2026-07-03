@@ -23,9 +23,23 @@ const { pool, init } = require('./db');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '4mb' })); // roster uploads can carry a few hundred rows
 
 app.use(express.static(path.join(__dirname, '..', 'registration')));
+
+// Admin key used to protect roster upload. Set ADMIN_KEY in the environment.
+// If it is not set, admin endpoints are refused (fail closed) rather than open.
+const ADMIN_KEY = process.env.ADMIN_KEY || '';
+function requireAdmin(req, res, next) {
+  if (!ADMIN_KEY) {
+    return res.status(503).json({ error: 'admin disabled: set ADMIN_KEY on the server' });
+  }
+  const provided = req.get('x-admin-key') || '';
+  if (provided !== ADMIN_KEY) {
+    return res.status(401).json({ error: 'invalid admin key' });
+  }
+  return next();
+}
 
 // Short, human-friendly visitor id. Excludes ambiguous chars (0/O/1/I/L).
 const ID_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -41,7 +55,18 @@ function makeToken() {
   return crypto.randomBytes(9).toString('base64url'); // ~12 chars
 }
 
+// Longer URL-safe token for a person's permanent login link.
+function makePersonToken() {
+  return crypto.randomBytes(16).toString('base64url'); // ~22 chars
+}
+
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
+
+// Nicer URLs for the two extra pages (the files are also served statically).
+app.get('/admin', (_req, res) =>
+  res.sendFile(path.join(__dirname, '..', 'registration', 'admin.html')));
+app.get('/p/:token', (_req, res) =>
+  res.sendFile(path.join(__dirname, '..', 'registration', 'scan.html')));
 
 // ---- Sessions (Model B) -------------------------------------------------
 
@@ -153,6 +178,151 @@ app.get('/api/visitors/:id', async (req, res) => {
     return res.json(rows[0]);
   } catch (err) {
     console.error('GET /api/visitors/:id failed:', err);
+    return res.status(500).json({ error: 'internal error' });
+  }
+});
+
+// ---- Roster (admin-loaded) + reverse-scan claim -------------------------
+
+// Map arbitrary sheet headers onto canonical fields. The admin page parses the
+// XLSX in the browser (SheetJS) and posts plain JSON rows keyed by the sheet's
+// own header text, e.g. { "Name": "...", "Email Id": "...", "Image": "..." }.
+function normalizePerson(row) {
+  const pick = (...wanted) => {
+    for (const key of Object.keys(row)) {
+      const norm = key.trim().toLowerCase().replace(/\s+/g, '');
+      if (wanted.includes(norm)) {
+        const v = row[key];
+        return v == null ? '' : String(v).trim();
+      }
+    }
+    return '';
+  };
+  return {
+    name: pick('name', 'fullname'),
+    role: pick('role', 'designation'),
+    aadhar: pick('aadhar', 'aadhaar', 'aadharno', 'aadhaarnumber', 'aadharnumber'),
+    email: pick('emailid', 'email', 'emailaddress'),
+    image: pick('image', 'imageurl', 'photo', 'picture'),
+  };
+}
+
+// Admin uploads a parsed roster: { people: [ { Name, Role, Aadhar, "Email Id", Image }, ... ] }.
+// Each valid row becomes a person with a unique token; returns their login links.
+app.post('/api/admin/upload', requireAdmin, async (req, res) => {
+  try {
+    const rows = Array.isArray(req.body?.people) ? req.body.people : null;
+    if (!rows) return res.status(400).json({ error: 'expected { people: [...] }' });
+
+    const created = [];
+    const skipped = [];
+    for (let i = 0; i < rows.length; i++) {
+      const p = normalizePerson(rows[i] || {});
+      if (!p.name) { skipped.push({ row: i + 1, reason: 'missing name' }); continue; }
+
+      let token = null;
+      for (let attempt = 0; attempt < 5 && !token; attempt++) {
+        const candidate = makePersonToken();
+        try {
+          await pool.query(
+            `INSERT INTO people (token, name, role, aadhar, email, image_url)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [candidate, p.name, p.role, p.aadhar, p.email, p.image]
+          );
+          token = candidate;
+        } catch (err) {
+          if (err.code === '23505') continue; // token collision -> retry
+          throw err;
+        }
+      }
+      if (!token) { skipped.push({ row: i + 1, reason: 'could not allocate token' }); continue; }
+
+      created.push({ token, name: p.name, role: p.role, path: `/p/${token}` });
+    }
+
+    return res.status(201).json({ created, skipped, count: created.length });
+  } catch (err) {
+    console.error('POST /api/admin/upload failed:', err);
+    return res.status(500).json({ error: 'internal error' });
+  }
+});
+
+// Public: the scan page fetches this to greet the person by name.
+// Returns ONLY name + role — never the Aadhaar or email.
+app.get('/api/people/:token', async (req, res) => {
+  try {
+    const token = String(req.params.token || '');
+    const { rows } = await pool.query(
+      'SELECT name, role FROM people WHERE token = $1',
+      [token]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'not found' });
+    return res.json({ name: rows[0].name, role: rows[0].role });
+  } catch (err) {
+    console.error('GET /api/people/:token failed:', err);
+    return res.status(500).json({ error: 'internal error' });
+  }
+});
+
+// The person's phone scanned the kiosk's QR. Link this pre-known person to the
+// session so the polling kiosk advances. We reuse the existing claim mechanic:
+// materialise a visitor row from the person, then claim the session — so the
+// C# kiosk needs no changes at all.
+app.post('/api/claim', async (req, res) => {
+  try {
+    const personToken = String(req.body?.person ?? '').trim();
+    const sessionToken = String(req.body?.session ?? '').trim();
+    if (!personToken || !sessionToken) {
+      return res.status(400).json({ error: 'person and session are required' });
+    }
+
+    const people = await pool.query(
+      'SELECT name, email FROM people WHERE token = $1',
+      [personToken]
+    );
+    if (people.rows.length === 0) {
+      return res.status(404).json({ error: 'unknown person link' });
+    }
+    const person = people.rows[0];
+
+    const sess = await pool.query('SELECT status FROM sessions WHERE token = $1', [sessionToken]);
+    if (sess.rows.length === 0) {
+      return res.status(404).json({ error: 'unknown session — scan the kiosk code again' });
+    }
+    if (sess.rows[0].status !== 'pending') {
+      return res.status(409).json({ error: 'this kiosk code was already used' });
+    }
+
+    // Materialise a visitor from the person (age isn't in the roster -> 0).
+    let visitorId = null;
+    for (let attempt = 0; attempt < 5 && !visitorId; attempt++) {
+      const candidate = makeId(8);
+      try {
+        await pool.query(
+          'INSERT INTO visitors (id, name, email, age) VALUES ($1, $2, $3, 0)',
+          [candidate, person.name, person.email]
+        );
+        visitorId = candidate;
+      } catch (err) {
+        if (err.code === '23505') continue;
+        throw err;
+      }
+    }
+    if (!visitorId) return res.status(500).json({ error: 'could not allocate a visitor id' });
+
+    const upd = await pool.query(
+      `UPDATE sessions
+          SET visitor_id = $1, status = 'claimed', claimed_at = now()
+        WHERE token = $2 AND status = 'pending'`,
+      [visitorId, sessionToken]
+    );
+    if (upd.rowCount === 0) {
+      return res.status(409).json({ error: 'this kiosk code was already used' });
+    }
+
+    return res.json({ ok: true, name: person.name });
+  } catch (err) {
+    console.error('POST /api/claim failed:', err);
     return res.status(500).json({ error: 'internal error' });
   }
 });
