@@ -132,9 +132,17 @@ registration website (`registration/index.html`). It stores visitors in Postgres
    - Registration website: open that URL in a browser.
    - Health check: `GET /api/health` -> `{"ok":true}`.
 4. Put that URL into the kiosk via `DIYA_API_BASE` (Section 4).
+5. **For the admin roster feature (Section 5A):** in the service's
+   **Environment** tab, add **`ADMIN_KEY`** = a long random secret. Without it the
+   admin page is disabled (returns `503 admin disabled`). Changing an env var
+   triggers a redeploy — wait for **Live** before using it.
 
 > Free Render web services sleep after ~15 min idle; the first request then
 > cold-starts in ~30–50s. The kiosk's lookup timeout accounts for this.
+
+> **Auto-deploy:** make sure the service's **Auto-Deploy** is **On** and the
+> **Branch** is `main`, otherwise merging changes to GitHub won't update the live
+> site. To force a deploy: **Manual Deploy -> Deploy latest commit**.
 
 ### c) Run the server locally (optional, for testing)
 ```bash
@@ -143,6 +151,61 @@ cp .env.example .env        # then edit DATABASE_URL (use PGSSL=disable for loca
 npm install
 npm start                   # serves site + API on http://localhost:3000
 ```
+
+---
+
+## 5A. Admin roster upload + phone login (pre-registered people)
+
+An alternative to visitors registering themselves: an **admin pre-loads people
+from an Excel sheet**, and each person gets a personal login link. The person opens
+their link on their phone, taps a button to open the camera, and **scans the QR on
+the kiosk screen** to log in. Their details (and photo) then appear on the kiosk.
+
+> This runs on the **same** Render service as the registration site — no separate
+> deploy. It just needs `ADMIN_KEY` set (Section 5, step 5).
+
+### a) Prepare the Excel sheet (.xlsx)
+One row per person. Expected column headers (only **Name** is required per row):
+
+| Name | Role | Aadhar | Email Id | Image |
+|---|---|---|---|---|
+| Dhruv Parate | Guest | 1234 5678 9012 | dhruv@example.com | `https://i.ibb.co/xxxx/dhruv.jpg` |
+
+**The `Image` column must be a _direct image URL_** — a link that returns the raw
+image file, e.g. `https://i.ibb.co/xxxx/name.jpg`:
+- ✅ Ends in `.jpg` / `.png` / `.webp`, opens as *just the photo* in a browser, public.
+- ❌ A share/preview **page** link (e.g. `https://ibb.co/...`, Google Drive
+  `.../view`), a link needing login, or an image **embedded inside a cell** — none
+  of these work (the parser reads the cell text as a URL only).
+- ❌ **HEIC** (default iPhone format) can't be decoded — convert to JPG first.
+
+### b) Upload the roster
+1. Open **`https://YOUR-SERVICE.onrender.com/admin`**.
+2. Enter the **admin key** (the `ADMIN_KEY` value you set on Render).
+3. Choose the `.xlsx` file. A preview appears (Aadhaar is masked).
+4. Click **Generate login links**. You get one link per person, of the form
+   `https://YOUR-SERVICE.onrender.com/p/<token>`. Copy them (per-row, **Copy all**,
+   or **Download as CSV**) and share each person their own link.
+
+### c) How a person logs in
+1. They open their `/p/<token>` link on their **phone** (needs **HTTPS** — Render
+   provides it — because the browser only allows the camera on secure pages).
+2. It greets them by name; they tap **Proceed to login**, which opens the camera.
+3. They point it at the **QR code on the kiosk screen**.
+4. The kiosk advances automatically and shows their name (and photo, if the kiosk
+   app is up to date — see note below).
+
+### d) Showing the photo on the kiosk
+The photo (from the `Image` column) is displayed on the kiosk **only if the kiosk
+app includes the photo feature**. If you installed an older `.deb`, everything still
+works but no photo shows. To enable it, **rebuild and reinstall the `.deb`**
+(Section 10) so the kiosk has the latest app; the kiosk needs internet to fetch the
+photos (it already does for the API).
+
+> **Privacy note:** the roster holds names, Aadhaar, and photo links. Aadhaar is
+> never exposed by the public link (only name/role/photo are). Still, host photos
+> somewhere access-appropriate — public image hosts make the photo viewable by
+> anyone with the URL; a private bucket is safer for real ID photos.
 
 ---
 
