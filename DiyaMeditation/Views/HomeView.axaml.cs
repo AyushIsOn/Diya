@@ -111,6 +111,13 @@ public partial class HomeView : UserControl
         DetailsPanel.IsVisible = true;
         NameBox.Text = v.Name;
 
+        // Optional roster photo. Downloaded in the background; a missing or broken
+        // image simply leaves the avatar hidden and never blocks the flow.
+        PhotoBorder.IsVisible = false;
+        PhotoImage.Source = null;
+        if (!string.IsNullOrWhiteSpace(v.ImageUrl))
+            _ = LoadPhotoAsync(v.ImageUrl);
+
         LiveStatus.Foreground = Brush.Parse("#16A34A");
         LiveStatus.Text = $"Registered! Welcome, {v.Name}.";
         ScanHint.Text = "You're all set — press Start Calibration.";
@@ -172,6 +179,32 @@ public partial class HomeView : UserControl
         finally
         {
             if (button is not null) button.IsEnabled = true;
+        }
+    }
+
+    private async Task LoadPhotoAsync(string url)
+    {
+        var bytes = await VisitorApiClient.DownloadBytesAsync(url).ConfigureAwait(false);
+        if (bytes is null || bytes.Length == 0)
+            return;
+
+        try
+        {
+            using var ms = new MemoryStream(bytes);
+            var bmp = new Bitmap(ms);
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                // Ignore a late-arriving image if a new session started meanwhile.
+                if (_claimed)
+                {
+                    PhotoImage.Source = bmp;
+                    PhotoBorder.IsVisible = true;
+                }
+            });
+        }
+        catch
+        {
+            // Unsupported/corrupt image data — leave the avatar hidden.
         }
     }
 

@@ -95,7 +95,7 @@ app.get('/api/sessions/:token', async (req, res) => {
   try {
     const token = String(req.params.token || '');
     const { rows } = await pool.query(
-      `SELECT s.status, v.id, v.name, v.email, v.age
+      `SELECT s.status, v.id, v.name, v.email, v.age, v.image_url
          FROM sessions s
          LEFT JOIN visitors v ON v.id = s.visitor_id
         WHERE s.token = $1`,
@@ -107,7 +107,7 @@ app.get('/api/sessions/:token', async (req, res) => {
     if (r.status === 'claimed' && r.id) {
       return res.json({
         status: 'claimed',
-        visitor: { id: r.id, name: r.name, email: r.email, age: r.age },
+        visitor: { id: r.id, name: r.name, email: r.email, age: r.age, image_url: r.image_url || '' },
       });
     }
     return res.json({ status: 'pending', visitor: null });
@@ -277,7 +277,7 @@ app.post('/api/claim', async (req, res) => {
     }
 
     const people = await pool.query(
-      'SELECT name, email FROM people WHERE token = $1',
+      'SELECT name, email, image_url FROM people WHERE token = $1',
       [personToken]
     );
     if (people.rows.length === 0) {
@@ -299,8 +299,8 @@ app.post('/api/claim', async (req, res) => {
       const candidate = makeId(8);
       try {
         await pool.query(
-          'INSERT INTO visitors (id, name, email, age) VALUES ($1, $2, $3, 0)',
-          [candidate, person.name, person.email]
+          'INSERT INTO visitors (id, name, email, age, image_url) VALUES ($1, $2, $3, 0, $4)',
+          [candidate, person.name, person.email, person.image_url || '']
         );
         visitorId = candidate;
       } catch (err) {
