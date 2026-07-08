@@ -129,6 +129,31 @@ public static class VisitorApiClient
         }
     }
 
+    /// <summary>
+    /// Downloads an image (the visitor's roster photo) as bytes. Returns null on
+    /// any failure — a missing/broken photo must never break the kiosk flow.
+    /// Only http/https URLs are fetched.
+    /// </summary>
+    public static async Task<byte[]?> DownloadBytesAsync(string? url, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(url)
+            || !Uri.TryCreate(url, UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            return null;
+
+        try
+        {
+            using var resp = await Http.GetAsync(uri, ct);
+            if (!resp.IsSuccessStatusCode)
+                return null;
+            return await resp.Content.ReadAsByteArrayAsync(ct);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private sealed class SessionCreateResponse
     {
         public string? Token { get; set; }

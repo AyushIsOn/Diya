@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS visitors (
   name       TEXT NOT NULL,
   email      TEXT NOT NULL DEFAULT '',
   age        INTEGER NOT NULL DEFAULT 0,
+  image_url  TEXT NOT NULL DEFAULT '', -- direct image URL, copied from the roster on claim
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

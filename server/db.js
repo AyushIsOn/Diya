@@ -27,9 +27,14 @@ async function init() {
       name       TEXT NOT NULL,
       email      TEXT NOT NULL DEFAULT '',
       age        INTEGER NOT NULL DEFAULT 0,
+      image_url  TEXT NOT NULL DEFAULT '',
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
+
+  // The visitors table already exists on deployed databases; add the new column
+  // in-place for those. (CREATE TABLE IF NOT EXISTS above only covers fresh DBs.)
+  await pool.query(`ALTER TABLE visitors ADD COLUMN IF NOT EXISTS image_url TEXT NOT NULL DEFAULT ''`);
 
   // Model B: a "session" is created by the kiosk. The kiosk shows a QR pointing
   // at the registration site with ?session=<token>. When the visitor registers

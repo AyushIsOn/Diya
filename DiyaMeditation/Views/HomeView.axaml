@@ -10,10 +10,17 @@
             <StackPanel VerticalAlignment="Center" Spacing="24">
                 <TextBlock Text="Welcome" FontSize="52" FontWeight="Bold" Foreground="#1F2A37" />
 
-                <StackPanel Name="DetailsPanel" IsVisible="False" Spacing="4">
-                    <TextBlock Name="NameText" FontSize="24" FontWeight="SemiBold" Foreground="#111827" />
-                    <TextBlock Name="EmailText" FontSize="15" Foreground="#6B7280" />
-                    <TextBlock Name="AgeText" FontSize="15" Foreground="#6B7280" />
+                <StackPanel Name="DetailsPanel" IsVisible="False" Spacing="14">
+                    <Border Name="PhotoBorder" IsVisible="False" Width="128" Height="128"
+                            CornerRadius="64" ClipToBounds="True" HorizontalAlignment="Left"
+                            Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1">
+                        <Image Name="PhotoImage" Stretch="UniformToFill" />
+                    </Border>
+                    <StackPanel Spacing="4">
+                        <TextBlock Name="NameText" FontSize="24" FontWeight="SemiBold" Foreground="#111827" />
+                        <TextBlock Name="EmailText" FontSize="15" Foreground="#6B7280" />
+                        <TextBlock Name="AgeText" FontSize="15" Foreground="#6B7280" />
+                    </StackPanel>
                 </StackPanel>
 
                 <Button Content="Start Calibration" Click="OnStartCalibration"
