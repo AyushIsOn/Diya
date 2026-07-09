@@ -59,6 +59,33 @@ Ways to get the file onto the machine without GitHub:
 - **VM shared folder** — drop it in the shared folder from the host
 - **scp** — `scp diya-meditation_1.4.0_amd64.deb user@machine:~/`
 
+### c) Update to a newer build (reinstall)
+When a new `.deb` is published (e.g. a new feature like the visitor photo), you
+must **stop the running app first** — otherwise `dpkg -i` replaces the files on
+disk but the old app keeps running until it restarts.
+
+```bash
+# 1. Stop the running app
+systemctl --user stop diya-meditation 2>/dev/null   # if you use the service
+pkill -f DiyaMeditation                             # kill any running instance
+
+# 2. Re-download the latest package (remove the stale copy first)
+cd ~
+rm -f diya-meditation_1.4.0_amd64.deb
+wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.4.0_amd64.deb
+
+# 3. Reinstall
+sudo dpkg -i ./diya-meditation_1.4.0_amd64.deb
+sudo apt -f install     # only if it reports a missing dependency
+
+# 4. Start it again (or reboot)
+diya-meditation
+# or: systemctl --user start diya-meditation
+```
+
+> Use the `arm64` filename on ARM devices. If unsure of the arch, run
+> `dpkg --print-architecture`.
+
 ## 2. Run it
 
 ```bash
