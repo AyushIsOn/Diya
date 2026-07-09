@@ -132,9 +132,17 @@ registration website (`registration/index.html`). It stores visitors in Postgres
    - Registration website: open that URL in a browser.
    - Health check: `GET /api/health` -> `{"ok":true}`.
 4. Put that URL into the kiosk via `DIYA_API_BASE` (Section 4).
+5. **For the admin roster feature (Section 5A):** in the service's
+   **Environment** tab, add **`ADMIN_KEY`** = a long random secret. Without it the
+   admin page is disabled (returns `503 admin disabled`). Changing an env var
+   triggers a redeploy — wait for **Live** before using it.
 
 > Free Render web services sleep after ~15 min idle; the first request then
 > cold-starts in ~30–50s. The kiosk's lookup timeout accounts for this.
+
+> **Auto-deploy:** make sure the service's **Auto-Deploy** is **On** and the
+> **Branch** is `main`, otherwise merging changes to GitHub won't update the live
+> site. To force a deploy: **Manual Deploy -> Deploy latest commit**.
 
 ### c) Run the server locally (optional, for testing)
 ```bash
@@ -143,6 +151,75 @@ cp .env.example .env        # then edit DATABASE_URL (use PGSSL=disable for loca
 npm install
 npm start                   # serves site + API on http://localhost:3000
 ```
+
+---
+
+## 5A. Admin roster upload + phone login (pre-registered people)
+
+An alternative to visitors registering themselves: an **admin pre-loads people
+from an Excel sheet**, and each person gets a personal login link. The person opens
+their link on their phone, taps a button to open the camera, and **scans the QR on
+the kiosk screen** to log in. Their details (and photo) then appear on the kiosk.
+
+> This runs on the **same** Render service as the registration site — no separate
+> deploy. It just needs `ADMIN_KEY` set (Section 5, step 5).
+
+### a) Prepare the Excel sheet (.xlsx)
+One row per person. Column headers are matched loosely (case-insensitive,
+substring), so `Image`, `Image URL`, or `Image Link (Gdrive - ...)` all work.
+Only **Name** is required per row. Recognised columns:
+
+| Column (any header containing…) | Stored as |
+|---|---|
+| `Name` | name (required) |
+| `Role` / `Designation` | role |
+| `Aadhar` / `Aadhaar` | aadhaar (kept private) |
+| `Email` / `Email Id` | email |
+| `Image` / `Photo` / `Picture` / `Image Link` | photo URL |
+
+**The image column must be a _direct image URL as plain text_** — a link that
+returns the raw image file, e.g. `https://i.ibb.co/xxxx/name.jpg`:
+- ✅ Ends in `.jpg` / `.png` / `.webp`, opens as *just the photo* in a browser, public.
+- ✅ Type/paste the URL **as text** into the cell (the cell shows the link text).
+- ❌ A share/preview **page** link (e.g. `https://ibb.co/...`, Google Drive
+  `.../view`), a link needing login, an **inserted picture**, or an
+  `=IMAGE("...")` **function** — none of these work (only the cell's text is read).
+- ❌ **HEIC** (default iPhone format) can't be decoded — convert to JPG first.
+
+### b) Upload the roster
+1. Open **`https://YOUR-SERVICE.onrender.com/admin`**.
+2. Enter the **admin key** (the `ADMIN_KEY` value you set on Render).
+3. Choose the `.xlsx` file. A preview appears (Aadhaar is masked). **Check the
+   preview's Image column shows your URLs** — if it's blank there, the cell isn't
+   plain text (see the ❌ cases above).
+4. Click **Generate login links**. You get one link per person, of the form
+   `https://YOUR-SERVICE.onrender.com/p/<token>`. Copy them (per-row, **Copy all**,
+   or **Download as CSV**) and share each person their own link.
+
+> Re-uploading generates **new** links (new people rows). If you fix a sheet and
+> re-upload, distribute the newly generated links — the old ones point to the
+> earlier rows.
+
+### c) How a person logs in
+1. They open their `/p/<token>` link on their **phone** (needs **HTTPS** — Render
+   provides it — because the browser only allows the camera on secure pages).
+2. It greets them by name; they tap **Proceed to login**, which opens the camera.
+3. They point it at the **QR code on the kiosk screen**.
+4. The kiosk advances automatically and shows their name (and photo, if the kiosk
+   app is up to date — see note below).
+
+### d) Showing the photo on the kiosk
+The photo (from the image column) is displayed on the kiosk **only if the kiosk
+app includes the photo feature**. If you installed an older `.deb`, everything still
+works but no photo shows. To enable it, **rebuild and reinstall the `.deb`**
+(Section 10) — or download the prebuilt package from `package/` — so the kiosk has
+the latest app; the kiosk needs internet to fetch the photos (it already does for
+the API).
+
+> **Privacy note:** the roster holds names, Aadhaar, and photo links. Aadhaar is
+> never exposed by the public link (only name/role/photo are). Still, host photos
+> somewhere access-appropriate — public image hosts make the photo viewable by
+> anyone with the URL; a private bucket is safer for real ID photos.
 
 ---
 
