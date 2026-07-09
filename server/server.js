@@ -191,7 +191,9 @@ function normalizePerson(row) {
   const pick = (...wanted) => {
     for (const key of Object.keys(row)) {
       const norm = key.trim().toLowerCase().replace(/\s+/g, '');
-      if (wanted.includes(norm)) {
+      // Substring match so real-world headers like "Image Link (Gdrive ...)"
+      // or "Email Id" still map correctly.
+      if (wanted.some((w) => norm.includes(w))) {
         const v = row[key];
         return v == null ? '' : String(v).trim();
       }

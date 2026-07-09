@@ -101,7 +101,8 @@
     function field(row, ...wanted) {
       for (const key of Object.keys(row)) {
         const norm = key.trim().toLowerCase().replace(/\s+/g, '');
-        if (wanted.includes(norm)) return row[key] == null ? '' : String(row[key]).trim();
+        // Substring match so headers like "Image Link (Gdrive ...)" still map.
+        if (wanted.some((w) => norm.includes(w))) return row[key] == null ? '' : String(row[key]).trim();
       }
       return '';
     }
