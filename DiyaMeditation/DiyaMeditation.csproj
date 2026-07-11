@@ -12,6 +12,8 @@
     <!-- Extract bundled native libs (SkiaSharp, PDFium) when running the
          self-contained single-file build. -->
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- Application version. Keep in sync with build-deb.sh / SETUP.md. -->
+    <Version>1.5.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
