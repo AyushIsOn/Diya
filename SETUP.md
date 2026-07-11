@@ -368,38 +368,56 @@ cd DiyaMeditation
 dotnet run            # builds + launches fullscreen
 ```
 
-### d) Update the calibration script & repackage
+### d) Edit the pipeline script (run1.sh) & repackage
 
-When "Start Calibration" is pressed, the kiosk runs a Python script and treats any
-output it prints as "calibration started". The scripts live in:
+On successful login the kiosk **automatically** runs a bundled bash pipeline,
+**waits for it to finish**, then displays the newest report PDF found in
+`/opt/meditation-app/data`. There is no calibration button and no in-between
+screen — login goes straight through to the report, with a **Return** button to
+reset for the next person.
+
+The pipeline script lives in the source at:
 
 ```
-DiyaMeditation/calibration/
-├── camera_utils.py        # camera discovery helpers (your hardware code)
-└── start_calibration.py   # entry point the kiosk runs; prints status / drives hardware
+DiyaMeditation/scripts/run1.sh    # runs HOME1/SHOOT1/CHEST1/EYE1 .py + meditation-app
 ```
 
-These are bundled into the package at **`/opt/diya-meditation/calibration/`** and run
-with `python3`. To change the calibration/hardware behaviour:
+and is bundled into the package at **`/opt/diya-meditation/scripts/run1.sh`**. To
+change the pipeline, edit it in the **unpacked (source) copy** and repackage:
 
-1. Edit the scripts in `DiyaMeditation/calibration/` (put camera/servo/serial logic in
-   `start_calibration.py`, or in new modules it imports).
+1. Edit `DiyaMeditation/scripts/run1.sh` (this is the file the kiosk runs).
 2. Rebuild the package — that's the whole "repackage" step:
    ```bash
    cd DiyaMeditation
-   ./deploy/build-deb.sh 1.4.0 amd64
+   ./deploy/build-deb.sh 1.4.0 amd64      # or arm64
    ```
-3. Reinstall on the kiosk: `sudo dpkg -i ./diya-meditation_1.4.0_amd64.deb`.
+3. Reinstall on the kiosk (see Section 1c — remember to stop the running app first).
+
+What the kiosk expects on the target machine (the other team provides these):
+- **python3.10** installed (`run1.sh` calls `python3.10` explicitly).
+- The camera/CV scripts at **`~/Desktop/mark1/`**: `HOME1.py`, `SHOOT1.py`,
+  `CHEST1.py`, `EYE1.py` (this path is set by `WORK_DIR` inside `run1.sh`).
+- The **`meditation-app`** package installed and on `PATH` — it runs headless and
+  writes the report PDF to `/opt/meditation-app/data`.
+
+**Report directory permissions.** `meditation-app` must be able to **write** the
+PDF there and the kiosk must **read** it. Both run as the same kiosk user, so hand
+that user the folder once (this is included in `deploy/setup-kiosk.sh`):
+```bash
+sudo mkdir -p /opt/meditation-app/data
+sudo chown -R "$USER:$USER" /opt/meditation-app
+```
+
+Override paths without rebuilding, via env vars:
+- `DIYA_PIPELINE_SCRIPT=/path/to/run1.sh` — the script to run on login
+- `DIYA_BASH=/usr/bin/bash` — the shell used to run it
+- `DIYA_REPORT_DIR=/some/other/dir` — where to look for the newest PDF
 
 Notes:
-- Requires **python3 ≥ 3.10** on the kiosk (Ubuntu 26.04 ships 3.12). The `.deb`
-  declares `python3` as a dependency.
-- For real USB camera detection install **v4l-utils** (`sudo apt install -y v4l-utils`);
-  without it the script still runs and just reports no cameras.
-- Override the script path or interpreter without rebuilding via env vars:
-  `DIYA_CALIBRATION_SCRIPT=/path/to/script.py` and `DIYA_PYTHON=python3.12`.
-- The kiosk shows "Starting calibration…" as long as the script prints **any** output;
-  if it prints nothing (or python3 is missing) it shows a failure message instead.
+- `run1.sh` has **no timeout** — it owns its own retry logic and blocks until the
+  pipeline (including `meditation-app`) finishes; only then is the PDF shown.
+- If no PDF is found when the pipeline ends, the report screen shows a short
+  message instead (still with the Return button).
 
 ---
 
