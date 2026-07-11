@@ -3,6 +3,7 @@
              x:Class="DiyaMeditation.Views.HomeView"
              Background="White">
 
+    <Grid>
     <Grid ColumnDefinitions="*,*" Margin="56">
 
         <!-- Left panel: Welcome + registered visitor + Start -->
@@ -23,7 +24,7 @@
                     </StackPanel>
                 </StackPanel>
 
-                <Button Content="Start Calibration" Click="OnStartCalibration"
+                <Button Content="Start" Click="OnStart"
                         Background="#111827" Foreground="White" FontSize="18" FontWeight="SemiBold"
                         Padding="32,18" CornerRadius="8" HorizontalAlignment="Left" />
 
@@ -73,5 +74,26 @@
 
             </StackPanel>
         </Border>
+    </Grid>
+
+        <!-- Full-screen report overlay: shown after the pipeline finishes.
+             The Return button resets everything for the next visitor. -->
+        <Grid Name="ReportOverlay" IsVisible="False" Background="#0E0B16" RowDefinitions="Auto,*">
+            <Border Grid.Row="0" Background="#1F2A37" Padding="24,16">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="Your Report" FontSize="24" FontWeight="Bold"
+                               Foreground="White" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Content="Return" Click="OnReturn"
+                            Background="#E9B872" Foreground="#1A1330" FontSize="16" FontWeight="SemiBold"
+                            Padding="26,12" CornerRadius="8" />
+                </Grid>
+            </Border>
+            <ScrollViewer Name="ReportScroll" Grid.Row="1" Padding="24">
+                <StackPanel Name="ReportPages" Spacing="16" HorizontalAlignment="Center" />
+            </ScrollViewer>
+            <TextBlock Name="ReportMessage" Grid.Row="1" IsVisible="False"
+                       Foreground="#F4F0FF" FontSize="18" TextWrapping="Wrap" TextAlignment="Center"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="620" Margin="24" />
+        </Grid>
     </Grid>
 </UserControl>

@@ -23,6 +23,14 @@ sudo mkdir -p "${INSTALL_DIR}"
 sudo cp -r "${APP_SRC}/." "${INSTALL_DIR}/"
 sudo chmod +x "${INSTALL_DIR}/DiyaMeditation"
 
+echo "==> Preparing the report directory (/opt/meditation-app/data)"
+# The external meditation-app writes the report PDF here, and Diya reads it back.
+# Both run as this kiosk user, so hand the folder to this user (it lives under
+# root-owned /opt). Override the location with DIYA_REPORT_DIR if needed.
+REPORT_DIR="/opt/meditation-app/data"
+sudo mkdir -p "${REPORT_DIR}"
+sudo chown -R "$(whoami):$(whoami)" "/opt/meditation-app"
+
 echo "==> Installing systemd user service (auto-start + auto-restart)"
 mkdir -p "${HOME}/.config/systemd/user"
 cp "$(dirname "$0")/diya-meditation.service" "${HOME}/.config/systemd/user/"
