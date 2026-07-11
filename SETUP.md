@@ -97,7 +97,13 @@ It opens **fullscreen**.
 
 ## 3. Exit the kiosk
 
-Secret shortcut: **`Ctrl + Shift + Alt + Q`**
+The window can be **closed normally** — `Alt + F4`, or a window-manager close —
+because the close-veto has been removed.
+
+The secret shortcut still works too: **`Ctrl + Shift + Alt + Q`**
+
+> Note: the window still opens **fullscreen** and **top-most**, so there may be no
+> visible close button; `Alt + F4` or the shortcut are the easiest ways to close it.
 
 ---
 
