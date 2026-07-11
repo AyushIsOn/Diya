@@ -62,10 +62,8 @@ public partial class MainWindow : Window
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (!_allowClose)
-        {
-            e.Cancel = true;
-        }
+        // Close-veto removed: the window may be closed normally (e.g. Alt+F4 or a
+        // window-manager close), in addition to the Ctrl+Shift+Alt+Q shortcut.
     }
 
     private void OnGlobalKeyDown(object? sender, KeyEventArgs e)
