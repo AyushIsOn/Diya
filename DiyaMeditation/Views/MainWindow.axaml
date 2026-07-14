@@ -7,8 +7,8 @@
         x:Class="DiyaMeditation.Views.MainWindow"
         Title="Diya Meditation"
         CanResize="True"
-        ShowInTaskbar="False"
-        Topmost="True"
+        ShowInTaskbar="True"
+        Topmost="False"
         Background="White">
 
     <!-- The kiosk shell hosts the current screen. For now: the Home screen. -->
