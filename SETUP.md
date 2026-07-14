@@ -95,15 +95,17 @@ diya-meditation
 ...or launch **"Diya Meditation"** from the app menu (press Super, search for it).
 It opens **fullscreen**.
 
-## 3. Exit the kiosk
+## 3. Exit / minimise the kiosk
 
-The window can be **closed normally** — `Alt + F4`, or a window-manager close —
-because the close-veto has been removed.
+The app behaves like a normal window now:
+- **Close** it with `Alt + F4` (or a window-manager close).
+- **Minimise** it like any app — it appears in the taskbar/dock, so you can bring
+  it back.
 
-The secret shortcut still works too: **`Ctrl + Shift + Alt + Q`**
+It still opens **fullscreen**, but is no longer top-most, so the taskbar and other
+windows are reachable.
 
-> Note: the window still opens **fullscreen** and **top-most**, so there may be no
-> visible close button; `Alt + F4` or the shortcut are the easiest ways to close it.
+> The old `Ctrl + Shift + Alt + Q` exit shortcut has been **removed**.
 
 ---
 
