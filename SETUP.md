@@ -427,6 +427,33 @@ Notes:
 - If no PDF is found when the pipeline ends, the report screen shows a short
   message instead (still with the Return button).
 
+### e) Test the whole flow WITHOUT cameras
+
+You can exercise the entire Diya flow (login -> pipeline -> report -> reset) on any
+Ubuntu machine with **no cameras** and without the hardware team's `meditation-app`,
+using the **test kit** in `testkit/`. It fakes the pipeline: a mock script waits a
+few seconds and drops a sample PDF into the report folder, which the app then shows.
+
+The test kit is **not part of the app** — it is driven entirely by two environment
+variables, so there is no mock code to remove. To run the real pipeline instead,
+just don't set them (or delete `testkit/`).
+
+```bash
+chmod +x testkit/run1.mock.sh
+export DIYA_PIPELINE_SCRIPT="$(pwd)/testkit/run1.mock.sh"
+export DIYA_REPORT_DIR=/tmp/diya-reports
+diya-meditation          # or:  cd DiyaMeditation && dotnet run
+```
+
+Then start a "session": either type any name in the on-screen box and click
+**Start**, or scan the QR with your phone. The app shows a **"please wait"** state
+for a few seconds, then displays the **sample report**; press **Return** to reset.
+See `testkit/README.md` for options (e.g. `DIYA_MOCK_DELAY`).
+
+> This verifies our side (login, the wait state, report display, reset). It does
+> **not** test the real cameras, the `meditation-app`, or the terminal pop-up —
+> those need the actual kiosk hardware.
+
 ---
 
 ## 11. Run with Docker (browser preview — dev only)
