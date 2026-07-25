@@ -6,13 +6,13 @@ This folder lets you test the **Diya app** end-to-end on any Ubuntu machine with
 It works by faking the pipeline: instead of running the real cameras, a mock
 script waits a few seconds and drops a sample PDF into the folder the app watches.
 The app then does everything it normally does — shows the QR, waits for a login,
-steps aside while the "session" runs, comes back, and displays the report.
+shows a "please wait" state while the "session" runs, then displays the report.
 
 > **This kit is NOT part of the app.** It is driven entirely by two environment
-> variables. To hand the real build to the hardware team, simply **don't set
-> them** (and you can delete this `testkit/` folder). The app then uses the real
-> bundled `scripts/run1.sh` and `/opt/meditation-app/data`. There is no mock code
-> inside the app to remove.
+> variables. To run the real pipeline, simply **don't set them** (and you can
+> delete this `testkit/` folder). The app then uses the real bundled
+> `scripts/run1.sh` and `/opt/meditation-app/data`. There is no mock code inside
+> the app to remove.
 
 ## Files
 - `run1.mock.sh` — the fake pipeline (waits, then drops the sample PDF).
@@ -30,16 +30,13 @@ steps aside while the "session" runs, comes back, and displays the report.
 3. Start a "session" one of two ways:
    - **No phone needed:** type any name in the on-screen box and click **Start**, or
    - scan the QR with your phone and register (the server is online).
-4. Watch the full flow:
-   - the app **minimises** (steps aside so the real meditation-app could show),
-   - waits ~5 seconds (the mock "session"),
-   - **comes back** and shows the **sample report** on screen,
-   - press **Return** to reset for the next person.
+4. You'll see the app show **"please wait"** for a few seconds, then the **sample
+   report** appears on screen. Press **Return** to reset for the next person.
 
 ## Options
 - `DIYA_MOCK_DELAY` — change the fake session length, e.g. `export DIYA_MOCK_DELAY=2`.
 
 ## What this proves (and what it doesn't)
-- ✅ Login, the window hand-off (minimise/restore), report display, and reset.
+- ✅ Login, the "please wait" state, report display, and reset.
 - ❌ The real cameras, the meditation-app, and the terminal pop-up — those need
   the hardware and can only be verified on the kiosk machine.
