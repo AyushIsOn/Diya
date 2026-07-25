@@ -427,9 +427,9 @@ Notes:
 - If no PDF is found when the pipeline ends, the report screen shows a short
   message instead (still with the Return button).
 
-> **During a session the kiosk minimises itself** so the external `meditation-app`
-> can take the screen, then it **restores to fullscreen and shows the report** when
-> the pipeline finishes.
+> **During a session the kiosk shows a "please wait" state** while the pipeline
+> runs; the external `meditation-app`'s own fullscreen windows cover it, and the
+> kiosk then **shows the report** when the pipeline finishes.
 
 ### e) Test the whole flow WITHOUT cameras
 
@@ -450,11 +450,11 @@ diya-meditation          # or:  cd DiyaMeditation && dotnet run
 ```
 
 Then start a "session": either type any name in the on-screen box and click
-**Start**, or scan the QR with your phone. You will see the app **minimise ->
-wait ~5s -> return -> show the sample report -> Return** to reset. See
+**Start**, or scan the QR with your phone. You will see a **"please wait" state ->
+wait ~5s -> the sample report on screen -> Return** to reset. See
 `testkit/README.md` for details and options (e.g. `DIYA_MOCK_DELAY`).
 
-> This verifies our side (login, the window hand-off, report display, reset). It
+> This verifies our side (login, the wait state, report display, reset). It
 > does **not** test the real cameras, the `meditation-app`, or the terminal
 > pop-up — those need the actual kiosk hardware.
 
