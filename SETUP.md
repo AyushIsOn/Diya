@@ -1,7 +1,7 @@
 # Diya Meditation — Setup & Commands
 
 All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
-**Latest version: 1.5.0**
+**Latest version: 1.6.0**
 
 > Pick the package matching your machine's architecture
 > (check with `dpkg --print-architecture`):
@@ -21,7 +21,7 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 
 **On a real Ubuntu machine, use the `.deb`.**
 
-> **Online registration (v1.5.0+):** the kiosk shows a **QR code on screen**. The
+> **Online registration (v1.6.0+):** the kiosk shows a **QR code on screen**. The
 > visitor scans it with their **phone**, fills in the registration form on their
 > phone, and the kiosk **advances automatically** once they submit. No QR scanner
 > or camera is needed at the kiosk — but the kiosk **must have internet** and know
@@ -34,9 +34,9 @@ All the commands for installing, running, and auto-starting the kiosk on Ubuntu.
 ### a) Download from GitHub and install
 ```bash
 cd ~
-rm -f diya-meditation_1.5.0_amd64.deb
-wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.5.0_amd64.deb
-sudo dpkg -i ./diya-meditation_1.5.0_amd64.deb
+rm -f diya-meditation_1.6.0_amd64.deb
+wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.6.0_amd64.deb
+sudo dpkg -i ./diya-meditation_1.6.0_amd64.deb
 ```
 
 If it ever complains about a missing dependency:
@@ -50,14 +50,14 @@ skip the download and install the local file directly — the package itself is
 self-contained (bundles the .NET runtime):
 
 ```bash
-sudo dpkg -i ./diya-meditation_1.5.0_amd64.deb
+sudo dpkg -i ./diya-meditation_1.6.0_amd64.deb
 sudo apt -f install     # only if it reports a missing dependency
 ```
 
 Ways to get the file onto the machine without GitHub:
 - **USB drive** — copy the `.deb` over and plug it in
 - **VM shared folder** — drop it in the shared folder from the host
-- **scp** — `scp diya-meditation_1.5.0_amd64.deb user@machine:~/`
+- **scp** — `scp diya-meditation_1.6.0_amd64.deb user@machine:~/`
 
 ### c) Update to a newer build (reinstall)
 When a new `.deb` is published (e.g. a new feature like the visitor photo), you
@@ -71,11 +71,11 @@ pkill -f DiyaMeditation                             # kill any running instance
 
 # 2. Re-download the latest package (remove the stale copy first)
 cd ~
-rm -f diya-meditation_1.5.0_amd64.deb
-wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.5.0_amd64.deb
+rm -f diya-meditation_1.6.0_amd64.deb
+wget https://github.com/AyushIsOn/Diya/raw/main/package/diya-meditation_1.6.0_amd64.deb
 
 # 3. Reinstall
-sudo dpkg -i ./diya-meditation_1.5.0_amd64.deb
+sudo dpkg -i ./diya-meditation_1.6.0_amd64.deb
 sudo apt -f install     # only if it reports a missing dependency
 
 # 4. Start it again (or reboot)
@@ -311,7 +311,7 @@ echo "--- binary present? ---"; ls -l /opt/diya-meditation/DiyaMeditation
 What it tells you:
 - **NOT running + a log error** -> the app crashed on launch; the log shows why.
 - **NOT running + no log** -> the autostart entry never fired (check auto-login actually boots to the desktop without a password prompt).
-- **binary missing** -> the v1.5.0 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.5.0_amd64.deb`.
+- **binary missing** -> the v1.6.0 install did not complete; reinstall with `sudo dpkg -i ./diya-meditation_1.6.0_amd64.deb`.
 - **scans say "Couldn't reach the server"** -> the kiosk has no internet or
   `DIYA_API_BASE` is wrong (Section 4); test with the `curl .../api/health` check.
 
@@ -361,9 +361,9 @@ dotnet --version        # should print 8.0.x
 ### b) Build the package
 ```bash
 cd DiyaMeditation
-./deploy/build-deb.sh 1.5.0 amd64     # x86 PCs
-./deploy/build-deb.sh 1.5.0 arm64     # ARM devices / Apple Silicon VMs
-# output: build/diya-meditation_1.5.0_<arch>.deb
+./deploy/build-deb.sh 1.6.0 amd64     # x86 PCs
+./deploy/build-deb.sh 1.6.0 arm64     # ARM devices / Apple Silicon VMs
+# output: build/diya-meditation_1.6.0_<arch>.deb
 ```
 
 > Note: `build-deb.sh` wipes the `build/` directory at the start of every run,
@@ -397,7 +397,7 @@ change the pipeline, edit it in the **unpacked (source) copy** and repackage:
 2. Rebuild the package — that's the whole "repackage" step:
    ```bash
    cd DiyaMeditation
-   ./deploy/build-deb.sh 1.5.0 amd64      # or arm64
+   ./deploy/build-deb.sh 1.6.0 amd64      # or arm64
    ```
 3. Reinstall on the kiosk (see Section 1c — remember to stop the running app first).
 

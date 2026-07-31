@@ -14,7 +14,7 @@ public partial class MainWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        Console.WriteLine("[Diya] v1.5.0 OnOpened — applying fullscreen");
+        Console.WriteLine("[Diya] v1.6.0 OnOpened — applying fullscreen");
         GoFullScreen();
 
         // Wayland/GNOME maps the window in a normal state first, so re-assert

@@ -35,7 +35,7 @@ public static class PipelineRunner
         return Path.Combine(AppContext.BaseDirectory, "scripts", "run1.sh");
     }
 
-    public static async Task<PipelineResult> RunAsync(CancellationToken ct = default)
+    public static async Task<PipelineResult> RunAsync(Action<string>? onOutput = null, CancellationToken ct = default)
     {
         var script = ScriptPath();
         if (!File.Exists(script))
@@ -58,6 +58,8 @@ public static class PipelineRunner
             if (data is null) return;
             lock (output) output.AppendLine(data);
             Console.WriteLine($"[pipeline] {data}");
+            // Surface each line so the UI can show a live status while running.
+            onOutput?.Invoke(data);
         }
 
         try

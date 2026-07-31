@@ -8,16 +8,16 @@
 #
 # Usage:
 #   ./deploy/build-deb.sh [version] [arch]
-#     version : package version           (default: 1.5.0)
+#     version : package version           (default: 1.6.0)
 #     arch    : amd64 (x86 PCs) | arm64   (default: amd64)
 #
 # Examples:
-#   ./deploy/build-deb.sh                 # 1.5.0, amd64 (x86 museum PC)
-#   ./deploy/build-deb.sh 1.5.0 arm64     # arm64 (Apple Silicon VM / Raspberry Pi)
+#   ./deploy/build-deb.sh                 # 1.6.0, amd64 (x86 museum PC)
+#   ./deploy/build-deb.sh 1.6.0 arm64     # arm64 (Apple Silicon VM / Raspberry Pi)
 #
 set -euo pipefail
 
-VERSION="${1:-1.5.0}"
+VERSION="${1:-1.6.0}"
 ARCH="${2:-amd64}"
 PKG="diya-meditation"
 
