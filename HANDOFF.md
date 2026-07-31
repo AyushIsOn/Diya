@@ -56,20 +56,28 @@ Kiosk (polling) shows the person's name + photo
 - Kiosk: `DIYA_API_BASE`, `DIYA_PIPELINE_SCRIPT`, `DIYA_BASH`, `DIYA_REPORT_DIR`.
 - Server: `DATABASE_URL`, `PORT`, `PGSSL`, `ADMIN_KEY`.
 
-## 5. Test the flow WITHOUT cameras
-The real pipeline needs the cameras + `meditation-app`. To exercise just our app,
-point it at a small script that drops any PDF into the report dir:
+## 5. Test the flow WITHOUT cameras (test kit)
+The real pipeline needs the cameras + `meditation-app`. To exercise just our app
+(login → session → report → **Thank you**) on any Linux desktop, use the bundled
+`testkit/` — a mock pipeline that prints status lines and drops a sample PDF:
 ```bash
-export DIYA_PIPELINE_SCRIPT=/path/to/mock.sh     # e.g. sleep 5; cp some.pdf "$DIYA_REPORT_DIR/r.pdf"
+export DIYA_PIPELINE_SCRIPT="$(pwd)/testkit/run1.mock.sh"
 export DIYA_REPORT_DIR=/tmp/diya-reports
-diya-meditation        # type a name -> Start (no phone/cameras needed)
+mkdir -p /tmp/diya-reports
+diya-meditation        # type a name -> Start (no phone/cameras/server needed)
 ```
+The test kit is external (not bundled in the `.deb`); see `testkit/README.md`.
+
+**Fullscreen fix (v1.6.0):** the meditation-app's OpenCV windows are fullscreened
+by `scripts/fullscreen-fixer.sh` (launched from `run1.sh`) — needs **X11** +
+`wmctrl` (`sudo apt install -y wmctrl`); safe no-op on Wayland. The report screen
+is now white with a **Thank-you** message, and shows only *this* session's PDF.
 
 ## 6. Backlog / open items (priority order)
 1. **CI to build the `.deb`s and publish as GitHub Releases** — stop committing ~40 MB binaries every change (biggest quality win).
 2. **Terminal pop-up** — the hardware team's software opens a stray terminal. `execsnoop` fails on their kernel; use **`forkstat`** (`sudo apt install forkstat; sudo forkstat -e exec | grep -i term`). Need their **source** (`~/Desktop/mark1` + `paths.py`) to locate it.
 3. **meditation-app OpenCV windows** (e.g. "Chest_Check") show title bars / aren't fullscreen — needs `cv::setWindowProperty(name, WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN)` in **their** code.
-4. **White report screen** (nice-to-have, was in the reverted #28) — re-add cleanly by styling the report overlay white to match the main screen.
+4. ~~White report screen~~ — **done in v1.6.0** (report overlay restyled white to match the welcome screen, with a Thank-you message).
 5. **Consent/privacy screen** before a session (cameras + Aadhaar stored).
 6. **Reconcile `PROJECT.md` / `FAQ.md`** with the real current state.
 7. **Centralise the version string** (`.csproj`, `build-deb.sh`, `SETUP.md`).
