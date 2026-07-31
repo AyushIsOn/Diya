@@ -491,34 +491,3 @@ Click **Connect**. Exit the app inside the view with **`Ctrl + Shift + Alt + Q`*
 
 To stop the container: press `Ctrl + C` in the terminal running it (the `--rm`
 flag removes it automatically on exit).
-
-
----
-
-## 12. Test the whole flow WITHOUT cameras (test kit)
-
-You can exercise the entire kiosk flow — **login → session → report → "Thank you"** —
-on any Linux desktop with **no cameras, no meditation-app, and no server**, using
-the bundled test kit in **`testkit/`**. It swaps the real pipeline for a mock that
-prints status lines and then drops a sample report PDF (a copy of our
-`docs/Diya-Codebase-Overview.pdf`).
-
-```bash
-# from the repo root, on the machine running the kiosk (Linux):
-export DIYA_PIPELINE_SCRIPT="$(pwd)/testkit/run1.mock.sh"
-export DIYA_REPORT_DIR=/tmp/diya-reports
-mkdir -p /tmp/diya-reports
-
-diya-meditation      # or, from source:  cd DiyaMeditation && dotnet run
-```
-
-Then on the welcome screen, **type a name and press Start** (no phone/QR/server
-needed — the name-entry fallback works offline). You'll see:
-1. the **live status line** update ("Calibrating cameras…", "Running t3 (PDF
-   report)…", …),
-2. the app **display the sample report**, and
-3. a **"Thank you, &lt;name&gt;"** message with a **Return** button.
-
-To return to the real pipeline, unset the two variables (or start the app without
-them). The test kit is **external** and is **not** bundled inside the `.deb`.
-See `testkit/README.md` for details.
