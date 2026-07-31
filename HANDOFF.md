@@ -56,14 +56,17 @@ Kiosk (polling) shows the person's name + photo
 - Kiosk: `DIYA_API_BASE`, `DIYA_PIPELINE_SCRIPT`, `DIYA_BASH`, `DIYA_REPORT_DIR`.
 - Server: `DATABASE_URL`, `PORT`, `PGSSL`, `ADMIN_KEY`.
 
-## 5. Test the flow WITHOUT cameras
-The real pipeline needs the cameras + `meditation-app`. To exercise just our app,
-point it at a small script that drops any PDF into the report dir:
+## 5. Test the flow WITHOUT cameras (test kit)
+The real pipeline needs the cameras + `meditation-app`. To exercise just our app
+(login → session → report → **Thank you**) on any Linux desktop, use the bundled
+`testkit/` — a mock pipeline that prints status lines and drops a sample PDF:
 ```bash
-export DIYA_PIPELINE_SCRIPT=/path/to/mock.sh     # e.g. sleep 5; cp some.pdf "$DIYA_REPORT_DIR/r.pdf"
+export DIYA_PIPELINE_SCRIPT="$(pwd)/testkit/run1.mock.sh"
 export DIYA_REPORT_DIR=/tmp/diya-reports
-diya-meditation        # type a name -> Start (no phone/cameras needed)
+mkdir -p /tmp/diya-reports
+diya-meditation        # type a name -> Start (no phone/cameras/server needed)
 ```
+The test kit is external (not bundled in the `.deb`); see `testkit/README.md`.
 
 ## 6. Backlog / open items (priority order)
 1. **CI to build the `.deb`s and publish as GitHub Releases** — stop committing ~40 MB binaries every change (biggest quality win).
