@@ -175,11 +175,6 @@ public partial class HomeView : UserControl
         LiveStatus.Foreground = Brush.Parse("#6B7280");
         LiveStatus.Text = "Session in progress…";
 
-        // Note: we do NOT minimise the window here. On Wayland an app can minimise
-        // itself but cannot un-minimise/raise itself, so it would appear to "close"
-        // and never come back. Instead we stay put showing this "please wait" state;
-        // the external meditation-app's own fullscreen windows cover us during the
-        // session, and we are already here to show the report afterwards.
         try
         {
             var result = await PipelineRunner.RunAsync();
