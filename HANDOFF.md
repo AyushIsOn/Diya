@@ -24,7 +24,7 @@ restore the old branches.
 
 ## 1. What it is
 An unattended meditation kiosk. Two parts we own:
-- **Kiosk app** — `DiyaMeditation/` — C#/.NET 8 + Avalonia, shipped as a `.deb`. Version **1.5.0**.
+- **Kiosk app** — `DiyaMeditation/` — C#/.NET 8 + Avalonia, shipped as a `.deb`. Version **1.6.0**.
 - **Backend + web** — `server/` (Node/Express/Postgres) + `registration/` (static pages), hosted on **Render** at `https://diya-registration.onrender.com`.
 
 The camera/CV pipeline and the `meditation-app` (which produces the report PDF) are the **hardware team's**; our app calls them and shows the result.
@@ -77,7 +77,7 @@ diya-meditation        # type a name -> Start (no phone/cameras needed)
 ## 7. Gotchas / lessons learned
 - **Render:** must track `main` with **Auto-Deploy ON**, or merges never go live. `ADMIN_KEY` is set in the Render dashboard (not in `render.yaml`).
 - **Reinstalling the `.deb`:** stop the running app first (`systemctl --user stop diya-meditation; pkill -f DiyaMeditation`) — `dpkg -i` replaces files but the old process keeps running.
-- **Editing C# source does NOT update the committed `.deb`** — rebuild with `deploy/build-deb.sh 1.5.0 <arch>`.
+- **Editing C# source does NOT update the committed `.deb`** — rebuild with `deploy/build-deb.sh 1.6.0 <arch>`.
 - **"Couldn't connect to the server" on the kiosk/VM** is usually a **wrong clock** — a VM clock in the past makes HTTPS certs "not yet valid". Fix: `sudo timedatectl set-ntp true` and enable host time-sync in the VM.
 - **Wayland** blocks an app from hiding *other* apps' windows AND from un-minimising/raising *itself* (this is why the post-#24 self-minimise was a bad idea).
 - The `meditation-app` package is huge (compiled CV binaries + videos + bundled deps). **Do not upload it to GitHub** (100 MB/file limit). Only the small **source text** is useful to share.

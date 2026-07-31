@@ -65,6 +65,20 @@ if ! command -v meditation-app &>/dev/null; then
     exit 1
 fi
 
+# ── window fix: fullscreen the meditation-app's OpenCV windows (X11 only) ─────
+# Removes the title bar / minimise-close buttons on the external app's windows
+# without modifying it. Runs alongside the pipeline; safe no-op on Wayland or if
+# wmctrl is missing. Stopped after the pipeline finishes (see end of file).
+FIXER="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/fullscreen-fixer.sh"
+FIXER_PID=""
+if [[ -f "$FIXER" ]]; then
+    bash "$FIXER" &
+    FIXER_PID=$!
+    log_info "Started window fullscreen-fixer (pid $FIXER_PID)."
+    # Ensure the fixer is stopped on ANY exit (normal, error, or signal).
+    trap '[[ -n "${FIXER_PID:-}" ]] && kill "$FIXER_PID" 2>/dev/null || true' EXIT
+fi
+
 # ── main pipeline loop ───────────────────────────────────────────────────────
 while true; do
 
@@ -112,3 +126,9 @@ while true; do
     break
 
 done
+
+# ── cleanup: stop the fullscreen-fixer if it was started ─────────────────────
+if [[ -n "${FIXER_PID:-}" ]]; then
+    kill "$FIXER_PID" 2>/dev/null || true
+    log_info "Stopped window fullscreen-fixer."
+fi

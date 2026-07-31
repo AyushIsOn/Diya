@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -23,6 +24,10 @@ public partial class HomeView : UserControl
     private bool _claimed;
     private bool _busy;
     private bool _pipelineRunning;
+
+    // Strips ANSI escape sequences (colour codes) that the pipeline scripts emit,
+    // so the on-screen status line stays clean.
+    private static readonly Regex AnsiRegex = new(@"\x1B\[[0-9;]*[A-Za-z]");
 
     public HomeView()
     {
@@ -161,8 +166,12 @@ public partial class HomeView : UserControl
     }
 
     /// <summary>
-    /// Runs run1.sh (which drives the cameras/CV and the headless meditation-app),
-    /// waits for it to finish, then displays the newest report PDF in-app.
+    /// Runs run1.sh (which drives the cameras/CV and the external meditation-app)
+    /// and waits for it to finish — the meditation-app exits once its report PDF is
+    /// written. The pipeline's own output is shown as a live status line. We then
+    /// display the report produced by THIS session (a PDF newer than when we
+    /// started), so a stale report from a previous visitor is never shown.
+    /// Nothing about the external meditation-app is modified.
     /// </summary>
     private async Task StartPipelineAsync()
     {
@@ -173,15 +182,30 @@ public partial class HomeView : UserControl
         StatusText.Foreground = Brush.Parse("#6B7280");
         StatusText.Text = "Please wait — running your session…";
         LiveStatus.Foreground = Brush.Parse("#6B7280");
-        LiveStatus.Text = "Session in progress…";
+        LiveStatus.Text = "Starting your session…";
+
+        var startUtc = DateTime.UtcNow;
 
         try
         {
-            var result = await PipelineRunner.RunAsync();
+            // The meditation-app prints its progress (e.g. "Running t3 (PDF report)…");
+            // surface the latest line as a live status. This is visible during the
+            // calibration phase, before the external app covers the screen.
+            var result = await PipelineRunner.RunAsync(onOutput: line =>
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var t = AnsiRegex.Replace(line ?? "", "").Trim();
+                    if (t.Length > 0)
+                        LiveStatus.Text = t.Length > 140 ? t.Substring(0, 140) : t;
+                }));
 
-            var pdf = ReportRenderer.FindNewestPdf();
+            // Only show a report produced by THIS session (newer than when we started),
+            // so a previous visitor's PDF is never displayed by mistake.
+            var pdf = ReportRenderer.FindNewestPdfSince(startUtc);
+
             if (pdf is not null)
             {
+                LiveStatus.Text = "Preparing your report…";
                 try
                 {
                     var pages = await ReportRenderer.RenderPagesAsync(pdf);
@@ -221,11 +245,20 @@ public partial class HomeView : UserControl
             ReportPages.Children.Add(new Border
             {
                 Background = Brushes.White,
-                CornerRadius = new CornerRadius(4),
+                BorderBrush = Brush.Parse("#E5E7EB"),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(8),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Child = img,
             });
         }
+
+        // Personalised thank-you, shown alongside the report.
+        ReportTitle.Text = "Your Report";
+        ReportThanks.Text = string.IsNullOrWhiteSpace(_visitor?.Name)
+            ? "Thank you for meditating with us."
+            : $"Thank you, {_visitor!.Name} — we hope you enjoyed your session.";
+        ReportThanks.IsVisible = true;
 
         ReportMessage.IsVisible = false;
         ReportScroll.IsVisible = true;
@@ -236,6 +269,8 @@ public partial class HomeView : UserControl
     {
         ReportPages.Children.Clear();
         ReportScroll.IsVisible = false;
+        ReportTitle.Text = "Your Report";
+        ReportThanks.IsVisible = false;
         ReportMessage.Text = message;
         ReportMessage.IsVisible = true;
         ReportOverlay.IsVisible = true;

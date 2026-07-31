@@ -76,23 +76,27 @@
         </Border>
     </Grid>
 
-        <!-- Full-screen report overlay: shown after the pipeline finishes.
-             The Return button resets everything for the next visitor. -->
-        <Grid Name="ReportOverlay" IsVisible="False" Background="#0E0B16" RowDefinitions="Auto,*">
-            <Border Grid.Row="0" Background="#1F2A37" Padding="24,16">
+        <!-- Full-screen report overlay: shown after the pipeline finishes. Styled to
+             match the white welcome screen. The Return button resets for the next visitor. -->
+        <Grid Name="ReportOverlay" IsVisible="False" Background="White" RowDefinitions="Auto,*">
+            <Border Grid.Row="0" Background="White" BorderBrush="#E5E7EB" BorderThickness="0,0,0,1" Padding="40,24">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Grid.Column="0" Text="Your Report" FontSize="24" FontWeight="Bold"
-                               Foreground="White" VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="4">
+                        <TextBlock Name="ReportTitle" Text="Your Report" FontSize="28" FontWeight="Bold"
+                                   Foreground="#1F2A37" />
+                        <TextBlock Name="ReportThanks" IsVisible="False" FontSize="16" Foreground="#6B7280"
+                                   TextWrapping="Wrap" MaxWidth="620" />
+                    </StackPanel>
                     <Button Grid.Column="1" Content="Return" Click="OnReturn"
-                            Background="#E9B872" Foreground="#1A1330" FontSize="16" FontWeight="SemiBold"
-                            Padding="26,12" CornerRadius="8" />
+                            Background="#111827" Foreground="White" FontSize="16" FontWeight="SemiBold"
+                            Padding="32,14" CornerRadius="8" VerticalAlignment="Center" />
                 </Grid>
             </Border>
-            <ScrollViewer Name="ReportScroll" Grid.Row="1" Padding="24">
+            <ScrollViewer Name="ReportScroll" Grid.Row="1" Padding="40" Background="#F9FAFB">
                 <StackPanel Name="ReportPages" Spacing="16" HorizontalAlignment="Center" />
             </ScrollViewer>
             <TextBlock Name="ReportMessage" Grid.Row="1" IsVisible="False"
-                       Foreground="#F4F0FF" FontSize="18" TextWrapping="Wrap" TextAlignment="Center"
+                       Foreground="#374151" FontSize="18" TextWrapping="Wrap" TextAlignment="Center"
                        HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="620" Margin="24" />
         </Grid>
     </Grid>

@@ -41,6 +41,36 @@ public static class ReportRenderer
     }
 
     /// <summary>
+    /// Newest *.pdf whose last-write time is at/after <paramref name="sinceUtc"/> —
+    /// i.e. a report produced by the current session (avoids showing a stale PDF
+    /// from a previous visitor). Returns null if none/unreadable.
+    /// </summary>
+    public static string? FindNewestPdfSince(DateTime sinceUtc)
+    {
+        try
+        {
+            var dir = ReportDir;
+            if (!Directory.Exists(dir)) return null;
+            return new DirectoryInfo(dir)
+                .EnumerateFiles("*.pdf", SearchOption.TopDirectoryOnly)
+                .Where(f => f.LastWriteTimeUtc >= sinceUtc)
+                .OrderByDescending(f => f.LastWriteTimeUtc)
+                .FirstOrDefault()?.FullName;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>File size in bytes, or -1 if it can't be read.</summary>
+    public static long SafeLength(string path)
+    {
+        try { return new FileInfo(path).Length; }
+        catch { return -1; }
+    }
+
+    /// <summary>
     /// Render every page of the PDF to Avalonia bitmaps. Runs off the UI thread.
     /// </summary>
     public static Task<List<Bitmap>> RenderPagesAsync(string pdfPath) => Task.Run(() =>
