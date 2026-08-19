@@ -8,6 +8,20 @@ with *View → Notes*, or in Google Slides with *View → Show speaker notes*.
 
 Slide 1 only: `[Your Name]`, `[Institution]`, `[Month Year – Month Year]`, `[Mentor Name]`.
 
+## Visuals to drop in
+
+`assets/` holds diagrams and real kiosk screenshots, with provenance notes in
+`assets/README.md`. They are **not yet embedded in the .pptx** — add them where they help:
+
+| Asset | Suggested slide |
+|---|---|
+| `diagram-timeline-slide.png` | Slide 5 (*How a Visitor Actually Logs In*) — sized for projection |
+| `diagram-timeline.png` | Print as a handout; too fine-grained to project |
+| `app-01-idle-qr.png` | Slide 4 (*Invert the QR*) — the kiosk showing its own QR |
+| `app-02-authenticated.png` | Slide 5 — visitor name and roster photo resolved |
+| `app-03-session-running.png` | Slide 7 (*Building It Without the Hardware*) |
+| `app-04-report.png` | Slide 9 (*Where I Left It*) — the report rendered in-app |
+
 ## If you need it shorter
 
 For a 10-minute slot, cut to 7 slides by deleting **3 (Architecture)** and **8 (Packaging)**,
