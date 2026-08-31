@@ -1,52 +1,57 @@
 # Internship report deck
 
-`Diya-Internship-Report.pptx` — 10 slides, 16:9. Every slide has **speaker notes**
-(what to say, and likely questions with answers). Open the notes pane in PowerPoint
-with *View → Notes*, or in Google Slides with *View → Show speaker notes*.
+**14 slides, 16:9.** Two formats — both identical:
 
-## Fill in before presenting
+- `Diya-Internship-Report.pdf` — use this to present. Nothing to install, fonts can't shift.
+- `Diya-Internship-Report.pptx` — same slides, plus **speaker notes on all 14** (*View → Notes*).
 
-Slide 1 only: `[Your Name]`, `[Institution]`, `[Month Year – Month Year]`, `[Mentor Name]`.
+Fill in slide 1: `[Your Name]`, `[Institution]`, `[Month Year – Month Year]`, `[Mentor Name]`.
 
-## Visuals to drop in
+## How it's built
 
-`assets/` holds diagrams and real kiosk screenshots, with provenance notes in
-`assets/README.md`. They are **not yet embedded in the .pptx** — add them where they help:
+The slides are designed in HTML/CSS (`assets/deck-source.html`), rendered at 1920×1080 with
+Playwright, and placed full-bleed into the `.pptx`. That's why they look designed rather than
+like default PowerPoint — but it also means **the text isn't editable in PowerPoint.**
 
-| Asset | Suggested slide |
-|---|---|
-| `diagram-timeline-slide.png` | Slide 5 (*How a Visitor Actually Logs In*) — sized for projection |
-| `diagram-timeline.png` | Print as a handout; too fine-grained to project |
-| `app-01-idle-qr.png` | Slide 4 (*Invert the QR*) — the kiosk showing its own QR |
-| `app-02-authenticated.png` | Slide 5 — visitor name and roster photo resolved |
-| `app-03-session-running.png` | Slide 7 (*Building It Without the Hardware*) |
-| `app-04-report.png` | Slide 9 (*Where I Left It*) — the report rendered in-app |
+To change wording: edit `assets/deck-source.html`, re-render, re-assemble. To change only
+slide 1's placeholders, editing the HTML is still the fastest route.
 
-## If you need it shorter
+If you'd rather have editable text and accept a plainer look, say so — it's a different build.
 
-For a 10-minute slot, cut to 7 slides by deleting **3 (Architecture)** and **8 (Packaging)**,
-and merging **10** into **9**. The argument still holds: problem → the QR decision →
-how login works → hard bugs → testing → state and takeaways.
+## The arc
 
-## Suggested timing
-
-| Slides | Content | Minutes |
+| # | Slide | Job |
 |---|---|---|
-| 1–3 | Framing and architecture | 3 |
-| 4–5 | The design decision and the flow | 4 |
-| 6–7 | Debugging and testing | 4 |
-| 8–10 | Shipping, state, takeaways | 3 |
+| 1 | Diya | Cover |
+| 2 | A visitor walks up | The brief, as four constraints |
+| 3 | Two teams, one thin seam | Scope — what you owned |
+| 4 | How do you identify someone? | The central question |
+| 5 | Three attempts | You iterated |
+| 6 | **The phone is the scanner** | **The hero slide** |
+| 7 | Four stages, one API | Architecture + the API / not-API boundary |
+| 8 | The whole flow, on screen | Real screenshots |
+| 9 | Three parts I built | Stack reference |
+| 10 | Three that cost me days | Debugging depth |
+| 11 | Building it without the hardware | Testability |
+| 12 | One command each | Packaging, deployment, docs |
+| 13 | Where I handed it over | Future work |
+| 14 | Someone can walk up… | Close |
 
-Slide 4 is the strongest one — give it the most time. Slide 9 (known limitations) reads as
-confidence, not weakness; don't rush or apologise through it.
+## Timing
 
-## Worth having open in another tab
+Roughly 12–14 minutes at a comfortable pace. **Give slide 6 the most time** — it's the
+strongest thing in the project, because the design got simpler under a constraint.
 
-A live demo of the phone-scans-kiosk flow lands better than any slide. If the hardware
-isn't available, the `testkit/` mock runs the whole flow on any Linux desktop — see
-`testkit/README.md`.
+For a 10-minute slot, cut 9 and 12.
 
-## Regenerating
+Slide 13 reads as confidence, not weakness. Don't rush or apologise through it.
 
-Built with [python-pptx](https://python-pptx.readthedocs.io/). Edit directly in PowerPoint;
-the generator script isn't committed, since the deck is meant to be hand-tuned from here.
+## Worth having ready
+
+A live demo of the phone-scanning-the-kiosk flow beats any slide. If the hardware isn't
+available, `testkit/` runs the whole flow on any Linux desktop — see `testkit/README.md`.
+
+## Assets
+
+`assets/` holds the screenshots, diagrams, rendered slide PNGs and the HTML source.
+Provenance — including the two things that were stood in for — is in `assets/README.md`.
