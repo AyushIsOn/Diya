@@ -6,9 +6,23 @@ scroll. No install, no server, no build step.
 | What | Where |
 |---|---|
 | **The site** (primary) | `site/index.html` |
+| **Your demo video** | drop it at `site/video/demo.mp4` — see `site/video/README.md` |
 | Source, to edit or rebuild | `site-src/` — see its README |
 | Slide deck (older, still valid) | `Diya-Internship-Report.pdf` / `.pptx` |
 | Raw screenshots, diagrams, wireframes | `assets/` |
+
+## The demo video
+
+Name it `demo.mp4`, put it in `site/video/`, and the *Watch it work* section picks it up.
+Until then that section shows a placeholder rather than a broken player.
+
+**It is deliberately not in git.** GitHub rejects files over 100 MB and this repo's history
+is already ~1.7 GB from the committed `.deb`s. `site/video/.gitignore` blocks media so you
+cannot add it by accident — the file travels with the folder instead.
+
+**Compress before using it.** A 500 MB recording will usually come down to 20–60 MB with no
+visible loss; `site/video/README.md` has the exact ffmpeg command, plus how to trim it and
+how to switch to a YouTube embed if you would rather stream.
 
 Everything is inlined into that one HTML file, so it works off a USB stick or with no
 network. The `shots/` and `wf/` folders next to it must travel with it.

@@ -16,6 +16,7 @@ const SECTIONS = [
   ['problem', 'The problem'],
   ['attempts', 'Three attempts'],
   ['inversion', 'The inversion'],
+  ['demo', 'Watch it run'],
   ['flow', 'The flow'],
   ['wireframes', 'Wireframes'],
   ['gallery', 'Screens'],
@@ -24,6 +25,71 @@ const SECTIONS = [
   ['shipping', 'Shipping'],
   ['roadmap', 'Handover'],
 ];
+
+/* ------------------------------------------------------------------
+   DEMO VIDEO
+   Drop a compressed mp4 at  presentation/site/video/demo.mp4
+   and it appears automatically. Nothing else to change.
+
+   Prefer the local file for presenting: it needs no network, so a dead
+   wifi connection cannot take your demo down mid-talk.
+
+   If you would rather stream it, paste a YouTube/Vimeo *embed* URL into
+   `embed` below and the local file is ignored:
+     embed: 'https://www.youtube.com/embed/XXXXXXXXXXX'
+------------------------------------------------------------------- */
+const VIDEO = {
+  src: 'video/demo.mp4',
+  poster: 'shots/app-02-authenticated.png',
+  embed: null,
+};
+
+/* Plays the local file, or an embed, or explains what is missing. */
+function DemoVideo() {
+  const [failed, setFailed] = useState(false);
+
+  if (VIDEO.embed) {
+    return (
+      <div className="videowrap">
+        <iframe
+          src={VIDEO.embed}
+          title="Diya kiosk walkthrough"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+
+  if (failed) {
+    return (
+      <div className="videowrap missing">
+        <div>
+          <h3>No video file yet</h3>
+          <p>
+            Put your compressed recording at <span className="mono">site/video/demo.mp4</span> and
+            reload this page. See <span className="mono">site/video/README.md</span> for the
+            one-line ffmpeg command.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="videowrap">
+      <video
+        controls
+        preload="metadata"
+        playsInline
+        poster={VIDEO.poster}
+        onError={() => setFailed(true)}
+      >
+        <source src={VIDEO.src} type="video/mp4" onError={() => setFailed(true)} />
+      </video>
+    </div>
+  );
+}
 
 /* generic scroll-in wrapper */
 function Reveal({ children, delay = 0, y = 34 }) {
@@ -270,6 +336,27 @@ export default function App() {
             />
           </Reveal>
         </div>
+      </section>
+
+      {/* ================= DEMO ================= */}
+      <section className="sec" id="demo">
+        <Reveal><div className="kick">See it work</div></Reveal>
+        <Reveal delay={0.05}><h2>The whole thing, end to end</h2></Reveal>
+        <Reveal delay={0.1}>
+          <p className="lede" style={{ marginTop: 26 }}>
+            A visitor opens their link, scans the kiosk, and the session starts on its own.
+            No staff, no scanner, no typing.
+          </p>
+        </Reveal>
+        <Reveal delay={0.14} y={44}>
+          <div style={{ marginTop: 44 }}>
+            <DemoVideo />
+            <p className="cap" style={{ marginTop: 18 }}>
+              <b>Recorded on the kiosk.</b> Everything after the scan is automatic &mdash; the
+              pipeline runs, the report is rendered in-app, and Return resets for the next person.
+            </p>
+          </div>
+        </Reveal>
       </section>
 
       {/* ================= FLOW ================= */}
