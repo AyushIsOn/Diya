@@ -1,57 +1,81 @@
-# Internship report deck
+# Internship report — presentation
 
-**14 slides, 16:9.** Two formats — both identical:
+**Present from the website.** `site/index.html` — open it in any browser, full screen, and
+scroll. No install, no server, no build step.
 
-- `Diya-Internship-Report.pdf` — use this to present. Nothing to install, fonts can't shift.
-- `Diya-Internship-Report.pptx` — same slides, plus **speaker notes on all 14** (*View → Notes*).
+| What | Where |
+|---|---|
+| **The site** (primary) | `site/index.html` |
+| **Your demo video** | drop it at `site/video/demo.mp4` — see `site/video/README.md` |
+| Source, to edit or rebuild | `site-src/` — see its README |
+| Slide deck (older, still valid) | `Diya-Internship-Report.pdf` / `.pptx` |
+| Raw screenshots, diagrams, wireframes | `assets/` |
 
-Fill in slide 1: `[Your Name]`, `[Institution]`, `[Month Year – Month Year]`, `[Mentor Name]`.
+## The demo video
 
-## How it's built
+Name it `demo.mp4`, put it in `site/video/`, and the *Watch it work* section picks it up.
+Until then that section shows a placeholder rather than a broken player.
 
-The slides are designed in HTML/CSS (`assets/deck-source.html`), rendered at 1920×1080 with
-Playwright, and placed full-bleed into the `.pptx`. That's why they look designed rather than
-like default PowerPoint — but it also means **the text isn't editable in PowerPoint.**
+**It is deliberately not in git.** GitHub rejects files over 100 MB and this repo's history
+is already ~1.7 GB from the committed `.deb`s. `site/video/.gitignore` blocks media so you
+cannot add it by accident — the file travels with the folder instead.
 
-To change wording: edit `assets/deck-source.html`, re-render, re-assemble. To change only
-slide 1's placeholders, editing the HTML is still the fastest route.
+**Compress before using it.** A 500 MB recording will usually come down to 20–60 MB with no
+visible loss; `site/video/README.md` has the exact ffmpeg command, plus how to trim it and
+how to switch to a YouTube embed if you would rather stream.
 
-If you'd rather have editable text and accept a plainer look, say so — it's a different build.
+Everything is inlined into that one HTML file, so it works off a USB stick or with no
+network. The `shots/` and `wf/` folders next to it must travel with it.
 
-## The arc
+Placeholders to fill are in the hero only: `[Your Name]`, `[Institution]`,
+`[Month Year – Month Year]`, `[Mentor Name]` — edit `site-src/src/App.jsx` and rebuild,
+or edit the text directly in `site/index.html` if you only need the names.
 
-| # | Slide | Job |
-|---|---|---|
-| 1 | Diya | Cover |
-| 2 | A visitor walks up | The brief, as four constraints |
-| 3 | Two teams, one thin seam | Scope — what you owned |
-| 4 | How do you identify someone? | The central question |
-| 5 | Three attempts | You iterated |
-| 6 | **The phone is the scanner** | **The hero slide** |
-| 7 | Four stages, one API | Architecture + the API / not-API boundary |
-| 8 | The whole flow, on screen | Real screenshots |
-| 9 | Three parts I built | Stack reference |
-| 10 | Three that cost me days | Debugging depth |
-| 11 | Building it without the hardware | Testability |
-| 12 | One command each | Packaging, deployment, docs |
-| 13 | Where I handed it over | Future work |
-| 14 | Someone can walk up… | Close |
+## Running order
 
-## Timing
+13 sections, scroll-driven. Roughly 12–15 minutes.
 
-Roughly 12–14 minutes at a comfortable pace. **Give slide 6 the most time** — it's the
-strongest thing in the project, because the design got simpler under a constraint.
+1. **Hero** — one sentence on what Diya is
+2. **The brief** — four constraints that ruled things out
+3. **Scope** — what you owned vs the hardware team
+4. **The problem** — identify someone with no scanner
+5. **Three attempts** — you iterated
+6. **The inversion** — *give this the most time*
+7. **Four stages** — architecture + the API / not-API boundary
+8. **Wireframes** — design process, with two flaws marked honestly
+9. **Every screen** — real captures, kiosk and web
+10. **Architecture** — stack reference
+11. **Testing** — building without hardware
+12. **Shipping** — packaging, lockdown, deployment
+13. **Handover** — what's queued next
 
-For a 10-minute slot, cut 9 and 12.
+Section 6 is the strongest thing in the project: no scanner hardware → three attempts →
+invert the QR so the phone reads the kiosk. A constraint produced a simpler design.
 
-Slide 13 reads as confidence, not weakness. Don't rush or apologise through it.
+The dots on the right jump between sections — useful if a question sends you backwards.
 
-## Worth having ready
+## Presenting notes
 
-A live demo of the phone-scanning-the-kiosk flow beats any slide. If the hardware isn't
-available, `testkit/` runs the whole flow on any Linux desktop — see `testkit/README.md`.
+- **Full screen** (F11) hides the browser chrome. The Aurora hero needs WebGL; any modern
+  browser is fine.
+- The wireframes section marks two defects as *known flaws* rather than hiding them. That
+  reads as judgement, not weakness — don't apologise through it.
+- A live demo of the phone-scanning-the-kiosk flow beats any section here. If the hardware
+  isn't available, `testkit/` runs the whole flow on any Linux desktop.
 
-## Assets
+## Honesty notes
 
-`assets/` holds the screenshots, diagrams, rendered slide PNGs and the HTML source.
-Provenance — including the two things that were stood in for — is in `assets/README.md`.
+Worth knowing before someone asks:
+
+- Screenshots are genuine frames from the running app and the live web pages.
+- **The report PDF shown is representative.** The real one comes from the hardware team's
+  `meditation-app`, which isn't in this repo. The rendering is real; the numbers are not.
+- The backend was a local stub during capture, returning the same JSON shapes.
+- The visitor is fictional and the avatar is generated. No real person's data appears.
+
+Full provenance is in `assets/README.md`.
+
+## Credits
+
+Animated components from [React Bits](https://reactbits.dev) — Aurora, SplitText, CountUp,
+SpotlightCard, TiltedCard, ScrollReveal, GradientText. Fonts: Inter, JetBrains Mono.

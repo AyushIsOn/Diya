@@ -1,0 +1,5 @@
+# Media never goes into git — GitHub rejects files over 100 MB and this repo's
+# history is already ~1.7 GB. The video travels with the folder instead.
+*
+!.gitignore
+!README.md
