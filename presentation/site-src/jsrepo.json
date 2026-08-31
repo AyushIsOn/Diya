@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/jsrepo@latest/schemas/project-config.json",
+  "repos": ["https://reactbits.dev/r"],
+  "includeTests": false,
+  "watermark": false,
+  "paths": {
+    "component": "./src/reactbits",
+    "hook": "./src/hooks",
+    "util": "./src/utils",
+    "*": "./src/reactbits"
+  }
+}

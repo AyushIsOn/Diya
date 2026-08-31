@@ -1,52 +1,67 @@
-# Internship report deck
+# Internship report — presentation
 
-`Diya-Internship-Report.pptx` — 10 slides, 16:9. Every slide has **speaker notes**
-(what to say, and likely questions with answers). Open the notes pane in PowerPoint
-with *View → Notes*, or in Google Slides with *View → Show speaker notes*.
+**Present from the website.** `site/index.html` — open it in any browser, full screen, and
+scroll. No install, no server, no build step.
 
-## Fill in before presenting
-
-Slide 1 only: `[Your Name]`, `[Institution]`, `[Month Year – Month Year]`, `[Mentor Name]`.
-
-## Visuals to drop in
-
-`assets/` holds diagrams and real kiosk screenshots, with provenance notes in
-`assets/README.md`. They are **not yet embedded in the .pptx** — add them where they help:
-
-| Asset | Suggested slide |
+| What | Where |
 |---|---|
-| `diagram-timeline-slide.png` | Slide 5 (*How a Visitor Actually Logs In*) — sized for projection |
-| `diagram-timeline.png` | Print as a handout; too fine-grained to project |
-| `app-01-idle-qr.png` | Slide 4 (*Invert the QR*) — the kiosk showing its own QR |
-| `app-02-authenticated.png` | Slide 5 — visitor name and roster photo resolved |
-| `app-03-session-running.png` | Slide 7 (*Building It Without the Hardware*) |
-| `app-04-report.png` | Slide 9 (*Where I Left It*) — the report rendered in-app |
+| **The site** (primary) | `site/index.html` |
+| Source, to edit or rebuild | `site-src/` — see its README |
+| Slide deck (older, still valid) | `Diya-Internship-Report.pdf` / `.pptx` |
+| Raw screenshots, diagrams, wireframes | `assets/` |
 
-## If you need it shorter
+Everything is inlined into that one HTML file, so it works off a USB stick or with no
+network. The `shots/` and `wf/` folders next to it must travel with it.
 
-For a 10-minute slot, cut to 7 slides by deleting **3 (Architecture)** and **8 (Packaging)**,
-and merging **10** into **9**. The argument still holds: problem → the QR decision →
-how login works → hard bugs → testing → state and takeaways.
+Placeholders to fill are in the hero only: `[Your Name]`, `[Institution]`,
+`[Month Year – Month Year]`, `[Mentor Name]` — edit `site-src/src/App.jsx` and rebuild,
+or edit the text directly in `site/index.html` if you only need the names.
 
-## Suggested timing
+## Running order
 
-| Slides | Content | Minutes |
-|---|---|---|
-| 1–3 | Framing and architecture | 3 |
-| 4–5 | The design decision and the flow | 4 |
-| 6–7 | Debugging and testing | 4 |
-| 8–10 | Shipping, state, takeaways | 3 |
+13 sections, scroll-driven. Roughly 12–15 minutes.
 
-Slide 4 is the strongest one — give it the most time. Slide 9 (known limitations) reads as
-confidence, not weakness; don't rush or apologise through it.
+1. **Hero** — one sentence on what Diya is
+2. **The brief** — four constraints that ruled things out
+3. **Scope** — what you owned vs the hardware team
+4. **The problem** — identify someone with no scanner
+5. **Three attempts** — you iterated
+6. **The inversion** — *give this the most time*
+7. **Four stages** — architecture + the API / not-API boundary
+8. **Wireframes** — design process, with two flaws marked honestly
+9. **Every screen** — real captures, kiosk and web
+10. **Architecture** — stack reference
+11. **Testing** — building without hardware
+12. **Shipping** — packaging, lockdown, deployment
+13. **Handover** — what's queued next
 
-## Worth having open in another tab
+Section 6 is the strongest thing in the project: no scanner hardware → three attempts →
+invert the QR so the phone reads the kiosk. A constraint produced a simpler design.
 
-A live demo of the phone-scans-kiosk flow lands better than any slide. If the hardware
-isn't available, the `testkit/` mock runs the whole flow on any Linux desktop — see
-`testkit/README.md`.
+The dots on the right jump between sections — useful if a question sends you backwards.
 
-## Regenerating
+## Presenting notes
 
-Built with [python-pptx](https://python-pptx.readthedocs.io/). Edit directly in PowerPoint;
-the generator script isn't committed, since the deck is meant to be hand-tuned from here.
+- **Full screen** (F11) hides the browser chrome. The Aurora hero needs WebGL; any modern
+  browser is fine.
+- The wireframes section marks two defects as *known flaws* rather than hiding them. That
+  reads as judgement, not weakness — don't apologise through it.
+- A live demo of the phone-scanning-the-kiosk flow beats any section here. If the hardware
+  isn't available, `testkit/` runs the whole flow on any Linux desktop.
+
+## Honesty notes
+
+Worth knowing before someone asks:
+
+- Screenshots are genuine frames from the running app and the live web pages.
+- **The report PDF shown is representative.** The real one comes from the hardware team's
+  `meditation-app`, which isn't in this repo. The rendering is real; the numbers are not.
+- The backend was a local stub during capture, returning the same JSON shapes.
+- The visitor is fictional and the avatar is generated. No real person's data appears.
+
+Full provenance is in `assets/README.md`.
+
+## Credits
+
+Animated components from [React Bits](https://reactbits.dev) — Aurora, SplitText, CountUp,
+SpotlightCard, TiltedCard, ScrollReveal, GradientText. Fonts: Inter, JetBrains Mono.
