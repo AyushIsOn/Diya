@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F0A1E; --panel:#1A1330; --panel2:#231A3D;
+  --gold:#E9B872; --lilac:#B4A9D6; --faint:#8F83B8;
+  --page:#FBFAF8; --line:#E7E3DC; --text:#1A1330; --muted:#6B6480;
+  --green:#2E9E68; --amber:#B45309;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#555;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.slide{
+  width:1920px;height:1080px;position:relative;overflow:hidden;
+  background:var(--page);color:var(--text);display:flex;flex-direction:column;justify-content:center;
+  padding:96px 120px;
+}
+.slide.dark{background:var(--ink);color:#fff}
+.slide.dark .kick{color:var(--gold)}
+.slide.dark .lede{color:var(--lilac)}
+.num{position:absolute;right:64px;bottom:52px;font-size:19px;color:#C9C3D8;font-weight:500}
+.slide.dark .num{color:#453B66}
+.kick{font-size:21px;font-weight:700;letter-spacing:2.4px;color:var(--amber);text-transform:uppercase;margin-bottom:26px}
+h1{font-size:104px;font-weight:800;letter-spacing:-3px;line-height:.98}
+h2{font-size:74px;font-weight:800;letter-spacing:-2.2px;line-height:1.02}
+h3{font-size:40px;font-weight:700;letter-spacing:-.8px;line-height:1.12}
+.lede{font-size:31px;line-height:1.45;color:var(--muted);font-weight:400;max-width:1180px}
+.rule{width:104px;height:7px;background:var(--gold);border-radius:4px}
+.mono{font-family:'JetBrains Mono',monospace}
+.grow{flex:1}
+.slide > .row{align-items:flex-start}
+
+.row{display:flex;gap:34px}
+.card{background:#fff;border:1.6px solid var(--line);border-radius:20px;padding:38px 40px;flex:1;
+  box-shadow:0 2px 3px rgba(15,10,30,.04)}
+.card .cn{font-size:19px;font-weight:800;color:var(--gold);letter-spacing:1.6px;margin-bottom:16px}
+.card h3{font-size:33px;margin-bottom:14px}
+.card p{font-size:22px;line-height:1.5;color:var(--muted)}
+.card.hero{background:var(--panel);border-color:var(--panel);color:#fff}
+.card.hero h3{color:#fff}.card.hero p{color:var(--lilac)}
+.shot{border-radius:16px;border:1.6px solid var(--line);box-shadow:0 28px 60px -22px rgba(15,10,30,.42);display:block}
+.cap{font-size:20px;color:var(--muted);margin-top:16px;line-height:1.4}
+.cap b{color:var(--text);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:14px}
+.chip{font-size:21px;font-weight:500;padding:12px 22px;border-radius:999px;background:#F1EEE8;
+  color:#4A4360;border:1.4px solid var(--line)}
+.slide.dark .chip{background:#241B3E;border-color:#342A55;color:var(--lilac)}
+.chip.mono{font-family:'JetBrains Mono',monospace;font-size:19px}
+</style>
+</head>
+<body>
+
+<!-- ============ 1 COVER ============ -->
+<section class="slide dark" style="justify-content:center;padding-left:150px">
+  <div style="position:absolute;right:-140px;top:-140px;width:820px;height:820px;
+    border:2px solid #2A2050;border-radius:50%"></div>
+  <div style="position:absolute;right:20px;top:170px;width:520px;height:520px;
+    border:2px solid #241B44;border-radius:50%"></div>
+  <div class="kick" style="margin-bottom:34px">Internship Project Report</div>
+  <h1 style="max-width:1250px">Diya</h1>
+  <h1 style="max-width:1300px;font-size:64px;font-weight:600;letter-spacing:-1.6px;
+    color:var(--lilac);margin-top:18px">An unattended meditation kiosk</h1>
+  <div class="rule" style="margin:52px 0 44px"></div>
+  <div style="font-size:27px;color:#fff;font-weight:500;line-height:1.7">
+    [Your Name] &nbsp;·&nbsp; [Institution]<br>
+    <span style="color:var(--faint);font-size:23px">[Month Year – Month Year] &nbsp;·&nbsp; Guide: [Mentor Name]</span>
+  </div>
+</section>
+
+<!-- ============ 2 THE BRIEF ============ -->
+<section class="slide dark" style="justify-content:center">
+  <div class="kick">The brief</div>
+  <h2 style="max-width:1500px">A visitor walks up.<br>Nobody is there to help them.</h2>
+  <div class="lede" style="margin-top:40px;max-width:1320px">
+    A museum kiosk has to identify a stranger, run a camera-guided meditation session,
+    hand them a personal report, and reset itself &mdash; unattended, all day.
+  </div>
+  <div class="chips" style="margin-top:64px">
+    <div class="chip">No staff present</div>
+    <div class="chip">No keyboard</div>
+    <div class="chip">No scanner hardware</div>
+    <div class="chip">Must never stay closed</div>
+  </div>
+  <div class="num">02</div>
+</section>
+
+<!-- ============ 3 SCOPE ============ -->
+<section class="slide">
+  <div class="kick">Scope</div>
+  <h2>Two teams, one thin seam</h2>
+  <div class="row" style="margin-top:64px">
+    <div class="card">
+      <div class="cn" style="color:var(--muted)">HARDWARE TEAM &nbsp;(IITH)</div>
+      <h3>Cameras, servos, CV</h3>
+      <p>RealSense and thermal capture, posture and gaze analysis, and the
+         <span class="mono" style="font-size:20px">meditation-app</span> that produces the report PDF.</p>
+    </div>
+    <div class="card hero">
+      <div class="cn">MINE</div>
+      <h3>Everything around it</h3>
+      <p>The kiosk application, the identification system, the backend and web pages,
+         packaging, deployment &mdash; and the contract between the two sides.</p>
+    </div>
+  </div>
+  <div style="margin-top:52px;background:#FFF9EE;border:1.6px solid #F2DDB8;border-radius:18px;
+       padding:34px 40px;display:flex;gap:26px;align-items:center">
+    <div style="font-size:23px;line-height:1.5;color:#7A5514">
+      <b>The seam is two primitives, not a protocol.</b> I launch one shell script and read one PDF
+      off disk. They rewrote their internals all summer without ever breaking my app.
+    </div>
+  </div>
+  <div class="num">03</div>
+</section>
+
+<!-- ============ 4 THE PROBLEM ============ -->
+<section class="slide dark" style="justify-content:center">
+  <div class="kick">The hard part</div>
+  <h2 style="max-width:1560px">How do you identify<br>someone with no scanner?</h2>
+  <div class="lede" style="margin-top:44px;max-width:1300px">
+    Every obvious answer costs hardware: a QR reader, a card reader, a touchscreen keyboard
+    that needs cleaning between strangers.
+  </div>
+  <div class="num">04</div>
+</section>
+
+<!-- ============ 5 THREE ATTEMPTS ============ -->
+<section class="slide">
+  <div class="kick">Design evolution</div>
+  <h2>Three attempts</h2>
+  <div class="row" style="margin-top:60px">
+    <div class="card">
+      <div class="cn" style="color:#C9C3D8">01</div>
+      <h3>Data in the QR</h3>
+      <p>The printed code carried the visitor's details. Fully offline &mdash; but still needs a
+         reader at the kiosk, and puts personal data on paper.</p>
+    </div>
+    <div class="card">
+      <div class="cn" style="color:#C9C3D8">02</div>
+      <h3>QR holds an id</h3>
+      <p>The code became a lookup key and the kiosk fetched details over the API.
+         Better privacy &mdash; the scanner problem remained.</p>
+    </div>
+    <div class="card hero">
+      <div class="cn">03 &nbsp;· &nbsp;SHIPPED</div>
+      <h3>Invert it</h3>
+      <p>The <b>kiosk shows the QR</b> and the <b>visitor's phone scans it</b>.
+         The phone is the scanner, camera and keyboard. Zero hardware.</p>
+    </div>
+  </div>
+  <div class="num">05</div>
+</section>
+
+<!-- ============ 6 THE INVERSION (hero) ============ -->
+<section class="slide" style="padding:96px 0 0 120px">
+  <div style="display:flex;gap:80px;height:100%">
+    <div style="flex:0 0 720px;padding-top:40px">
+      <div class="kick">The decision that mattered</div>
+      <h2 style="font-size:66px">The phone<br>is the scanner</h2>
+      <div class="lede" style="font-size:27px;margin-top:34px;max-width:660px">
+        The kiosk asks the backend for a session, renders the token as a QR, and polls.
+        The visitor's own phone does the reading.
+      </div>
+      <div class="chips" style="margin-top:44px;max-width:660px">
+        <div class="chip mono">POST /api/sessions</div>
+        <div class="chip mono">GET /api/sessions/:token</div>
+      </div>
+      <div style="margin-top:44px;font-size:23px;color:var(--muted);line-height:1.55;max-width:640px">
+        A constraint produced a simpler design than a budget would have.
+      </div>
+    </div>
+    <div style="flex:1;display:flex;align-items:center;overflow:hidden">
+      <img class="shot" src="file:///projects/sandbox/Diya/presentation/assets/app-01-idle-qr.png"
+           style="width:1010px;border-radius:16px 0 0 16px;border-right:none">
+    </div>
+  </div>
+  <div class="num">06</div>
+</section>
+
+<!-- ============ 7 THE FLOW ============ -->
+<section class="slide">
+  <div class="kick">End to end</div>
+  <h2>Four stages, one API</h2>
+  <div class="row" style="margin-top:58px;gap:22px">
+    <div class="card" style="padding:32px 30px">
+      <div class="cn">STAGE 01</div>
+      <h3 style="font-size:29px">Identify</h3>
+      <p style="font-size:20px">An admin roster gives each person a private link. They open it on
+         their phone and scan the kiosk.</p>
+      <div class="mono" style="font-size:17px;color:var(--amber);margin-top:18px;line-height:1.7">
+        GET /api/people/:token<br>POST /api/claim</div>
+    </div>
+    <div class="card" style="padding:32px 30px">
+      <div class="cn">STAGE 02</div>
+      <h3 style="font-size:29px">Claim</h3>
+      <p style="font-size:20px">The backend links that identity to the kiosk's open session.
+         The polling kiosk advances by itself.</p>
+      <div class="mono" style="font-size:17px;color:var(--amber);margin-top:18px;line-height:1.7">
+        GET /api/sessions/:token<br>-> status claimed</div>
+    </div>
+    <div class="card" style="padding:32px 30px;background:#FFFBF3;border-color:#F2DDB8">
+      <div class="cn" style="color:var(--amber)">STAGE 03</div>
+      <h3 style="font-size:29px">Session</h3>
+      <p style="font-size:20px">The kiosk launches the CV pipeline and blocks. This boundary is
+         deliberately <b>not</b> an API.</p>
+      <div class="mono" style="font-size:17px;color:var(--amber);margin-top:18px;line-height:1.7">
+        bash scripts/run1.sh<br>writes report.pdf</div>
+    </div>
+    <div class="card" style="padding:32px 30px">
+      <div class="cn">STAGE 04</div>
+      <h3 style="font-size:29px">Report</h3>
+      <p style="font-size:20px">The newest PDF written after the session began is rendered in-app,
+         then the kiosk resets.</p>
+      <div class="mono" style="font-size:17px;color:var(--amber);margin-top:18px;line-height:1.7">
+        PDFium -> page images</div>
+    </div>
+  </div>
+  <div style="margin-top:46px;display:flex;gap:44px;align-items:center;
+       border-top:1.6px solid var(--line);padding-top:38px">
+    <div style="font-size:23px;color:var(--muted);line-height:1.5;flex:1">
+      <b style="color:var(--text)">Kiosk to Backend</b> is the only network boundary &mdash; plain REST over HTTPS.
+    </div>
+    <div style="width:1.6px;height:56px;background:var(--line)"></div>
+    <div style="font-size:23px;color:var(--muted);line-height:1.5;flex:1">
+      <b style="color:var(--amber)">Kiosk to meditation-app</b> is a local process and a file on disk. No protocol to break.
+    </div>
+  </div>
+  <div class="num">07</div>
+</section>
+
+<!-- ============ 8 IT WORKS ============ -->
+<section class="slide">
+  <div class="kick">Running system</div>
+  <h2>The whole flow, on screen</h2>
+  <div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:36px 54px">
+    <div>
+      <img class="shot" src="file:///projects/sandbox/Diya/presentation/assets/app-02-authenticated.png" style="width:100%">
+      <div class="cap"><b>Authenticated.</b> Name, email and roster photo arrive from the claim; the session starts with no button press.</div>
+    </div>
+    <div>
+      <img class="shot" src="file:///projects/sandbox/Diya/presentation/assets/app-04-report.png" style="width:100%">
+      <div class="cap"><b>Report.</b> The PDF is decoded and rendered inside the app &mdash; no external viewer, no desktop visible.</div>
+    </div>
+  </div>
+  <div class="num">08</div>
+</section>
+
+<!-- ============ 9 ARCHITECTURE ============ -->
+<section class="slide dark">
+  <div class="kick">Under the hood</div>
+  <h2>Three parts I built</h2>
+  <div class="row" style="margin-top:62px">
+    <div class="card" style="background:var(--panel2);border-color:#33285A;color:#fff">
+      <div class="cn">KIOSK APP</div>
+      <h3 style="color:#fff">C# · .NET 8 · Avalonia</h3>
+      <p style="color:var(--lilac)">The only .NET UI framework that officially supports Linux.
+         Ships as a self-contained single-file <span class="mono" style="font-size:20px">.deb</span>.</p>
+    </div>
+    <div class="card" style="background:var(--panel2);border-color:#33285A;color:#fff">
+      <div class="cn">BACKEND</div>
+      <h3 style="color:#fff">Node · Express · Postgres</h3>
+      <p style="color:var(--lilac)">Sessions, visitors and the admin roster. Serves the web pages
+         from the same origin.</p>
+    </div>
+    <div class="card" style="background:var(--panel2);border-color:#33285A;color:#fff">
+      <div class="cn">WEB</div>
+      <h3 style="color:#fff">Three static pages</h3>
+      <p style="color:var(--lilac)">Phone registration, admin roster upload with in-browser XLSX
+         parsing, and the per-person login scanner.</p>
+    </div>
+  </div>
+  <div class="chips" style="margin-top:56px">
+    <div class="chip mono">QRCoder</div>
+    <div class="chip mono">PDFtoImage / PDFium</div>
+    <div class="chip mono">SheetJS</div>
+    <div class="chip mono">html5-qrcode</div>
+    <div class="chip mono">systemd</div>
+    <div class="chip mono">Render</div>
+  </div>
+  <div class="num">09</div>
+</section>
+
+<!-- ============ 10 HARD PROBLEMS ============ -->
+<section class="slide">
+  <div class="kick">Debugging</div>
+  <h2>Three that cost me days</h2>
+  <div class="row" style="margin-top:58px">
+    <div class="card">
+      <div class="cn" style="color:var(--amber)">WAYLAND</div>
+      <h3>Fullscreen refused</h3>
+      <p><span class="mono" style="font-size:19px">CanResize="False"</span> sets fixed size hints,
+         and the compositor then <b>refuses</b> to fullscreen the window. The intuition is backwards.</p>
+    </div>
+    <div class="card">
+      <div class="cn" style="color:var(--amber)">DEPENDENCIES</div>
+      <h3>A clash that hides</h3>
+      <p>Avalonia and the PDF renderer both use SkiaSharp. I verified they resolved to one
+         version <b>before</b> committing to in-app rendering.</p>
+    </div>
+    <div class="card">
+      <div class="cn" style="color:var(--amber)">THE BEST ONE</div>
+      <h3>&ldquo;Can't reach the server&rdquo;</h3>
+      <p>The VM clock was in the past, so valid HTTPS certificates looked <b>not yet valid</b>.
+         Nothing to do with the server at all.</p>
+    </div>
+  </div>
+  <div class="num">10</div>
+</section>
+
+<!-- ============ 11 TESTKIT ============ -->
+<section class="slide">
+  <div style="display:flex;gap:78px;align-items:center;height:100%">
+    <div style="flex:1">
+      <div class="kick">Testing</div>
+      <h2 style="font-size:64px">Building it<br>without the hardware</h2>
+      <div class="lede" style="font-size:26px;margin-top:32px;max-width:720px">
+        For most of the internship there were no cameras and no
+        <span class="mono" style="font-size:23px">meditation-app</span>. The flow still had to be testable.
+      </div>
+      <div style="margin-top:40px;font-size:24px;color:var(--muted);line-height:1.6;max-width:720px">
+        Two environment variables swap the pipeline for a mock. <b style="color:var(--text)">No test code
+        inside the app</b>, nothing extra in the shipped package &mdash; and those same variables are
+        the real production override.
+      </div>
+    </div>
+    <div style="flex:0 0 780px">
+      <div style="background:var(--ink);border-radius:20px;padding:44px 46px;
+           box-shadow:0 30px 60px -24px rgba(15,10,30,.5)">
+        <div class="mono" style="font-size:22px;line-height:2.05;color:#D8CCFF">
+          <span style="color:#6B6089">$</span> export DIYA_PIPELINE_SCRIPT=<span style="color:var(--gold)">…/run1.mock.sh</span><br>
+          <span style="color:#6B6089">$</span> export DIYA_REPORT_DIR=<span style="color:var(--gold)">/tmp/diya-reports</span><br>
+          <span style="color:#6B6089">$</span> diya-meditation<br><br>
+          <span style="color:#7EE0A0">Calibrating cameras…</span><br>
+          <span style="color:#7EE0A0">Running t3 (PDF report)…</span><br>
+          <span style="color:#7EE0A0">All tasks completed successfully.</span>
+        </div>
+      </div>
+      <div class="cap" style="margin-top:22px">Login, session, report, thank-you, on any Linux desktop.</div>
+    </div>
+  </div>
+  <div class="num">11</div>
+</section>
+
+<!-- ============ 12 SHIPPING ============ -->
+<section class="slide dark">
+  <div class="kick">Shipping</div>
+  <h2>One command each</h2>
+  <div class="row" style="margin-top:66px">
+    <div class="card" style="background:var(--panel2);border-color:#33285A;color:#fff">
+      <div class="cn">BUILD</div>
+      <h3 style="color:#fff">A single package</h3>
+      <p style="color:var(--lilac)">Self-contained <span class="mono" style="font-size:20px">.deb</span>
+         for amd64 and arm64. The museum machine needs nothing pre-installed.</p>
+    </div>
+    <div class="card" style="background:var(--panel2);border-color:#33285A;color:#fff">
+      <div class="cn">LOCK DOWN</div>
+      <h3 style="color:#fff">A kiosk, not an app</h3>
+      <p style="color:var(--lilac)">systemd user service with <span class="mono" style="font-size:20px">Restart=always</span>,
+         autologin, and GNOME escape shortcuts disabled.</p>
+    </div>
+    <div class="card" style="background:var(--panel2);border-color:#33285A;color:#fff">
+      <div class="cn">DEPLOY</div>
+      <h3 style="color:#fff">Backend in one file</h3>
+      <p style="color:var(--lilac)">A blueprint provisions the web service and Postgres together,
+         then tracks <span class="mono" style="font-size:20px">main</span>.</p>
+    </div>
+  </div>
+  <div style="margin-top:58px;font-size:25px;color:var(--lilac);line-height:1.6;max-width:1450px">
+    Plus documentation written for whoever comes next: an overview, a full command reference,
+    an FAQ, and a handoff note recording the dead ends so nobody repeats them.
+  </div>
+  <div class="num">12</div>
+</section>
+
+<!-- ============ 13 ROADMAP ============ -->
+<section class="slide">
+  <div class="kick">What comes next</div>
+  <h2>Where I handed it over</h2>
+  <div class="lede" style="margin-top:34px;max-width:1400px">
+    The full path works today: roster upload, phone login, automatic session, report on screen, reset.
+    Four things are queued for whoever continues.
+  </div>
+  <div class="row" style="margin-top:54px;gap:24px">
+    <div class="card" style="padding:34px 32px">
+      <div class="cn" style="color:#C9C3D8">01</div>
+      <h3 style="font-size:29px">Personalise the report</h3>
+      <p style="font-size:20px">Pass the visitor into the pipeline so the PDF is theirs, not generic.</p>
+    </div>
+    <div class="card" style="padding:34px 32px">
+      <div class="cn" style="color:#C9C3D8">02</div>
+      <h3 style="font-size:29px">Bound the pipeline</h3>
+      <p style="font-size:20px">A timeout and a failure screen, so a dead camera cannot strand the kiosk.</p>
+    </div>
+    <div class="card" style="padding:34px 32px">
+      <div class="cn" style="color:#C9C3D8">03</div>
+      <h3 style="font-size:29px">Consent screen</h3>
+      <p style="font-size:20px">Cameras observe visitors and identity data is stored. It needs asking first.</p>
+    </div>
+    <div class="card" style="padding:34px 32px">
+      <div class="cn" style="color:#C9C3D8">04</div>
+      <h3 style="font-size:29px">Real CV hardware</h3>
+      <p style="font-size:20px">The interfaces are in place; the devices arrive after me.</p>
+    </div>
+  </div>
+  <div class="num">13</div>
+</section>
+
+<!-- ============ 14 CLOSE ============ -->
+<section class="slide dark" style="justify-content:center">
+  <div style="position:absolute;right:-180px;bottom:-260px;width:900px;height:900px;
+    border:2px solid #241B44;border-radius:50%"></div>
+  <h2 style="max-width:1500px;font-size:80px">Someone can walk up, log in<br>with their phone, and leave<br>with their report.</h2>
+  <div class="rule" style="margin:56px 0 40px"></div>
+  <div style="font-size:29px;color:var(--lilac);line-height:1.6;max-width:1200px">
+    The vision hardware is the remaining milestone. Everything I could not finish is written down.
+  </div>
+  <div style="margin-top:70px;font-size:34px;font-weight:600;color:#fff">Thank you &mdash; questions?</div>
+</section>
+
+</body>
+</html>
