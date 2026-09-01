@@ -147,3 +147,39 @@ figure{margin:0}
 .videowrap.missing p{color:var(--faint);font-size:clamp(13px,1.05vw,17px);line-height:1.65;
   max-width:56ch;margin:0 auto}
 .videowrap.missing .mono{color:var(--lilac)}
+
+/* ---------- hero particle layer ---------- */
+.hero-particles{position:absolute;inset:0;opacity:.55;pointer-events:none}
+
+/* ---------- scan footage ---------- */
+.demogrid{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:56px;
+  margin-top:52px;align-items:start}
+.clipwrap{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#05040A;
+  box-shadow:0 44px 90px -32px rgba(0,0,0,.92)}
+.clipwrap video{width:100%;height:auto;display:block}
+.clipwrap.portrait{border-radius:26px}
+
+/* ---------- moving tech band ---------- */
+.velo{margin-top:40px;padding:22px 0;border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);overflow:hidden;
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.veloline{font-family:'JetBrains Mono',monospace;font-size:clamp(20px,2.4vw,40px);
+  font-weight:400;color:#2E2650;letter-spacing:-.01em;white-space:nowrap}
+
+/* ---------- StarBorder card ---------- */
+.shipped{width:100%;height:100%;text-align:left}
+.shipped .star-border-inner,.shipped > div:last-child{text-align:left}
+.star-border-container{width:100%;display:block}
+.shipped h3{margin-bottom:12px;color:#fff}
+.shipped p{font-size:clamp(14px,1.05vw,18px);line-height:1.58;color:var(--lilac)}
+.shipped .mono{font-size:clamp(12px,.85vw,15px);color:var(--gold);line-height:1.9;
+  display:block;margin-top:16px}
+
+/* ---------- magnet wrapper must not break the grid ---------- */
+.stats > div{height:100%}
+
+@media(max-width:1080px){
+  .demogrid{grid-template-columns:1fr;gap:40px}
+  .clipwrap.portrait{max-width:340px}
+}
