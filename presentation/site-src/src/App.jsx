@@ -8,6 +8,14 @@ import SpotlightCard from './reactbits/SpotlightCard';
 import TiltedCard from './reactbits/TiltedCard';
 import ScrollReveal from './reactbits/ScrollReveal';
 import GradientText from './reactbits/GradientText';
+import Particles from './reactbits/Particles';
+import ShinyText from './reactbits/ShinyText';
+import DecryptedText from './reactbits/DecryptedText';
+import GlareHover from './reactbits/GlareHover';
+import ClickSpark from './reactbits/ClickSpark';
+import StarBorder from './reactbits/StarBorder';
+import Magnet from './reactbits/Magnet';
+import ScrollVelocity from './reactbits/ScrollVelocity';
 
 const SECTIONS = [
   ['hero', 'Diya'],
@@ -91,6 +99,15 @@ function DemoVideo() {
   );
 }
 
+/* section eyebrow, with a slow shine passing through it */
+function Kick({ children }) {
+  return (
+    <div className="kick">
+      <ShinyText text={children} speed={4.5} color="#E9B872" shineColor="#FFF3DE" spread={90} />
+    </div>
+  );
+}
+
 /* generic scroll-in wrapper */
 function Reveal({ children, delay = 0, y = 34 }) {
   return (
@@ -115,7 +132,19 @@ function Card({ n, title, children, mono, hi, delay = 0 }) {
         {n && <div className="cardnum">{n}</div>}
         <h3>{title}</h3>
         <p>{children}</p>
-        {mono && <span className="mono">{mono}</span>}
+        {mono && (
+          <span className="mono">
+            <DecryptedText
+              text={mono}
+              animateOn="view"
+              speed={26}
+              maxIterations={12}
+              sequential
+              revealDirection="start"
+              characters="ABCDEF0123456789/:_-."
+            />
+          </span>
+        )}
       </SpotlightCard>
     </Reveal>
   );
@@ -144,7 +173,7 @@ export default function App() {
   const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <>
+    <ClickSpark sparkColor="#E9B872" sparkCount={10} sparkRadius={24} sparkSize={11} duration={520}>
       <motion.div className="bar" style={{ scaleX: width, width: '100%' }} />
 
       <nav className="dots">
@@ -164,9 +193,23 @@ export default function App() {
         <div className="hero-aurora">
           <Aurora colorStops={['#6D28D9', '#E9B872', '#3B1F6B']} amplitude={1.15} blend={0.62} />
         </div>
+        <div className="hero-particles">
+          <Particles
+            particleCount={320}
+            particleSpread={13}
+            speed={0.055}
+            particleColors={['#E9B872', '#B4A9D6', '#FFFFFF']}
+            moveParticlesOnHover
+            particleHoverFactor={0.6}
+            alphaParticles
+            particleBaseSize={62}
+            sizeRandomness={1.2}
+            cameraDistance={19}
+          />
+        </div>
         <div className="hero-fade" />
         <div className="hero-in">
-          <div className="kick">Internship Project Report</div>
+          <Kick>Internship Project Report</Kick>
           <SplitText
             text="Diya"
             tag="h1"
@@ -205,7 +248,7 @@ export default function App() {
 
       {/* ================= BRIEF ================= */}
       <section className="sec" id="brief">
-        <Reveal><div className="kick">The brief</div></Reveal>
+        <Reveal><Kick>The brief</Kick></Reveal>
         <Reveal delay={0.05}>
           <h2>A visitor walks up.<br />Nobody is there to help them.</h2>
         </Reveal>
@@ -233,7 +276,7 @@ export default function App() {
 
       {/* ================= SCOPE ================= */}
       <section className="sec" id="scope">
-        <Reveal><div className="kick">Scope</div></Reveal>
+        <Reveal><Kick>Scope</Kick></Reveal>
         <Reveal delay={0.05}><h2>Two teams, one thin seam</h2></Reveal>
         <div className="grid g2" style={{ marginTop: 56 }}>
           <Card n="HARDWARE TEAM · IITH" title="Cameras, servos, CV" delay={0.04}>
@@ -258,7 +301,7 @@ export default function App() {
 
       {/* ================= PROBLEM ================= */}
       <section className="sec" id="problem">
-        <Reveal><div className="kick">The hard part</div></Reveal>
+        <Reveal><Kick>The hard part</Kick></Reveal>
         <div style={{ maxWidth: '20ch' }}>
           <ScrollReveal baseOpacity={0.08} enableBlur blurStrength={5} baseRotation={4}>
             How do you identify someone with no scanner?
@@ -274,7 +317,7 @@ export default function App() {
 
       {/* ================= ATTEMPTS ================= */}
       <section className="sec" id="attempts">
-        <Reveal><div className="kick">Design evolution</div></Reveal>
+        <Reveal><Kick>Design evolution</Kick></Reveal>
         <Reveal delay={0.05}><h2>Three attempts</h2></Reveal>
         <div className="grid g3" style={{ marginTop: 58 }}>
           <Card n="01" title="Data in the QR" delay={0.04}
@@ -287,11 +330,21 @@ export default function App() {
             The code became a lookup key and the kiosk fetched details over the API.
             Better privacy; the scanner problem remained.
           </Card>
-          <Card n="03 · SHIPPED" title="Invert it" hi delay={0.18}
-            mono="POST /api/sessions">
-            The kiosk shows the QR and the visitor's phone scans it. The phone is the scanner,
-            the camera and the keyboard. Zero hardware.
-          </Card>
+          <Reveal delay={0.18}>
+            <StarBorder as="div" color="#E9B872" speed="7s" thickness={2}
+              backgroundColor="#241A33" borderColor="#3A2C52" className="shipped">
+              <div className="cardnum" style={{ color: 'var(--gold2)' }}>03 · SHIPPED</div>
+              <h3>Invert it</h3>
+              <p>
+                The kiosk shows the QR and the visitor's phone scans it. The phone is the
+                scanner, the camera and the keyboard. Zero hardware.
+              </p>
+              <span className="mono">
+                <DecryptedText text="POST /api/sessions" animateOn="view" speed={26}
+                  sequential characters="ABCDEF0123456789/:_-." />
+              </span>
+            </StarBorder>
+          </Reveal>
         </div>
       </section>
 
@@ -299,7 +352,7 @@ export default function App() {
       <section className="sec" id="inversion">
         <div className="split">
           <div>
-            <Reveal><div className="kick">The decision that mattered</div></Reveal>
+            <Reveal><Kick>The decision that mattered</Kick></Reveal>
             <Reveal delay={0.05}><h2>The phone is the scanner</h2></Reveal>
             <Reveal delay={0.1}>
               <p className="lede" style={{ marginTop: 26 }}>
@@ -340,28 +393,60 @@ export default function App() {
 
       {/* ================= DEMO ================= */}
       <section className="sec" id="demo">
-        <Reveal><div className="kick">See it work</div></Reveal>
-        <Reveal delay={0.05}><h2>The whole thing, end to end</h2></Reveal>
+        <Reveal><Kick>See it work</Kick></Reveal>
+        <Reveal delay={0.05}><h2>The scan, on real hardware</h2></Reveal>
         <Reveal delay={0.1}>
           <p className="lede" style={{ marginTop: 26 }}>
-            A visitor opens their link, scans the kiosk, and the session starts on its own.
-            No staff, no scanner, no typing.
+            Filmed during a live run. The phone opens its private link, points at the kiosk,
+            and the kiosk takes over on its own.
           </p>
         </Reveal>
-        <Reveal delay={0.14} y={44}>
-          <div style={{ marginTop: 44 }}>
-            <DemoVideo />
-            <p className="cap" style={{ marginTop: 18 }}>
-              <b>Recorded on the kiosk.</b> Everything after the scan is automatic &mdash; the
-              pipeline runs, the report is rendered in-app, and Return resets for the next person.
+
+        <div className="demogrid">
+          <Reveal delay={0.14} y={44}>
+            <div className="clipwrap portrait">
+              <video src="clips/scan-phone.mp4" autoPlay muted loop playsInline preload="metadata" />
+            </div>
+            <p className="cap">
+              <b>The phone reads the kiosk.</b> No app, no typing, no scanner hardware &mdash;
+              the camera the visitor already owns does the work.
             </p>
-          </div>
+          </Reveal>
+
+          <Reveal delay={0.22} y={44}>
+            <div className="clipwrap land">
+              <video src="clips/kiosk-authed.mp4" autoPlay muted loop playsInline preload="metadata" />
+            </div>
+            <p className="cap">
+              <b>The kiosk responds.</b> Name and roster photo resolve from the claim, and the
+              session begins without anyone pressing anything.
+            </p>
+            <Reveal delay={0.1}>
+              <div className="callout" style={{ marginTop: 34 }}>
+                <p>
+                  Two seconds of polling is all that connects them. The phone never talks to the
+                  kiosk directly &mdash; both only talk to the backend.
+                </p>
+              </div>
+            </Reveal>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.1}>
+          <h3 style={{ marginTop: 84, marginBottom: 24 }}>Full walkthrough</h3>
+        </Reveal>
+        <Reveal delay={0.14} y={40}>
+          <DemoVideo />
+          <p className="cap" style={{ marginTop: 16 }}>
+            The complete run, unedited &mdash; roster already loaded, through to the authenticated
+            kiosk.
+          </p>
         </Reveal>
       </section>
 
       {/* ================= FLOW ================= */}
       <section className="sec" id="flow">
-        <Reveal><div className="kick">End to end</div></Reveal>
+        <Reveal><Kick>End to end</Kick></Reveal>
         <Reveal delay={0.05}><h2>Four stages, one API</h2></Reveal>
         <div className="grid g4" style={{ marginTop: 54 }}>
           <Card n="STAGE 01" title="Identify" delay={0.04}
@@ -400,7 +485,7 @@ export default function App() {
 
       {/* ================= WIREFRAMES ================= */}
       <section className="sec" id="wireframes">
-        <Reveal><div className="kick">Design process</div></Reveal>
+        <Reveal><Kick>Design process</Kick></Reveal>
         <Reveal delay={0.05}><h2>Wireframes, and what they got wrong</h2></Reveal>
         <Reveal delay={0.1}>
           <p className="lede" style={{ marginTop: 26 }}>
@@ -427,7 +512,7 @@ export default function App() {
 
       {/* ================= GALLERY ================= */}
       <section className="sec" id="gallery">
-        <Reveal><div className="kick">Running system</div></Reveal>
+        <Reveal><Kick>Running system</Kick></Reveal>
         <Reveal delay={0.05}><h2>Every screen, for real</h2></Reveal>
         <Reveal delay={0.1}>
           <p className="lede" style={{ marginTop: 26 }}>
@@ -467,6 +552,24 @@ export default function App() {
         </Reveal>
 
         <Reveal delay={0.05}>
+          <h3 style={{ marginTop: 78, marginBottom: 30 }}>From the live run</h3>
+        </Reveal>
+        <div className="grid g3">
+          {[
+            ['real-greeting', 'The private link greets the person by name, then opens the camera.'],
+            ['real-scan', 'The viewfinder framing the QR on the kiosk screen.'],
+            ['real-kiosk', 'The kiosk after the claim — name, photo, and the session ready to run.'],
+          ].map(([f, cap], i) => (
+            <Reveal key={f} delay={0.07 * i} y={36}>
+              <figure>
+                <img className="shot" src={`shots/${f}.png`} alt={cap} />
+                <figcaption className="cap">{cap}</figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal delay={0.05}>
           <h3 style={{ marginTop: 78, marginBottom: 30 }}>The web side</h3>
         </Reveal>
         <div className="grid g3">
@@ -493,7 +596,7 @@ export default function App() {
 
       {/* ================= STACK ================= */}
       <section className="sec" id="stack">
-        <Reveal><div className="kick">Under the hood</div></Reveal>
+        <Reveal><Kick>Under the hood</Kick></Reveal>
         <Reveal delay={0.05}><h2>Three parts I built</h2></Reveal>
         <div className="grid g3" style={{ marginTop: 54 }}>
           <Card n="KIOSK APP" title="C# · .NET 8 · Avalonia" delay={0.04}>
@@ -510,10 +613,16 @@ export default function App() {
           </Card>
         </div>
         <Reveal delay={0.1}>
-          <div className="chips">
-            {['QRCoder', 'PDFtoImage / PDFium', 'SkiaSharp', 'SheetJS', 'html5-qrcode', 'systemd', 'Render', 'QuestPDF-free'].map((c) => (
-              <div className="chip m" key={c}>{c}</div>
-            ))}
+          <div className="velo">
+            <ScrollVelocity
+              texts={[
+                'QRCoder · PDFium · SkiaSharp · Avalonia · ',
+                'SheetJS · html5-qrcode · systemd · Postgres · ',
+              ]}
+              velocity={32}
+              numCopies={7}
+              className="veloline"
+            />
           </div>
         </Reveal>
         <div className="stats">
@@ -524,10 +633,12 @@ export default function App() {
             [2, 'architectures packaged', ''],
           ].map(([n, l], i) => (
             <Reveal key={l} delay={0.06 * i}>
-              <div className="stat">
-                <div className="statn"><CountUp to={n} duration={1.6} /></div>
-                <div className="statl">{l}</div>
-              </div>
+              <Magnet padding={90} magnetStrength={7}>
+                <div className="stat">
+                  <div className="statn"><CountUp to={n} duration={1.6} /></div>
+                  <div className="statl">{l}</div>
+                </div>
+              </Magnet>
             </Reveal>
           ))}
         </div>
@@ -537,7 +648,7 @@ export default function App() {
       <section className="sec" id="testing">
         <div className="split">
           <div>
-            <Reveal><div className="kick">Testing</div></Reveal>
+            <Reveal><Kick>Testing</Kick></Reveal>
             <Reveal delay={0.05}><h2>Building it without the hardware</h2></Reveal>
             <Reveal delay={0.1}>
               <p className="lede" style={{ marginTop: 26 }}>
@@ -586,7 +697,7 @@ export default function App() {
 
       {/* ================= SHIPPING ================= */}
       <section className="sec" id="shipping">
-        <Reveal><div className="kick">Shipping</div></Reveal>
+        <Reveal><Kick>Shipping</Kick></Reveal>
         <Reveal delay={0.05}><h2>One command each</h2></Reveal>
         <div className="grid g3" style={{ marginTop: 54 }}>
           <Card n="BUILD" title="A single package" delay={0.04}
@@ -618,7 +729,7 @@ export default function App() {
 
       {/* ================= ROADMAP ================= */}
       <section className="sec" id="roadmap">
-        <Reveal><div className="kick">What comes next</div></Reveal>
+        <Reveal><Kick>What comes next</Kick></Reveal>
         <Reveal delay={0.05}><h2>Where I handed it over</h2></Reveal>
         <Reveal delay={0.1}>
           <p className="lede" style={{ marginTop: 26 }}>
@@ -667,6 +778,6 @@ export default function App() {
         representative — the real one is produced by the hardware team’s meditation-app.<br />
         Animated components from <a href="https://reactbits.dev" style={{ color: 'var(--gold)' }}>React Bits</a>.
       </footer>
-    </>
+    </ClickSpark>
   );
 }

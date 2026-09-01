@@ -11,18 +11,37 @@ scroll. No install, no server, no build step.
 | Slide deck (older, still valid) | `Diya-Internship-Report.pdf` / `.pptx` |
 | Raw screenshots, diagrams, wireframes | `assets/` |
 
-## The demo video
+## The footage
 
-Name it `demo.mp4`, put it in `site/video/`, and the *Watch it work* section picks it up.
-Until then that section shows a placeholder rather than a broken player.
+Cut from a real recorded run, and committed — the files are small enough:
 
-**It is deliberately not in git.** GitHub rejects files over 100 MB and this repo's history
-is already ~1.7 GB from the committed `.deb`s. `site/video/.gitignore` blocks media so you
-cannot add it by accident — the file travels with the folder instead.
+| File | What | Size |
+|---|---|---|
+| `site/clips/scan-phone.mp4` | The scan itself, rotated upright. Autoplays muted on loop. | 1.4 MB |
+| `site/clips/kiosk-authed.mp4` | The kiosk responding. Autoplays muted on loop. | 0.4 MB |
+| `site/video/demo.mp4` | Full walkthrough, with controls. | 4.9 MB |
+| `assets/video-stills/` | Four stills at the key beats. | — |
 
-**Compress before using it.** A 500 MB recording will usually come down to 20–60 MB with no
-visible loss; `site/video/README.md` has the exact ffmpeg command, plus how to trim it and
-how to switch to a YouTube embed if you would rather stream.
+The source clip mixed orientations — the phone close-ups were portrait-in-landscape while
+the laptop shots were already upright — so the phone segment is rotated 90° and the kiosk
+segment is not. That is why they are two clips rather than one.
+
+`site/video/.gitignore` still blocks anything else dropped in there, so an unprocessed
+recording can't be committed by accident. `site/video/README.md` has the ffmpeg commands if
+you want to recut.
+
+### Three things to check before you present
+
+1. **Real personal data is on screen.** The footage shows a real name, a legible Gmail
+   address, and a face photo. Fine if that person consents; worth a moment's thought if the
+   recording will be shared beyond the room.
+2. **The video shows an older build.** It says *Start Calibration* and *Registered! Welcome*,
+   whereas the current code has a *Start* button and says *Authenticated! Welcome*. The
+   screenshots elsewhere are from the current build, so the copy differs slightly between
+   them. Nobody is likely to notice, but you should know before someone asks.
+3. **It was demoed on Windows.** A taskbar was visible in the original, so the kiosk clip is
+   cropped to the app area. The project targets Ubuntu — if asked, Avalonia is cross-platform
+   and this was just the convenient dev machine.
 
 Everything is inlined into that one HTML file, so it works off a USB stick or with no
 network. The `shots/` and `wf/` folders next to it must travel with it.

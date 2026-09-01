@@ -1,5 +1,7 @@
-# Media never goes into git — GitHub rejects files over 100 MB and this repo's
-# history is already ~1.7 GB. The video travels with the folder instead.
+# Block large raw footage, but keep the compressed walkthrough that the site needs.
+# GitHub rejects files over 100 MB and this repo already carries ~1.7 GB of .debs,
+# so never commit an unprocessed recording here.
 *
 !.gitignore
 !README.md
+!demo.mp4
