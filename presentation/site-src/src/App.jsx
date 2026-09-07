@@ -207,8 +207,8 @@ export default function App() {
                 <figcaption>The scan, filmed on the real setup — plays in full</figcaption>
               </figure>
               <figure className="phone-frame">
-                <img className="web-shot" src="shots/web-01-register.png" alt="The registration website that opens on the visitor's phone after scanning the QR code" />
-                <figcaption>Scanning the code opens this page on the visitor's phone</figcaption>
+                <img className="web-shot" src="shots/web-02-login.png" alt="The website open on the visitor's phone, greeting them by name before they scan" />
+                <figcaption>The website on their phone — it greets them by name, then opens the camera</figcaption>
               </figure>
             </div>
           </div>
@@ -232,8 +232,15 @@ export default function App() {
               </div>
             ))}
           </div>
-          <div className="note">
-            The visitor never presses a button to begin — being identified is what starts the session.
+          <div className="flow-bottom">
+            <figure className="report-shot">
+              <img src="shots/app-04-report.png" alt="The finished report rendered inside the kiosk" />
+              <figcaption>Stage 04 — the report, rendered inside the kiosk itself</figcaption>
+            </figure>
+            <div className="note">
+              The visitor never presses a button to begin — being identified is what starts the
+              session, and the report appears on screen the moment it is written to disk.
+            </div>
           </div>
         </Slide>
 
@@ -314,17 +321,14 @@ export default function App() {
           </p>
           <div className="thanks-grid">
             <div className="thanks-card">
-              <span>Guidance</span>
               <b>Eshwar Teja</b>
               <p>For mentoring me through the project.</p>
             </div>
             <div className="thanks-card">
-              <span>Support</span>
               <b>Kalyan Sir</b>
-              <p>For his constant support and encouragement throughout.</p>
+              <p>For his encouragement throughout.</p>
             </div>
           </div>
-          <p className="closing">Thank you — happy to take questions.</p>
         </Slide>
       </main>
     </>
