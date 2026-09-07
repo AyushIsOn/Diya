@@ -7,6 +7,7 @@ use the arrow keys. Seven slides. No install, no server, no build step.
 |---|---|
 | **The deck** (primary) | `site/index.html` — 7 slides, white and black over a blue Grainient background |
 | **The deck as a PDF** | `Diya-Presentation.pdf` — 7 pages, 16:9, for handing out or presenting without a browser |
+| **Real report screenshot** | drop one in at `site/shots/real-report.png` and slide 4 uses it automatically |
 | **Your demo video** | drop it at `site/video/demo.mp4` — see `site/video/README.md` |
 | Source, to edit or rebuild | `site-src/` — see its README |
 | Slide deck (older, still valid) | `Diya-Internship-Report.pdf` / `.pptx` |
@@ -47,6 +48,19 @@ you want to recut.
 All the JavaScript and CSS is inlined into that one HTML file, so it works off a USB stick or
 with no network. The `shots/`, `wf/`, `clips/` and `video/` folders next to it must travel
 with it.
+
+### Swapping in the real report
+
+Slide 4 shows `site/shots/real-report.png` if that file exists, and falls back to the
+representative `site/shots/app-04-report.png` if it does not. So to show a genuine report —
+the posture and gaze analysis that the hardware team's `meditation-app` produces — just save
+the screenshot to that path. No code change and no rebuild:
+
+```bash
+cp your-report-screenshot.png presentation/site/shots/real-report.png
+```
+
+Then regenerate the PDF if you hand that out too (see `site-src/README.md`).
 
 ## Running order
 

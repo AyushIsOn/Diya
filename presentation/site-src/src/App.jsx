@@ -26,6 +26,21 @@ function Slide({ id, n, children, className = '' }) {
   );
 }
 
+/* An image that prefers `primary` and silently falls back to `fallback`.
+   Used for the report shot: drop a file in at shots/real-report.png and it is
+   picked up automatically, with no code change and no rebuild needed. */
+function Shot({ primary, fallback, alt, className = '' }) {
+  const [src, setSrc] = useState(primary);
+  return (
+    <img
+      className={className}
+      src={src}
+      alt={alt}
+      onError={() => setSrc(current => (current === fallback ? current : fallback))}
+    />
+  );
+}
+
 /* A video that falls back to a still image, and always prints as the still. */
 function Clip({ src, still, alt, className = '', ...rest }) {
   const [failed, setFailed] = useState(false);
@@ -234,7 +249,11 @@ export default function App() {
           </div>
           <div className="flow-bottom">
             <figure className="report-shot">
-              <img src="shots/app-04-report.png" alt="The finished report rendered inside the kiosk" />
+              <Shot
+                primary="shots/real-report.png"
+                fallback="shots/app-04-report.png"
+                alt="The finished report rendered inside the kiosk"
+              />
               <figcaption>Stage 04 — the report, rendered inside the kiosk itself</figcaption>
             </figure>
             <div className="note">
