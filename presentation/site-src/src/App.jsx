@@ -41,9 +41,41 @@ function Shot({ primary, fallback, alt, className = '' }) {
   );
 }
 
-/* A video that falls back to a still image, and always prints as the still. */
-function Clip({ src, still, alt, className = '', ...rest }) {
+/* Resolves to the first path in the list that actually loads, so a preferred
+   file can simply be dropped in without editing anything. */
+function useFirstAvailable(paths) {
+  const key = paths.join('|');
+  const [found, setFound] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      for (const path of key.split('|')) {
+        const ok = await new Promise(resolve => {
+          const probe = new Image();
+          probe.onload = () => resolve(true);
+          probe.onerror = () => resolve(false);
+          probe.src = path;
+        });
+        if (cancelled) return;
+        if (ok) {
+          setFound(path);
+          return;
+        }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [key]);
+
+  return found;
+}
+
+/* A video that falls back to a still image, and always prints as the still.
+   `stills` is tried in order, so the first one present wins. */
+function Clip({ src, stills, alt, className = '', ...rest }) {
   const [failed, setFailed] = useState(false);
+  const still = useFirstAvailable(stills) ?? stills[stills.length - 1];
+
   return (
     <div className={`clip ${className}`}>
       {failed ? (
@@ -210,7 +242,7 @@ export default function App() {
                 <Clip
                   className="phone"
                   src="clips/scan-phone.mp4"
-                  still="shots/real-scan.png"
+                  stills={['shots/real-scan.png']}
                   alt="A phone scanning the QR code shown on the kiosk"
                   autoPlay
                   muted
@@ -329,12 +361,13 @@ export default function App() {
           <Clip
             className="feature"
             src="video/demo.mp4"
-            still="shots/app-02-authenticated.png"
-            alt="Full walkthrough of the Diya kiosk"
+            stills={['shots/real-welcome.png', 'shots/app-02-authenticated.png']}
+            alt="The kiosk showing the identified visitor, ready to start the session"
             controls
             playsInline
             preload="metadata"
           />
+          <p className="play-hint">Play the video</p>
         </Slide>
 
         {/* 7 — THANKS */}
