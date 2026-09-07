@@ -27,8 +27,10 @@ img, video { display: block; max-width: 100%; }
 
 /* Blue Grainient wash behind everything, kept very light so the page still
    reads as white paper and black text stays crisp. */
-/* The shader runs with its stock React Bits colours; a flat white veil on top
-   lifts it to a pastel wash so near-black text stays readable over it. */
+/* The shader keeps its stock React Bits colours and motion. It is lightened
+   inside the shader (gamma up, saturation down) rather than by a heavy white
+   veil, because a veil flattens the grain and the movement with it. Only a
+   light veil remains, to keep near-black text readable. */
 .backdrop {
   position: fixed;
   inset: 0;
@@ -39,7 +41,7 @@ img, video { display: block; max-width: 100%; }
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, .82);
+  background: rgba(255, 255, 255, .34);
 }
 main { position: relative; z-index: 1; }
 
@@ -124,6 +126,8 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 
 /* 3 — QR system */
 .qr-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 3vw; align-items: end; }
+/* Sized so the heading sets on two lines rather than orphaning a word. */
+.qr-slide h2 { max-width: 24ch; font-size: clamp(30px, 3.15vw, 50px); }
 .caption { margin-top: 10px; color: var(--grey); font-size: 12.5px; line-height: 1.45; }
 .qr-media { display: contents; }
 .phone-frame { margin: 0; }
@@ -167,6 +171,11 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 .step-n { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--blue); }
 .step h3 { margin: 12px 0 9px; }
 .step p { color: var(--grey); font-size: 14.5px; line-height: 1.55; }
+.flow-bottom { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3vw; align-items: center; margin-top: 30px; }
+.report-shot { margin: 0; }
+.report-shot img { height: 25vh; width: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.report-shot figcaption { margin-top: 10px; color: var(--grey); font-size: 12px; }
+.flow-bottom .note { margin-top: 0; }
 .note {
   margin-top: 34px;
   padding: 16px 20px;
@@ -195,8 +204,7 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 /* 7 — Thanks */
 .thanks-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 340px)); gap: 16px; margin-top: 38px; }
 .thanks-card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 22px; }
-.thanks-card span { color: var(--grey-2); font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.thanks-card b { display: block; margin: 9px 0 7px; font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
+.thanks-card b { display: block; margin-bottom: 7px; font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
 .thanks-card p { color: var(--grey); font-size: 14px; line-height: 1.5; }
 .closing { margin-top: 36px; color: var(--ink); font-size: clamp(19px, 1.7vw, 27px); font-weight: 600; letter-spacing: -.02em; }
 
@@ -211,7 +219,7 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
   .cards, .flow { grid-template-columns: 1fr 1fr; }
   .step { padding-right: 18px; }
   .qr-grid { grid-template-columns: auto auto; }
-  .problems, .demo-slide .demo-head { grid-template-columns: 1fr; }
+  .problems, .demo-slide .demo-head, .flow-bottom { grid-template-columns: 1fr; }
   .qr-copy { grid-column: 1 / -1; }
   .demo-head .lede { padding-bottom: 0; }
   .rail { display: none; }
@@ -278,6 +286,9 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
   .note { margin-top: .26in; }
   .problems { margin-top: .26in; }
   .thanks-grid { margin-top: .28in; }
+  .flow-bottom { margin-top: .24in; }
+  .report-shot img { height: 1.85in; }
+  .report-shot figcaption { font-size: 10.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
