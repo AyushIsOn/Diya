@@ -361,7 +361,7 @@ export default function App() {
           <Clip
             className="feature"
             src="video/demo.mp4"
-            stills={['shots/real-welcome.png', 'shots/app-02-authenticated.png']}
+            stills={['shots/real-welcome.png', 'shots/real-kiosk.png', 'shots/app-02-authenticated.png']}
             alt="The kiosk showing the identified visitor, ready to start the session"
             controls
             playsInline
