@@ -27,18 +27,19 @@ img, video { display: block; max-width: 100%; }
 
 /* Blue Grainient wash behind everything, kept very light so the page still
    reads as white paper and black text stays crisp. */
+/* The shader runs with its stock React Bits colours; a flat white veil on top
+   lifts it to a pastel wash so near-black text stays readable over it. */
 .backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
-  opacity: .3;
   pointer-events: none;
 }
 .backdrop::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, .78));
+  background: rgba(255, 255, 255, .82);
 }
 main { position: relative; z-index: 1; }
 
@@ -88,7 +89,6 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 .lede { max-width: 62ch; margin-top: 20px; color: var(--grey); font-size: clamp(15.5px, 1.2vw, 20px); line-height: 1.62; }
 
 /* 1 — Title */
-.title-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 5vw; align-items: center; }
 .title-slide .sub { margin-top: 14px; color: var(--ink-2); font-size: clamp(20px, 2vw, 34px); font-weight: 500; letter-spacing: -.02em; }
 .line { width: 72px; height: 4px; margin: 32px 0; background: var(--blue); border-radius: 2px; }
 .who { display: flex; flex-wrap: wrap; gap: 18px 60px; }
@@ -123,9 +123,13 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 .card p { color: var(--grey); font-size: 14.5px; line-height: 1.55; }
 
 /* 3 — QR system */
-.qr-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 4vw; align-items: center; }
+.qr-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 3vw; align-items: end; }
 .caption { margin-top: 10px; color: var(--grey); font-size: 12.5px; line-height: 1.45; }
-.qr-video { text-align: center; }
+.qr-media { display: contents; }
+.phone-frame { margin: 0; }
+.phone-frame figcaption { max-width: 260px; margin-top: 10px; color: var(--grey); font-size: 12px; line-height: 1.45; }
+/* Both phone panes share the same height so the pair reads as one row. */
+.web-shot { height: 54vh; width: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
 .ticks { margin-top: 24px; list-style: none; }
 .ticks li { position: relative; padding-left: 26px; margin-bottom: 11px; color: var(--ink-2); font-size: 15.5px; line-height: 1.5; }
 .ticks li::before {
@@ -146,7 +150,7 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 /* Each frame is given the clip's real aspect ratio, so nothing is cropped
    or letterboxed: phone clip 540x958, kiosk strip 1000x484, demo 848x478. */
 .clip video, .clip > img { width: 100%; height: 100%; object-fit: cover; }
-.clip.phone { aspect-ratio: 540 / 958; height: 58vh; width: auto; margin: 0 auto; }
+.clip.phone { aspect-ratio: 540 / 958; height: 54vh; width: auto; }
 .clip.strip { aspect-ratio: 1000 / 484; width: 100%; max-width: 620px; margin-top: 24px; }
 .print-still { display: none; }
 
@@ -206,19 +210,22 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 @media screen and (max-width: 1080px) {
   .cards, .flow { grid-template-columns: 1fr 1fr; }
   .step { padding-right: 18px; }
-  .title-grid, .qr-grid, .problems, .demo-slide .demo-head { grid-template-columns: 1fr; }
+  .qr-grid { grid-template-columns: auto auto; }
+  .problems, .demo-slide .demo-head { grid-template-columns: 1fr; }
+  .qr-copy { grid-column: 1 / -1; }
   .demo-head .lede { padding-bottom: 0; }
   .rail { display: none; }
-  .clip.phone { height: 44vh; }
+  .clip.phone, .web-shot { height: 40vh; }
   .clip.feature { height: 46vh; }
-  .shot-card { max-width: 520px; }
 }
 @media screen and (max-width: 680px) {
   main { scroll-snap-type: none; }
   .slide { min-height: auto; padding: 60px 7vw 74px; }
   .cards, .flow, .thanks-grid { grid-template-columns: 1fr; }
   h1 { font-size: 21vw; }
+  .qr-grid { grid-template-columns: 1fr; justify-items: start; }
   .clip.phone { height: auto; width: 100%; max-width: 300px; }
+  .web-shot { height: auto; width: 100%; max-width: 300px; }
   .clip.feature { height: auto; width: 100%; }
 }
 
@@ -247,12 +254,12 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
   .slide-foot { left: .75in; right: .75in; bottom: .3in; }
   video { display: none !important; }
   .print-still { display: block !important; }
-  .clip.phone { height: 3.5in; }
+  .clip.phone, .web-shot { height: 3.5in; }
+  .phone-frame figcaption { font-size: 10.5px; max-width: 2.2in; }
   .clip.strip { max-width: 4.1in; margin-top: .16in; }
   /* The print still is 1600x1000, so match it and avoid letterboxing. */
   .clip.feature { height: 3.75in; aspect-ratio: 1600 / 1000; background: #fff; }
   .clip.feature > .print-still { object-fit: cover; }
-  .shot-card img { max-height: 2.6in; object-fit: contain; }
   h2 { font-size: 40px; }
   .lede { font-size: 13.5px; margin-top: .14in; }
   .ticks li { font-size: 13px; margin-bottom: 7px; }
