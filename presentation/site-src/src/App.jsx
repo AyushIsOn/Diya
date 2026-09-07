@@ -233,34 +233,43 @@ export default function App() {
         <Slide id="flow" n={4}>
           <p className="kicker">End to end</p>
           <h2>The whole flow</h2>
-          <div className="flow">
+          <div className="pipeline">
             {[
-              ['01', 'Identify', 'The visitor opens their private link and scans the kiosk with their phone.'],
-              ['02', 'Claim', 'The backend ties that person to the open kiosk session. The kiosk sees it while polling.'],
-              ['03', 'Session', 'The kiosk starts the camera pipeline and waits while the meditation session runs.'],
-              ['04', 'Report', 'The generated PDF is found and shown on screen, then the kiosk resets itself.'],
-            ].map(([n, title, copy]) => (
-              <div className="step" key={n}>
-                <span className="step-n">{n}</span>
+              ["Visitor's phone", '01', 'Identify', 'They open their private link and scan the kiosk.', 'GET /api/people/:token'],
+              ['Backend', '02', 'Claim', "The person is tied to the kiosk's waiting session.", 'POST /api/claim'],
+              ['Kiosk app', '03', 'Session', 'It starts the camera pipeline and waits.', 'bash scripts/run1.sh'],
+              ['Meditation app', '04', 'Report', 'It writes a PDF. The kiosk spots it and draws it.', 'newest *.pdf -> PDFium'],
+            ].map(([actor, n, title, copy, code]) => (
+              <div className="stage" key={n}>
+                <span className="actor">{actor}</span>
+                <span className="stage-n">{n}</span>
                 <h3>{title}</h3>
                 <p>{copy}</p>
+                <code>{code}</code>
               </div>
             ))}
-          </div>
-          <div className="flow-bottom">
+
             <figure className="report-shot">
               <Shot
                 primary="shots/real-report.png"
                 fallback="shots/app-04-report.png"
                 alt="The finished report rendered inside the kiosk"
               />
-              <figcaption>Stage 04 — the report, rendered inside the kiosk itself</figcaption>
+              <figcaption>What the visitor is handed</figcaption>
             </figure>
-            <div className="note">
-              The visitor never presses a button to begin — being identified is what starts the
-              session, and the report appears on screen the moment it is written to disk.
+
+            <div className="bnd rest">
+              <b>01 — 02</b>
+              <span>REST over HTTPS. The phone and the kiosk only ever talk to the backend, never to each other.</span>
+            </div>
+            <div className="bnd local">
+              <b>03 — 04</b>
+              <span>A launched process and a file on disk — deliberately not an API.</span>
             </div>
           </div>
+          <p className="flow-note">
+            Nobody presses a button to begin. Being identified is what starts the session.
+          </p>
         </Slide>
 
         {/* 5 — PROBLEMS */}
