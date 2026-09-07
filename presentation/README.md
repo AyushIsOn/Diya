@@ -6,6 +6,7 @@ scroll. No install, no server, no build step.
 | What | Where |
 |---|---|
 | **The site** (primary) | `site/index.html` |
+| **Redesigned PDF export** | `Diya-Redesigned-Presentation.pdf` (15 pages, 16:9) |
 | **Your demo video** | drop it at `site/video/demo.mp4` — see `site/video/README.md` |
 | Source, to edit or rebuild | `site-src/` — see its README |
 | Slide deck (older, still valid) | `Diya-Internship-Report.pdf` / `.pptx` |
