@@ -1,12 +1,12 @@
 # Internship report — presentation
 
-**Present from the website.** `site/index.html` — open it in any browser, full screen, and
-scroll. No install, no server, no build step.
+**Present from the website.** `site/index.html` — open it in any browser, go full screen, and
+use the arrow keys. Seven slides. No install, no server, no build step.
 
 | What | Where |
 |---|---|
-| **The site** (primary) | `site/index.html` |
-| **The site as a PDF** | `Diya-Presentation.pdf` — 22 pages, 16:9, for handing out or presenting without a browser |
+| **The deck** (primary) | `site/index.html` — 7 slides, white and black over a blue Grainient background |
+| **The deck as a PDF** | `Diya-Presentation.pdf` — 7 pages, 16:9, for handing out or presenting without a browser |
 | **Your demo video** | drop it at `site/video/demo.mp4` — see `site/video/README.md` |
 | Source, to edit or rebuild | `site-src/` — see its README |
 | Slide deck (older, still valid) | `Diya-Internship-Report.pdf` / `.pptx` |
@@ -44,43 +44,37 @@ you want to recut.
    cropped to the app area. The project targets Ubuntu — if asked, Avalonia is cross-platform
    and this was just the convenient dev machine.
 
-Everything is inlined into that one HTML file, so it works off a USB stick or with no
-network. The `shots/` and `wf/` folders next to it must travel with it.
-
-Placeholders to fill are in the hero only: `[Your Name]`, `[Institution]`,
-`[Month Year – Month Year]`, `[Mentor Name]` — edit `site-src/src/App.jsx` and rebuild,
-or edit the text directly in `site/index.html` if you only need the names.
+All the JavaScript and CSS is inlined into that one HTML file, so it works off a USB stick or
+with no network. The `shots/`, `wf/`, `clips/` and `video/` folders next to it must travel
+with it.
 
 ## Running order
 
-13 sections, scroll-driven. Roughly 12–15 minutes.
+Seven slides. Roughly 8–10 minutes.
 
-1. **Hero** — one sentence on what Diya is
-2. **The brief** — four constraints that ruled things out
-3. **Scope** — what you owned vs the hardware team
-4. **The problem** — identify someone with no scanner
-5. **Three attempts** — you iterated
-6. **The inversion** — *give this the most time*
-7. **Four stages** — architecture + the API / not-API boundary
-8. **Wireframes** — design process, with two flaws marked honestly
-9. **Every screen** — real captures, kiosk and web
-10. **Architecture** — stack reference
-11. **Testing** — building without hardware
-12. **Shipping** — packaging, lockdown, deployment
-13. **Handover** — what's queued next
+1. **Title** — Diya, presented by Ayush Gupta, under the guidance of Eshwar Teja
+2. **What I worked on** — the kiosk app, phone identification, hardware integration, packaging
+3. **The QR code system** — the inversion, with the scan footage playing large
+4. **The whole flow** — identify → claim → session → report
+5. **Two real problems** — no scanner, and integrating another team's `.deb` by watching for
+   the report file instead of calling an API
+6. **The full walkthrough** — the complete recorded run
+7. **Thank you** — the learning, and thanks to Eshwar Teja and Kalyan Sir
 
-Section 6 is the strongest thing in the project: no scanner hardware → three attempts →
-invert the QR so the phone reads the kiosk. A constraint produced a simpler design.
-
-The dots on the right jump between sections — useful if a question sends you backwards.
+Slide 3 is the strongest point in the project: there was no scanner, so the kiosk shows the
+QR and the visitor's phone reads it. A constraint produced a simpler design.
 
 ## Presenting notes
 
-- **Full screen** (F11) hides the browser chrome. The Aurora hero needs WebGL; any modern
-  browser is fine.
-- The wireframes section marks two defects as *known flaws* rather than hiding them. That
-  reads as judgement, not weakness — don't apologise through it.
-- A live demo of the phone-scanning-the-kiosk flow beats any section here. If the hardware
+- **Full screen** first (**⌃⌘F** on macOS, **F11** elsewhere).
+- **Arrow keys**, **Space** or **Page Up/Down** move between slides; the dots on the right
+  jump directly to one.
+- The blue background is a WebGL shader, so it needs a current browser. If WebGL is
+  unavailable the slides still read fine — they just lose the wash.
+- The two clips on slide 3 autoplay muted on loop. The walkthrough on slide 6 has controls,
+  so click it when you are ready.
+- Printing (**⌘P**) produces the same seven 16:9 pages, without the background.
+- A live demo of the phone-scanning-the-kiosk flow beats any slide here. If the hardware
   isn't available, `testkit/` runs the whole flow on any Linux desktop.
 
 ## Honesty notes
@@ -97,5 +91,6 @@ Full provenance is in `assets/README.md`.
 
 ## Credits
 
-Animated components from [React Bits](https://reactbits.dev) — Aurora, SplitText, CountUp,
-SpotlightCard, TiltedCard, ScrollReveal, GradientText. Fonts: Inter, JetBrains Mono.
+Background from [React Bits](https://reactbits.dev) — Grainient. Earlier vendored components
+from the same library are still in `site-src/src/reactbits/`. Fonts: Inter, JetBrains Mono.
+Colours are taken from the kiosk app itself.
