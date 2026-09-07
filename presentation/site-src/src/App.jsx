@@ -1,461 +1,783 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useSpring } from 'motion/react';
 
 import Aurora from './reactbits/Aurora';
-import DecryptedText from './reactbits/DecryptedText';
-import GlareHover from './reactbits/GlareHover';
+import SplitText from './reactbits/SplitText';
+import CountUp from './reactbits/CountUp';
+import SpotlightCard from './reactbits/SpotlightCard';
+import TiltedCard from './reactbits/TiltedCard';
+import ScrollReveal from './reactbits/ScrollReveal';
+import GradientText from './reactbits/GradientText';
 import Particles from './reactbits/Particles';
 import ShinyText from './reactbits/ShinyText';
-import SpotlightCard from './reactbits/SpotlightCard';
+import DecryptedText from './reactbits/DecryptedText';
+import GlareHover from './reactbits/GlareHover';
+import ClickSpark from './reactbits/ClickSpark';
+import StarBorder from './reactbits/StarBorder';
+import Magnet from './reactbits/Magnet';
+import ScrollVelocity from './reactbits/ScrollVelocity';
 
 const SECTIONS = [
-  ['hero', 'Opening'],
-  ['brief', 'Mission'],
-  ['scope', 'Boundary'],
-  ['problem', 'Constraint'],
-  ['attempts', 'Evolution'],
-  ['inversion', 'Breakthrough'],
-  ['proof', 'Live proof'],
-  ['flow', 'System flow'],
-  ['interface', 'Kiosk'],
-  ['field', 'Field evidence'],
-  ['architecture', 'Architecture'],
+  ['hero', 'Diya'],
+  ['brief', 'The brief'],
+  ['scope', 'Scope'],
+  ['problem', 'The problem'],
+  ['attempts', 'Three attempts'],
+  ['inversion', 'The inversion'],
+  ['demo', 'Watch it run'],
+  ['flow', 'The flow'],
+  ['wireframes', 'Wireframes'],
+  ['gallery', 'Screens'],
+  ['stack', 'Architecture'],
   ['testing', 'Testing'],
   ['shipping', 'Shipping'],
   ['roadmap', 'Handover'],
-  ['close', 'Close'],
 ];
 
-const EASE = [0.22, 1, 0.36, 1];
+/* ------------------------------------------------------------------
+   DEMO VIDEO
+   Drop a compressed mp4 at  presentation/site/video/demo.mp4
+   and it appears automatically. Nothing else to change.
 
-function Reveal({ children, delay = 0, y = 36, className = '' }) {
+   Prefer the local file for presenting: it needs no network, so a dead
+   wifi connection cannot take your demo down mid-talk.
+
+   If you would rather stream it, paste a YouTube/Vimeo *embed* URL into
+   `embed` below and the local file is ignored:
+     embed: 'https://www.youtube.com/embed/XXXXXXXXXXX'
+------------------------------------------------------------------- */
+const VIDEO = {
+  src: 'video/demo.mp4',
+  poster: 'shots/app-02-authenticated.png',
+  embed: null,
+};
+
+/* Plays the local file, or an embed, or explains what is missing. */
+function DemoVideo() {
+  const [failed, setFailed] = useState(false);
+
+  if (VIDEO.embed) {
+    return (
+      <div className="videowrap">
+        <iframe
+          src={VIDEO.embed}
+          title="Diya kiosk walkthrough"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+
+  if (failed) {
+    return (
+      <div className="videowrap missing">
+        <div>
+          <h3>No video file yet</h3>
+          <p>
+            Put your compressed recording at <span className="mono">site/video/demo.mp4</span> and
+            reload this page. See <span className="mono">site/video/README.md</span> for the
+            one-line ffmpeg command.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="videowrap">
+      <video
+        controls
+        preload="metadata"
+        playsInline
+        poster={VIDEO.poster}
+        onError={() => setFailed(true)}
+      >
+        <source src={VIDEO.src} type="video/mp4" onError={() => setFailed(true)} />
+      </video>
+    </div>
+  );
+}
+
+/* section eyebrow, with a slow shine passing through it */
+function Kick({ children }) {
+  return (
+    <div className="kick">
+      <ShinyText text={children} speed={4.5} color="#E9B872" shineColor="#FFF3DE" spread={90} />
+    </div>
+  );
+}
+
+/* generic scroll-in wrapper */
+function Reveal({ children, delay = 0, y = 34 }) {
   return (
     <motion.div
-      className={`reveal ${className}`}
       initial={{ opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.18 }}
-      transition={{ duration: 0.72, delay, ease: EASE }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.72, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
   );
 }
 
-function Eyebrow({ code, children }) {
+function Card({ n, title, children, mono, hi, delay = 0 }) {
   return (
-    <div className="eyebrow">
-      <span>{code}</span>
-      <ShinyText text={children} speed={4} color="#ffb35c" shineColor="#fff3d7" spread={92} />
-    </div>
-  );
-}
-
-function Slide({ id, index, children, className = '' }) {
-  return (
-    <section id={id} className={`slide ${className}`} data-slide={String(index).padStart(2, '0')}>
-      <div className="slide-no">{String(index).padStart(2, '0')} / 15</div>
-      <div className="slide-grid" aria-hidden="true" />
-      <div className="slide-inner">{children}</div>
-    </section>
-  );
-}
-
-function GlassCard({ code, title, children, accent = 'violet', className = '' }) {
-  return (
-    <SpotlightCard className={`glass-card ${accent} ${className}`} spotlightColor="rgba(255,179,92,.18)">
-      <div className="card-code">{code}</div>
-      <h3>{title}</h3>
-      <p>{children}</p>
-    </SpotlightCard>
-  );
-}
-
-function Metric({ value, suffix = '', label }) {
-  return (
-    <div className="metric">
-      <div className="metric-value">{value}{suffix}</div>
-      <div className="metric-label">{label}</div>
-    </div>
-  );
-}
-
-function CodeLine({ children }) {
-  return (
-    <div className="code-line mono">
-      <span>›</span>
-      <DecryptedText
-        text={children}
-        animateOn="view"
-        speed={22}
-        maxIterations={12}
-        sequential
-        characters="ABCDEF0123456789/:._-"
-      />
-    </div>
-  );
-}
-
-function DemoVideo() {
-  const [failed, setFailed] = useState(false);
-
-  return (
-    <div className="demo-frame">
-      <div className="demo-chrome"><i /><i /><i /><span>LIVE RUN / LOCAL CAPTURE</span></div>
-      {!failed ? (
-        <video controls preload="metadata" playsInline poster="shots/app-02-authenticated.png" onError={() => setFailed(true)}>
-          <source src="video/demo.mp4" type="video/mp4" onError={() => setFailed(true)} />
-        </video>
-      ) : (
-        <img src="shots/app-02-authenticated.png" alt="Diya authenticated visitor screen" />
-      )}
-      <img className="print-video" src="shots/app-02-authenticated.png" alt="Diya authenticated visitor screen" />
-    </div>
-  );
-}
-
-function AppChrome({ active, go, progress }) {
-  return (
-    <>
-      <motion.div className="progress" style={{ scaleX: progress }} />
-      <header className="chrome">
-        <button className="brand" onClick={() => go('hero')} aria-label="Back to opening">
-          <span className="brand-mark">D</span>
-          <span><b>DIYA</b><small>MEDITATION KIOSK</small></span>
-        </button>
-        <div className="chrome-status"><i /> SYSTEM CASE STUDY</div>
-        <button className="print-button" onClick={() => window.print()}>EXPORT PDF ↗</button>
-      </header>
-      <nav className="rail" aria-label="Presentation sections">
-        {SECTIONS.map(([id, label], i) => (
-          <button key={id} className={active === id ? 'active' : ''} onClick={() => go(id)} aria-label={`Go to ${label}`}>
-            <span>{String(i + 1).padStart(2, '0')}</span><b>{label}</b>
-          </button>
-        ))}
-      </nav>
-    </>
+    <Reveal delay={delay}>
+      <SpotlightCard
+        className={hi ? 'hi' : ''}
+        spotlightColor={hi ? 'rgba(233,184,114,.22)' : 'rgba(180,169,214,.13)'}
+      >
+        {n && <div className="cardnum">{n}</div>}
+        <h3>{title}</h3>
+        <p>{children}</p>
+        {mono && (
+          <span className="mono">
+            <DecryptedText
+              text={mono}
+              animateOn="view"
+              speed={26}
+              maxIterations={12}
+              sequential
+              revealDirection="start"
+              characters="ABCDEF0123456789/:_-."
+            />
+          </span>
+        )}
+      </SpotlightCard>
+    </Reveal>
   );
 }
 
 export default function App() {
   const [active, setActive] = useState('hero');
   const { scrollYProgress } = useScroll();
-  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
+  const width = useSpring(scrollYProgress, { stiffness: 120, damping: 28, restDelta: 0.001 });
+  const refs = useRef({});
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => entries.forEach(entry => entry.isIntersecting && setActive(entry.target.id)),
-      { rootMargin: '-42% 0px -42% 0px' },
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => e.isIntersecting && setActive(e.target.id));
+      },
+      { rootMargin: '-45% 0px -45% 0px' }
     );
     SECTIONS.forEach(([id]) => {
-      const node = document.getElementById(id);
-      if (node) observer.observe(node);
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
     });
-    return () => observer.disconnect();
+    return () => obs.disconnect();
   }, []);
 
-  const go = id => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const go = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <main>
-      <AppChrome active={active} go={go} progress={progress} />
+    <ClickSpark sparkColor="#E9B872" sparkCount={10} sparkRadius={24} sparkSize={11} duration={520}>
+      <motion.div className="bar" style={{ scaleX: width, width: '100%' }} />
 
-      <Slide id="hero" index={1} className="hero-slide">
-        <div className="hero-aurora"><Aurora colorStops={['#6e39ff', '#ff7a45', '#ffc857']} amplitude={1.35} blend={0.6} /></div>
+      <nav className="dots">
+        {SECTIONS.map(([id, label]) => (
+          <button
+            key={id}
+            title={label}
+            aria-label={label}
+            className={`dot ${active === id ? 'on' : ''}`}
+            onClick={() => go(id)}
+          />
+        ))}
+      </nav>
+
+      {/* ================= HERO ================= */}
+      <header className="hero" id="hero">
+        <div className="hero-aurora">
+          <Aurora colorStops={['#6D28D9', '#E9B872', '#3B1F6B']} amplitude={1.15} blend={0.62} />
+        </div>
         <div className="hero-particles">
-          <Particles particleCount={260} particleSpread={12} speed={0.045} particleColors={['#ffb35c', '#a38bff', '#ffffff']} alphaParticles particleBaseSize={64} sizeRandomness={1.3} cameraDistance={20} />
+          <Particles
+            particleCount={320}
+            particleSpread={13}
+            speed={0.055}
+            particleColors={['#E9B872', '#B4A9D6', '#FFFFFF']}
+            moveParticlesOnHover
+            particleHoverFactor={0.6}
+            alphaParticles
+            particleBaseSize={62}
+            sizeRandomness={1.2}
+            cameraDistance={19}
+          />
         </div>
-        <div className="hero-copy">
-          <Reveal><Eyebrow code="01 / EXPERIENCE">INTERNSHIP PROJECT REPORT</Eyebrow></Reveal>
-          <Reveal delay={0.08} className="hero-title-wrap">
-            <h1 className="hero-title"><span>DI</span><span>YA</span></h1>
-          </Reveal>
-          <Reveal delay={0.18}>
-            <p className="hero-statement">A self-running meditation experience where the visitor’s phone becomes the kiosk’s missing hardware.</p>
-          </Reveal>
-          <Reveal delay={0.26}>
-            <div className="hero-tags"><span>IDENTITY</span><span>COMPUTER VISION</span><span>ZERO-TOUCH FLOW</span></div>
-          </Reveal>
-        </div>
-        <div className="diya-orbit" aria-hidden="true">
-          <div className="orbit orbit-a"><i /></div>
-          <div className="orbit orbit-b"><i /></div>
-          <div className="orbit orbit-c" />
-          <div className="flame"><span /></div>
-          <div className="orbit-label label-a">PHONE</div>
-          <div className="orbit-label label-b">KIOSK</div>
-          <div className="orbit-label label-c">REPORT</div>
-        </div>
-        <div className="scroll-hint">SCROLL TO ENTER <i /></div>
-      </Slide>
-
-      <Slide id="brief" index={2} className="brief-slide">
-        <div className="two-col lead-layout">
-          <div>
-            <Reveal><Eyebrow code="02 / MISSION">THE BRIEF</Eyebrow></Reveal>
-            <Reveal delay={0.06}><h2>A visitor walks up.<br /><em>Nobody is there.</em></h2></Reveal>
-            <Reveal delay={0.14}><p className="lede">The system must identify a stranger, run a camera-guided meditation, deliver a personal report, and reset itself—unattended, all day.</p></Reveal>
-          </div>
-          <div className="constraint-grid">
-            <Reveal delay={0.06}><GlassCard code="C-01" title="No staff" accent="orange">No one is present to check visitors in or recover a stalled session.</GlassCard></Reveal>
-            <Reveal delay={0.12}><GlassCard code="C-02" title="No keyboard">A shared input surface creates friction, hygiene, and accessibility problems.</GlassCard></Reveal>
-            <Reveal delay={0.18}><GlassCard code="C-03" title="No scanner">Dedicated reader hardware adds cost, procurement, and another failure point.</GlassCard></Reveal>
-            <Reveal delay={0.24}><GlassCard code="C-04" title="Always on" accent="cyan">A kiosk that crashes once and stays down is not an installation.</GlassCard></Reveal>
-          </div>
-        </div>
-      </Slide>
-
-      <Slide id="scope" index={3} className="scope-slide">
-        <Reveal><Eyebrow code="03 / OWNERSHIP">THE SYSTEM BOUNDARY</Eyebrow></Reveal>
-        <Reveal delay={0.06}><h2>Two teams.<br />One deliberately thin seam.</h2></Reveal>
-        <div className="seam-map">
-          <Reveal delay={0.12} className="seam-side">
-            <div className="owner hardware">HARDWARE TEAM</div>
-            <h3>Cameras · Servos · CV</h3>
-            <p>Depth and thermal capture, posture and gaze analysis, and the external meditation application.</p>
-            <div className="seam-list"><span>HOME1.py</span><span>SHOOT1.py</span><span>CHEST1.py</span><span>EYE1.py</span></div>
-          </Reveal>
-          <div className="seam-line" aria-hidden="true"><b>PROCESS</b><i /><b>PDF</b></div>
-          <Reveal delay={0.18} className="seam-side owned">
-            <div className="owner mine">MY SCOPE</div>
-            <h3>Everything around it</h3>
-            <p>Kiosk UI, identity flow, backend, web pages, packaging, deployment, and the contract between both sides.</p>
-            <div className="seam-list"><span>AVALONIA</span><span>EXPRESS</span><span>POSTGRES</span><span>SYSTEMD</span></div>
-          </Reveal>
-        </div>
-        <Reveal delay={0.24}><div className="thesis"><span>DESIGN DECISION</span> Launch one process. Read one file. Let both teams evolve independently.</div></Reveal>
-      </Slide>
-
-      <Slide id="problem" index={4} className="problem-slide">
-        <div className="problem-noise" aria-hidden="true">NO SCANNER · NO SCANNER · NO SCANNER ·</div>
-        <div className="problem-layout">
-          <div>
-            <Reveal><Eyebrow code="04 / CONSTRAINT">THE HARD PART</Eyebrow></Reveal>
-            <Reveal delay={0.08}><h2>How do you identify someone with <em>nothing to scan them?</em></h2></Reveal>
-            <Reveal delay={0.16}><p className="lede">Every obvious answer adds hardware: a QR reader, a card reader, or a shared keyboard.</p></Reveal>
-          </div>
-          <Reveal delay={0.14} className="scanner-void">
-            <div className="void-ring"><span>?</span></div>
-            <div className="void-caption mono">DEVICE_NOT_FOUND</div>
-            <div className="crosshair a" /><div className="crosshair b" />
-          </Reveal>
-        </div>
-      </Slide>
-
-      <Slide id="attempts" index={5} className="attempts-slide">
-        <Reveal><Eyebrow code="05 / ITERATION">DESIGN EVOLUTION</Eyebrow></Reveal>
-        <Reveal delay={0.06}><h2>Three attempts.<br /><em>One inversion.</em></h2></Reveal>
-        <div className="attempt-track">
-          <Reveal delay={0.10} className="attempt rejected">
-            <div className="attempt-mark">01</div><span className="status">REJECTED</span>
-            <h3>Data inside the QR</h3><p>Offline, but personal data sits on paper and the kiosk still needs a reader.</p>
-            <CodeLine>DIYA1:&lt;base64_json&gt;</CodeLine>
-          </Reveal>
-          <Reveal delay={0.16} className="attempt rejected">
-            <div className="attempt-mark">02</div><span className="status">INCOMPLETE</span>
-            <h3>QR as lookup ID</h3><p>Better privacy. Same physical scanner problem.</p>
-            <CodeLine>GET /api/visitors/:id</CodeLine>
-          </Reveal>
-          <Reveal delay={0.22} className="attempt shipped">
-            <div className="attempt-mark">03</div><span className="status">SHIPPED</span>
-            <h3>Invert the interaction</h3><p>The kiosk shows the code. The visitor’s phone scans it. Zero added hardware.</p>
-            <CodeLine>POST /api/claim</CodeLine>
-          </Reveal>
-        </div>
-      </Slide>
-
-      <Slide id="inversion" index={6} className="inversion-slide">
-        <div className="inversion-bg"><Aurora colorStops={['#111827', '#6e39ff', '#ff7a45']} amplitude={1.1} blend={0.72} /></div>
-        <Reveal><Eyebrow code="06 / BREAKTHROUGH">THE DECISION THAT MATTERED</Eyebrow></Reveal>
-        <div className="inversion-layout">
-          <div>
-            <Reveal delay={0.06}><h2>The phone is<br /><em>the scanner.</em></h2></Reveal>
-            <Reveal delay={0.14}><p className="lede">Move the QR from the person to the kiosk. The visitor already carries a camera, keyboard, display, and network connection.</p></Reveal>
-            <Reveal delay={0.20}><blockquote>“A constraint produced a simpler design than a budget would have.”</blockquote></Reveal>
-          </div>
-          <Reveal delay={0.12} className="handoff-visual">
-            <div className="device phone"><span className="device-top" /><img src="shots/real-scan.png" alt="Phone scanning the kiosk QR" /></div>
-            <div className="signal"><i /><i /><i /><b>CLAIM</b></div>
-            <div className="device kiosk"><span className="device-top" /><img src="shots/app-01-idle-qr.png" alt="Kiosk displaying a QR code" /></div>
-          </Reveal>
-        </div>
-      </Slide>
-
-      <Slide id="proof" index={7} className="proof-slide">
-        <Reveal><Eyebrow code="07 / EVIDENCE">WATCH IT WORK</Eyebrow></Reveal>
-        <div className="proof-head">
-          <Reveal delay={0.06}><h2>The scan.<br /><em>On real hardware.</em></h2></Reveal>
-          <Reveal delay={0.12}><p className="lede">The phone opens a private link, reads the kiosk, and the kiosk advances without a touch.</p></Reveal>
-        </div>
-        <div className="proof-grid">
-          <Reveal delay={0.12} className="mini-video phone-video">
-            <video src="clips/scan-phone.mp4" autoPlay muted loop playsInline preload="metadata" />
-            <img className="print-video" src="shots/real-scan.png" alt="Phone scanning the QR" />
-            <div><span>01</span><b>PHONE READS KIOSK</b></div>
-          </Reveal>
-          <Reveal delay={0.18} className="mini-video kiosk-video">
-            <video src="clips/kiosk-authed.mp4" autoPlay muted loop playsInline preload="metadata" />
-            <img className="print-video" src="shots/real-kiosk.png" alt="Kiosk after authentication" />
-            <div><span>02</span><b>KIOSK RESPONDS</b></div>
-          </Reveal>
-          <Reveal delay={0.24} className="full-demo"><DemoVideo /></Reveal>
-        </div>
-      </Slide>
-
-      <Slide id="flow" index={8} className="flow-slide">
-        <Reveal><Eyebrow code="08 / SEQUENCE">END TO END</Eyebrow></Reveal>
-        <Reveal delay={0.06}><h2>Four stages.<br /><em>One uninterrupted flow.</em></h2></Reveal>
-        <div className="flow-track">
-          {[
-            ['01', 'IDENTIFY', 'Private roster link', 'GET /api/people/:token'],
-            ['02', 'CLAIM', 'Bind person to kiosk', 'POST /api/claim'],
-            ['03', 'SESSION', 'Launch CV pipeline', 'bash scripts/run1.sh'],
-            ['04', 'REPORT', 'Render newest PDF', 'PDFium → images'],
-          ].map(([n, title, copy, code], i) => (
-            <Reveal key={n} delay={0.08 + i * 0.06} className="flow-node">
-              <div className="flow-num">{n}</div><i />
-              <h3>{title}</h3><p>{copy}</p><code>{code}</code>
-            </Reveal>
-          ))}
-        </div>
-        <Reveal delay={0.28}><div className="boundary-note"><b>NETWORK BOUNDARY</b><span>Phone ↔ Backend ↔ Kiosk</span><i /><b>LOCAL BOUNDARY</b><span>Process + filesystem</span></div></Reveal>
-      </Slide>
-
-      <Slide id="interface" index={9} className="interface-slide">
-        <Reveal><Eyebrow code="09 / INTERFACE">THE KIOSK</Eyebrow></Reveal>
-        <Reveal delay={0.05}><h2>Four states.<br /><em>No dead ends.</em></h2></Reveal>
-        <div className="screen-stack">
-          {[
-            ['shots/app-01-idle-qr.png', '01', 'WAITING', 'Session QR owns the screen'],
-            ['shots/app-02-authenticated.png', '02', 'IDENTIFIED', 'Identity resolves automatically'],
-            ['shots/app-03-session-running.png', '03', 'RUNNING', 'Pipeline status streams live'],
-            ['shots/app-04-report.png', '04', 'REPORT', 'PDF remains inside the kiosk'],
-          ].map(([src, n, title, copy], i) => (
-            <Reveal key={src} delay={0.08 + i * 0.06} className={`screen-card screen-${i + 1}`}>
-              <img src={src} alt={`${title} kiosk state`} />
-              <div><span>{n}</span><b>{title}</b><small>{copy}</small></div>
-            </Reveal>
-          ))}
-        </div>
-      </Slide>
-
-      <Slide id="field" index={10} className="field-slide">
-        <Reveal><Eyebrow code="10 / REALITY">FIELD EVIDENCE</Eyebrow></Reveal>
-        <div className="field-layout">
-          <div>
-            <Reveal delay={0.06}><h2>Not mockups.<br /><em>Running screens.</em></h2></Reveal>
-            <Reveal delay={0.12}><p className="lede">Captured from the live phone flow, kiosk application, and administration pages.</p></Reveal>
-            <Reveal delay={0.18}><div className="field-proof"><span>7</span><p>real interfaces across the visitor, kiosk, and operator journey</p></div></Reveal>
-          </div>
-          <div className="evidence-wall">
-            {[
-              ['shots/real-greeting.png', 'PRIVATE GREETING'],
-              ['shots/real-scan.png', 'CAMERA SCAN'],
-              ['shots/real-kiosk.png', 'KIOSK CLAIM'],
-              ['shots/web-02-login.png', 'PERSONAL LINK'],
-              ['shots/web-01-register.png', 'FALLBACK SIGN-UP'],
-              ['shots/web-03-admin.png', 'ROSTER ADMIN'],
-            ].map(([src, label], i) => (
-              <Reveal key={src} delay={0.05 * i} className="evidence-card"><img src={src} alt={label} /><span>{label}</span></Reveal>
-            ))}
-          </div>
-        </div>
-      </Slide>
-
-      <Slide id="architecture" index={11} className="architecture-slide">
-        <Reveal><Eyebrow code="11 / SYSTEM">ARCHITECTURE</Eyebrow></Reveal>
-        <div className="architecture-layout">
-          <div>
-            <Reveal delay={0.05}><h2>Three products.<br /><em>One experience.</em></h2></Reveal>
-            <div className="system-orbit">
-              <div className="system-core">DIYA<small>SESSION</small></div>
-              <div className="system-node node-kiosk"><b>KIOSK</b><span>C# · .NET 8 · Avalonia</span></div>
-              <div className="system-node node-api"><b>BACKEND</b><span>Node · Express · Postgres</span></div>
-              <div className="system-node node-web"><b>WEB</b><span>Registration · Scan · Admin</span></div>
+        <div className="hero-fade" />
+        <div className="hero-in">
+          <Kick>Internship Project Report</Kick>
+          <SplitText
+            text="Diya"
+            tag="h1"
+            textAlign="left"
+            delay={62}
+            duration={1.15}
+            splitType="chars"
+            from={{ opacity: 0, y: 78, rotateX: -75 }}
+            to={{ opacity: 1, y: 0, rotateX: 0 }}
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 26 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.72, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <h2 style={{ fontWeight: 600, color: 'var(--lilac)', marginTop: 16 }}>
+              An unattended<br />
+              <GradientText colors={['#E9B872', '#F5D9A8', '#B4A9D6', '#E9B872']} animationSpeed={7}>
+                meditation kiosk
+              </GradientText>
+            </h2>
+            <div className="rule" />
+            <p className="lede" style={{ maxWidth: '52ch' }}>
+              A visitor is identified by their own phone, guided through a camera-observed session,
+              and handed a report. Then the machine resets itself.
+            </p>
+            <div className="hero-meta">
+              <div><b>[Your Name]</b> · [Institution]</div>
+              <div>[Month Year – Month Year]</div>
+              <div>Guide: [Mentor Name]</div>
             </div>
+          </motion.div>
+        </div>
+        <div className="scrollcue">scroll<span /></div>
+      </header>
+
+      {/* ================= BRIEF ================= */}
+      <section className="sec" id="brief">
+        <Reveal><Kick>The brief</Kick></Reveal>
+        <Reveal delay={0.05}>
+          <h2>A visitor walks up.<br />Nobody is there to help them.</h2>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <p className="lede" style={{ marginTop: 30 }}>
+            A museum kiosk has to identify a stranger, run a camera-guided meditation session,
+            hand them a personal report, and reset itself — unattended, all day.
+          </p>
+        </Reveal>
+        <div className="grid g4" style={{ marginTop: 58 }}>
+          <Card n="01" title="No staff" delay={0.04}>
+            Nobody is present to check anyone in, or to restart anything that stops.
+          </Card>
+          <Card n="02" title="No keyboard" delay={0.1}>
+            A shared touchscreen that strangers type on needs cleaning between visitors.
+          </Card>
+          <Card n="03" title="No scanner" delay={0.16}>
+            Dedicated reader hardware is cost, procurement and one more thing that breaks.
+          </Card>
+          <Card n="04" title="Never closed" delay={0.22}>
+            An unattended machine that crashes and stays down is worth nothing at all.
+          </Card>
+        </div>
+      </section>
+
+      {/* ================= SCOPE ================= */}
+      <section className="sec" id="scope">
+        <Reveal><Kick>Scope</Kick></Reveal>
+        <Reveal delay={0.05}><h2>Two teams, one thin seam</h2></Reveal>
+        <div className="grid g2" style={{ marginTop: 56 }}>
+          <Card n="HARDWARE TEAM · IITH" title="Cameras, servos, CV" delay={0.04}>
+            Depth and thermal capture, posture and gaze analysis, and the external
+            meditation-app that produces the report PDF.
+          </Card>
+          <Card n="MINE" title="Everything around it" hi delay={0.12}>
+            The kiosk application, the identification system, the backend and web pages,
+            packaging and deployment — and the contract between the two sides.
+          </Card>
+        </div>
+        <Reveal delay={0.18}>
+          <div className="callout">
+            <p>
+              <b>The seam is two primitives, not a protocol.</b> I launch one shell script and
+              read one PDF off disk. They changed their internals all summer without ever
+              breaking my app.
+            </p>
           </div>
-          <div className="architecture-panel">
-            <Reveal delay={0.10}><div className="metric-grid"><Metric value={8} label="kiosk source files" /><Metric value={9} label="API endpoints" /><Metric value={3} label="database tables" /><Metric value={2} label="CPU architectures" /></div></Reveal>
-            <Reveal delay={0.18}>
-              <div className="tech-stack mono">
-                <span>QRCoder</span><span>PDFium</span><span>SkiaSharp</span><span>SheetJS</span><span>html5-qrcode</span><span>systemd</span>
+        </Reveal>
+      </section>
+
+      {/* ================= PROBLEM ================= */}
+      <section className="sec" id="problem">
+        <Reveal><Kick>The hard part</Kick></Reveal>
+        <div style={{ maxWidth: '20ch' }}>
+          <ScrollReveal baseOpacity={0.08} enableBlur blurStrength={5} baseRotation={4}>
+            How do you identify someone with no scanner?
+          </ScrollReveal>
+        </div>
+        <Reveal delay={0.1}>
+          <p className="lede" style={{ marginTop: 26 }}>
+            Every obvious answer costs hardware — a QR reader, a card reader, or a keyboard
+            that strangers share.
+          </p>
+        </Reveal>
+      </section>
+
+      {/* ================= ATTEMPTS ================= */}
+      <section className="sec" id="attempts">
+        <Reveal><Kick>Design evolution</Kick></Reveal>
+        <Reveal delay={0.05}><h2>Three attempts</h2></Reveal>
+        <div className="grid g3" style={{ marginTop: 58 }}>
+          <Card n="01" title="Data in the QR" delay={0.04}
+            mono="DIYA1:<base64 json>">
+            The printed code carried the visitor's details. Fully offline — but it still needs a
+            reader, and it puts personal data on paper.
+          </Card>
+          <Card n="02" title="QR holds an id" delay={0.11}
+            mono="GET /api/visitors/:id">
+            The code became a lookup key and the kiosk fetched details over the API.
+            Better privacy; the scanner problem remained.
+          </Card>
+          <Reveal delay={0.18}>
+            <StarBorder as="div" color="#E9B872" speed="7s" thickness={2}
+              backgroundColor="#241A33" borderColor="#3A2C52" className="shipped">
+              <div className="cardnum" style={{ color: 'var(--gold2)' }}>03 · SHIPPED</div>
+              <h3>Invert it</h3>
+              <p>
+                The kiosk shows the QR and the visitor's phone scans it. The phone is the
+                scanner, the camera and the keyboard. Zero hardware.
+              </p>
+              <span className="mono">
+                <DecryptedText text="POST /api/sessions" animateOn="view" speed={26}
+                  sequential characters="ABCDEF0123456789/:_-." />
+              </span>
+            </StarBorder>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ================= INVERSION ================= */}
+      <section className="sec" id="inversion">
+        <div className="split">
+          <div>
+            <Reveal><Kick>The decision that mattered</Kick></Reveal>
+            <Reveal delay={0.05}><h2>The phone is the scanner</h2></Reveal>
+            <Reveal delay={0.1}>
+              <p className="lede" style={{ marginTop: 26 }}>
+                The kiosk asks the backend for a session, renders the token as a QR, and polls.
+                The visitor's own phone does the reading.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div className="chips">
+                <div className="chip m">POST /api/sessions</div>
+                <div className="chip m">GET /api/sessions/:token</div>
+                <div className="chip m">POST /api/claim</div>
+              </div>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <div className="callout">
+                <p>A constraint produced a simpler design than a budget would have.</p>
               </div>
             </Reveal>
           </div>
-        </div>
-      </Slide>
-
-      <Slide id="testing" index={12} className="testing-slide">
-        <Reveal><Eyebrow code="12 / RESILIENCE">TESTING WITHOUT HARDWARE</Eyebrow></Reveal>
-        <div className="testing-layout">
-          <div>
-            <Reveal delay={0.06}><h2>Swap the boundary.<br /><em>Keep the journey.</em></h2></Reveal>
-            <Reveal delay={0.12}><p className="lede">For most of the build, the cameras and meditation application did not exist. Two environment variables made the entire journey testable.</p></Reveal>
-            <Reveal delay={0.18}><div className="lesson"><b>BUG FOUND</b><p>“Newest PDF” could show the previous visitor’s report. The fix accepts only files created after the current session began.</p></div></Reveal>
-          </div>
-          <Reveal delay={0.12} className="terminal">
-            <div className="terminal-bar"><i /><i /><i /><span>diya — mock pipeline</span></div>
-            <div className="terminal-body mono">
-              <p><b>$</b> export DIYA_PIPELINE_SCRIPT=<em>…/run1.mock.sh</em></p>
-              <p><b>$</b> export DIYA_REPORT_DIR=<em>/tmp/diya-reports</em></p>
-              <p><b>$</b> diya-meditation</p>
-              <br />
-              <p className="success">✓ Calibrating cameras</p>
-              <p className="success">✓ Running meditation session</p>
-              <p className="success">✓ Rendering fresh report</p>
-              <p className="success">✓ Resetting kiosk</p>
-              <br /><p className="comment"># same app · same flow · zero cameras</p>
-            </div>
+          <Reveal delay={0.12} y={50}>
+            <TiltedCard
+              imageSrc="shots/app-01-idle-qr.png"
+              altText="The kiosk displaying its own session QR code"
+              captionText="The kiosk shows the code — the phone reads it"
+              containerHeight="430px"
+              containerWidth="100%"
+              imageHeight="430px"
+              imageWidth="100%"
+              rotateAmplitude={11}
+              scaleOnHover={1.04}
+              showMobileWarning={false}
+              showTooltip
+            />
           </Reveal>
         </div>
-      </Slide>
+      </section>
 
-      <Slide id="shipping" index={13} className="shipping-slide">
-        <Reveal><Eyebrow code="13 / DELIVERY">SHIPPING</Eyebrow></Reveal>
-        <Reveal delay={0.06}><h2>From repository<br /><em>to unattended machine.</em></h2></Reveal>
-        <div className="shipping-grid">
+      {/* ================= DEMO ================= */}
+      <section className="sec" id="demo">
+        <Reveal><Kick>See it work</Kick></Reveal>
+        <Reveal delay={0.05}><h2>The scan, on real hardware</h2></Reveal>
+        <Reveal delay={0.1}>
+          <p className="lede" style={{ marginTop: 26 }}>
+            Filmed during a live run. The phone opens its private link, points at the kiosk,
+            and the kiosk takes over on its own.
+          </p>
+        </Reveal>
+
+        <div className="demogrid">
+          <Reveal delay={0.14} y={44}>
+            <div className="clipwrap portrait">
+              <video src="clips/scan-phone.mp4" autoPlay muted loop playsInline preload="metadata" />
+            </div>
+            <p className="cap">
+              <b>The phone reads the kiosk.</b> No app, no typing, no scanner hardware &mdash;
+              the camera the visitor already owns does the work.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.22} y={44}>
+            <div className="clipwrap land">
+              <video src="clips/kiosk-authed.mp4" autoPlay muted loop playsInline preload="metadata" />
+            </div>
+            <p className="cap">
+              <b>The kiosk responds.</b> Name and roster photo resolve from the claim, and the
+              session begins without anyone pressing anything.
+            </p>
+            <Reveal delay={0.1}>
+              <div className="callout" style={{ marginTop: 34 }}>
+                <p>
+                  Two seconds of polling is all that connects them. The phone never talks to the
+                  kiosk directly &mdash; both only talk to the backend.
+                </p>
+              </div>
+            </Reveal>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.1}>
+          <h3 style={{ marginTop: 84, marginBottom: 24 }}>Full walkthrough</h3>
+        </Reveal>
+        <Reveal delay={0.14} y={40}>
+          <DemoVideo />
+          <p className="cap" style={{ marginTop: 16 }}>
+            The complete run, unedited &mdash; roster already loaded, through to the authenticated
+            kiosk.
+          </p>
+        </Reveal>
+      </section>
+
+      {/* ================= FLOW ================= */}
+      <section className="sec" id="flow">
+        <Reveal><Kick>End to end</Kick></Reveal>
+        <Reveal delay={0.05}><h2>Four stages, one API</h2></Reveal>
+        <div className="grid g4" style={{ marginTop: 54 }}>
+          <Card n="STAGE 01" title="Identify" delay={0.04}
+            mono={'GET /api/people/:token'}>
+            An admin roster gives each person a private link. They open it on their phone and
+            scan the kiosk.
+          </Card>
+          <Card n="STAGE 02" title="Claim" delay={0.1}
+            mono={'POST /api/claim'}>
+            The backend links that identity to the kiosk's open session. The polling kiosk
+            advances by itself.
+          </Card>
+          <Card n="STAGE 03" title="Session" hi delay={0.16}
+            mono={'bash scripts/run1.sh'}>
+            The kiosk launches the CV pipeline and blocks. This boundary is deliberately
+            not an API.
+          </Card>
+          <Card n="STAGE 04" title="Report" delay={0.22}
+            mono={'PDFium -> images'}>
+            The newest PDF written after the session began is rendered in-app, then the
+            kiosk resets.
+          </Card>
+        </div>
+        <Reveal delay={0.16}>
+          <figure style={{ marginTop: 52 }}>
+            <img className="wide" src="shots/diagram-timeline-slide.png"
+              alt="Timeline of the interaction between phone, kiosk, backend and meditation-app" />
+            <figcaption className="cap">
+              <b>Kiosk to Backend</b> is the only network boundary — plain REST over HTTPS.
+              <b> Kiosk to meditation-app</b> is a local process and a file on disk, so there is
+              no protocol to break.
+            </figcaption>
+          </figure>
+        </Reveal>
+      </section>
+
+      {/* ================= WIREFRAMES ================= */}
+      <section className="sec" id="wireframes">
+        <Reveal><Kick>Design process</Kick></Reveal>
+        <Reveal delay={0.05}><h2>Wireframes, and what they got wrong</h2></Reveal>
+        <Reveal delay={0.1}>
+          <p className="lede" style={{ marginTop: 26 }}>
+            Annotated before building. Two of the notes are flaws I only saw once it was
+            running — they are marked as such rather than quietly fixed in the drawing.
+          </p>
+        </Reveal>
+        <div className="grid g2" style={{ marginTop: 50 }}>
           {[
-            ['01', 'BUILD', 'A single package', './deploy/build-deb.sh 1.6.0', 'Self-contained amd64 and arm64 packages. No .NET installation required.'],
-            ['02', 'LOCK', 'A kiosk, not an app', 'Restart=always', 'Autostart, crash recovery, fullscreen enforcement, and disabled escape routes.'],
-            ['03', 'DEPLOY', 'Backend as blueprint', 'render.yaml', 'Web service and Postgres provision together and track the repository.'],
-          ].map(([n, tag, title, code, copy], i) => (
-            <Reveal key={n} delay={0.08 + i * 0.08}>
-              <GlareHover width="100%" height="100%" background="rgba(15,13,29,.92)" borderRadius="24px" borderColor="rgba(255,255,255,.1)" glareColor={i === 1 ? '#8f7cff' : '#ffb35c'} glareOpacity={0.18} className="ship-card">
-                <div className="ship-top"><span>{n}</span><b>{tag}</b></div><h3>{title}</h3><code>{code}</code><p>{copy}</p>
-              </GlareHover>
+            ['wf-01', 'Idle. The QR owns the screen; everything else is deliberately quiet.'],
+            ['wf-02', 'Identified. Notes 5 and 6 are real defects — stale controls and split status.'],
+            ['wf-03', 'Report overlay, full-bleed so the desktop never shows between visitors.'],
+            ['wf-04', 'The phone side: three taps, no app install, no typing.'],
+          ].map(([f, cap], i) => (
+            <Reveal key={f} delay={0.05 * i} y={40}>
+              <figure>
+                <img className="wide" src={`wf/${f}.png`} alt={cap} />
+                <figcaption className="cap">{cap}</figcaption>
+              </figure>
             </Reveal>
           ))}
         </div>
-        <Reveal delay={0.28}><div className="delivery-line"><span>CODE</span><i /><span>PACKAGE</span><i /><span>BOOT</span><i /><span>RECOVER</span></div></Reveal>
-      </Slide>
+      </section>
 
-      <Slide id="roadmap" index={14} className="roadmap-slide">
-        <Reveal><Eyebrow code="14 / HANDOVER">WHAT COMES NEXT</Eyebrow></Reveal>
-        <Reveal delay={0.06}><h2>The path works today.<br /><em>The risks are explicit.</em></h2></Reveal>
-        <div className="roadmap-grid">
+      {/* ================= GALLERY ================= */}
+      <section className="sec" id="gallery">
+        <Reveal><Kick>Running system</Kick></Reveal>
+        <Reveal delay={0.05}><h2>Every screen, for real</h2></Reveal>
+        <Reveal delay={0.1}>
+          <p className="lede" style={{ marginTop: 26 }}>
+            Captured from the running application and the live web pages — not mockups.
+          </p>
+        </Reveal>
+
+        <div className="grid g2" style={{ marginTop: 50 }}>
+          <Reveal y={40}>
+            <figure>
+              <img className="shot" src="shots/app-02-authenticated.png" alt="Kiosk showing the identified visitor" />
+              <figcaption className="cap">
+                <b>Identified.</b> Name, email and roster photo arrive from the claim; the session
+                starts with no button press.
+              </figcaption>
+            </figure>
+          </Reveal>
+          <Reveal delay={0.08} y={40}>
+            <figure>
+              <img className="shot" src="shots/app-03-session-running.png" alt="Kiosk during the session" />
+              <figcaption className="cap">
+                <b>Session running.</b> The live status line is the pipeline's own stdout, stripped
+                of colour codes.
+              </figcaption>
+            </figure>
+          </Reveal>
+        </div>
+
+        <Reveal delay={0.06} y={40}>
+          <figure style={{ marginTop: 34 }}>
+            <img className="shot" src="shots/app-04-report.png" alt="Report rendered inside the kiosk" />
+            <figcaption className="cap">
+              <b>Report.</b> The PDF is decoded by PDFium and rendered inside the app — no external
+              viewer, and the desktop is never exposed.
+            </figcaption>
+          </figure>
+        </Reveal>
+
+        <Reveal delay={0.05}>
+          <h3 style={{ marginTop: 78, marginBottom: 30 }}>From the live run</h3>
+        </Reveal>
+        <div className="grid g3">
           {[
-            ['01', 'PERSONALISE', 'Pass visitor context into the report pipeline.'],
-            ['02', 'TIME-BOUND', 'Add cancellation and a recovery screen for dead cameras.'],
-            ['03', 'CONSENT', 'Ask before cameras observe and identity data is retained.'],
-            ['04', 'INTEGRATE', 'Connect the production computer-vision hardware.'],
-          ].map(([n, title, copy], i) => (
-            <Reveal key={n} delay={0.08 + i * 0.06} className="roadmap-item"><span>{n}</span><div><h3>{title}</h3><p>{copy}</p></div></Reveal>
+            ['real-greeting', 'The private link greets the person by name, then opens the camera.'],
+            ['real-scan', 'The viewfinder framing the QR on the kiosk screen.'],
+            ['real-kiosk', 'The kiosk after the claim — name, photo, and the session ready to run.'],
+          ].map(([f, cap], i) => (
+            <Reveal key={f} delay={0.07 * i} y={36}>
+              <figure>
+                <img className="shot" src={`shots/${f}.png`} alt={cap} />
+                <figcaption className="cap">{cap}</figcaption>
+              </figure>
+            </Reveal>
           ))}
         </div>
-        <Reveal delay={0.28}><div className="handover-state"><i /> CURRENT STATE <b>END-TO-END FLOW OPERATIONAL</b></div></Reveal>
-      </Slide>
 
-      <Slide id="close" index={15} className="close-slide">
-        <div className="close-aurora"><Aurora colorStops={['#ff7a45', '#6e39ff', '#ffc857']} amplitude={1.4} blend={0.64} /></div>
-        <div className="close-particles"><Particles particleCount={180} particleSpread={11} speed={0.04} particleColors={['#ffb35c', '#8f7cff']} alphaParticles particleBaseSize={72} cameraDistance={20} /></div>
-        <div className="close-content">
-          <Reveal><Eyebrow code="15 / CLOSE">THE OUTCOME</Eyebrow></Reveal>
-          <Reveal delay={0.08}><h2>Walk up.<br />Breathe.<br /><em>Leave with insight.</em></h2></Reveal>
-          <Reveal delay={0.18}><p>A constraint became the interaction. The interaction became a system. The system now runs without a guide.</p></Reveal>
-          <Reveal delay={0.26}><div className="questions">THANK YOU <span>QUESTIONS?</span></div></Reveal>
+        <Reveal delay={0.05}>
+          <h3 style={{ marginTop: 78, marginBottom: 30 }}>The web side</h3>
+        </Reveal>
+        <div className="grid g3">
+          <Reveal y={36}>
+            <figure>
+              <img className="phoneshot" src="shots/web-02-login.png" alt="Per-person login page on a phone" />
+              <figcaption className="cap"><b>Private link.</b> Greets the person by name. Returns name and role only — never Aadhaar or email.</figcaption>
+            </figure>
+          </Reveal>
+          <Reveal delay={0.08} y={36}>
+            <figure>
+              <img className="phoneshot" src="shots/web-01-register.png" alt="Visitor self-registration on a phone" />
+              <figcaption className="cap"><b>Self-registration.</b> The session-aware fallback when someone is not on the roster.</figcaption>
+            </figure>
+          </Reveal>
+          <Reveal delay={0.16} y={36}>
+            <figure>
+              <img className="phoneshot" style={{ maxWidth: '100%' }} src="shots/web-03-admin.png" alt="Admin roster upload with parsed preview" />
+              <figcaption className="cap"><b>Admin roster.</b> XLSX parsed in the browser, Aadhaar masked in the preview.</figcaption>
+            </figure>
+          </Reveal>
         </div>
-        <div className="close-orb" aria-hidden="true"><i /><i /><i /><b>DIYA</b></div>
-      </Slide>
-    </main>
+      </section>
+
+      {/* ================= STACK ================= */}
+      <section className="sec" id="stack">
+        <Reveal><Kick>Under the hood</Kick></Reveal>
+        <Reveal delay={0.05}><h2>Three parts I built</h2></Reveal>
+        <div className="grid g3" style={{ marginTop: 54 }}>
+          <Card n="KIOSK APP" title="C# · .NET 8 · Avalonia" delay={0.04}>
+            The only .NET UI framework that officially supports Linux. Ships as a
+            self-contained single-file .deb for two architectures.
+          </Card>
+          <Card n="BACKEND" title="Node · Express · Postgres" delay={0.11}>
+            Sessions, visitors and the admin roster, serving the web pages from the same
+            origin so the phone camera gets HTTPS.
+          </Card>
+          <Card n="WEB" title="Three static pages" delay={0.18}>
+            Phone registration, admin roster upload with in-browser XLSX parsing, and the
+            per-person login scanner.
+          </Card>
+        </div>
+        <Reveal delay={0.1}>
+          <div className="velo">
+            <ScrollVelocity
+              texts={[
+                'QRCoder · PDFium · SkiaSharp · Avalonia · ',
+                'SheetJS · html5-qrcode · systemd · Postgres · ',
+              ]}
+              velocity={32}
+              numCopies={7}
+              className="veloline"
+            />
+          </div>
+        </Reveal>
+        <div className="stats">
+          {[
+            [8, 'source files in the kiosk app', ''],
+            [9, 'API endpoints', ''],
+            [3, 'Postgres tables', ''],
+            [2, 'architectures packaged', ''],
+          ].map(([n, l], i) => (
+            <Reveal key={l} delay={0.06 * i}>
+              <Magnet padding={90} magnetStrength={7}>
+                <div className="stat">
+                  <div className="statn"><CountUp to={n} duration={1.6} /></div>
+                  <div className="statl">{l}</div>
+                </div>
+              </Magnet>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= TESTING ================= */}
+      <section className="sec" id="testing">
+        <div className="split">
+          <div>
+            <Reveal><Kick>Testing</Kick></Reveal>
+            <Reveal delay={0.05}><h2>Building it without the hardware</h2></Reveal>
+            <Reveal delay={0.1}>
+              <p className="lede" style={{ marginTop: 26 }}>
+                For most of the internship there were no cameras and no meditation-app. The flow
+                still had to be testable end to end.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div className="callout">
+                <p>
+                  Two environment variables swap the pipeline for a mock. <b>No test code inside
+                  the app</b>, nothing extra in the shipped package — and those same variables are
+                  the real production override.
+                </p>
+              </div>
+            </Reveal>
+            <Reveal delay={0.2}>
+              <p className="small" style={{ marginTop: 26 }}>
+                It also surfaced a real bug: “show the newest PDF” would quietly hand a visitor
+                their predecessor’s report. Now only a file newer than the session start is accepted.
+              </p>
+            </Reveal>
+          </div>
+          <Reveal delay={0.12} y={44}>
+            <div className="term">
+              <div className="termbar">
+                <i style={{ background: '#FF5F57' }} /><i style={{ background: '#FEBC2E' }} /><i style={{ background: '#28C840' }} />
+              </div>
+              <div className="termbody">
+                <div><span className="p">$</span> export DIYA_PIPELINE_SCRIPT=<span className="k">…/run1.mock.sh</span></div>
+                <div><span className="p">$</span> export DIYA_REPORT_DIR=<span className="k">/tmp/diya-reports</span></div>
+                <div><span className="p">$</span> diya-meditation</div>
+                <div style={{ height: 18 }} />
+                <div className="ok">Calibrating cameras…</div>
+                <div className="ok">Running meditation session…</div>
+                <div className="ok">Running t3 (PDF report)…</div>
+                <div className="ok">All tasks completed successfully.</div>
+                <div style={{ height: 12 }} />
+                <div className="c"># login → session → report → thank-you</div>
+                <div className="c"># on any Linux desktop, no cameras</div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ================= SHIPPING ================= */}
+      <section className="sec" id="shipping">
+        <Reveal><Kick>Shipping</Kick></Reveal>
+        <Reveal delay={0.05}><h2>One command each</h2></Reveal>
+        <div className="grid g3" style={{ marginTop: 54 }}>
+          <Card n="BUILD" title="A single package" delay={0.04}
+            mono="./deploy/build-deb.sh 1.6.0 amd64">
+            Self-contained .deb for amd64 and arm64. The museum machine needs nothing
+            pre-installed — not even .NET.
+          </Card>
+          <Card n="LOCK DOWN" title="A kiosk, not an app" delay={0.11}
+            mono="Restart=always">
+            A systemd user service restarts it on crash, autologin brings it up on boot, and the
+            GNOME escape shortcuts are disabled.
+          </Card>
+          <Card n="DEPLOY" title="Backend in one file" delay={0.18}
+            mono="render.yaml">
+            A blueprint provisions the web service and Postgres together, then tracks main
+            on every merge.
+          </Card>
+        </div>
+        <Reveal delay={0.16}>
+          <div className="callout">
+            <p>
+              Plus documentation written for whoever comes next: an overview, a full command
+              reference, an FAQ, and a handoff note that records the <b>dead ends</b> so nobody
+              repeats them.
+            </p>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ================= ROADMAP ================= */}
+      <section className="sec" id="roadmap">
+        <Reveal><Kick>What comes next</Kick></Reveal>
+        <Reveal delay={0.05}><h2>Where I handed it over</h2></Reveal>
+        <Reveal delay={0.1}>
+          <p className="lede" style={{ marginTop: 26 }}>
+            The full path works today: roster upload, phone login, automatic session, report on
+            screen, reset. Four things are queued for whoever continues.
+          </p>
+        </Reveal>
+        <div className="grid g4" style={{ marginTop: 54 }}>
+          <Card n="01" title="Personalise the report" delay={0.04}>
+            Pass the visitor into the pipeline so the PDF is theirs rather than generic.
+          </Card>
+          <Card n="02" title="Bound the pipeline" delay={0.1}>
+            A timeout and a failure screen, so a dead camera cannot strand the kiosk.
+          </Card>
+          <Card n="03" title="Consent screen" delay={0.16}>
+            Cameras observe visitors and identity data is stored. It needs asking first.
+          </Card>
+          <Card n="04" title="Real CV hardware" delay={0.22}>
+            The interfaces are in place; the devices arrive after my internship ends.
+          </Card>
+        </div>
+      </section>
+
+      {/* ================= CLOSE ================= */}
+      <section className="sec" id="close" style={{ minHeight: '86vh' }}>
+        <Reveal>
+          <h2 style={{ maxWidth: '24ch' }}>
+            Someone can walk up, log in with their phone, and leave with their report.
+          </h2>
+        </Reveal>
+        <Reveal delay={0.08}><div className="rule" /></Reveal>
+        <Reveal delay={0.12}>
+          <p className="lede">
+            The vision hardware is the remaining milestone. Everything I could not finish is
+            written down.
+          </p>
+        </Reveal>
+        <Reveal delay={0.2}>
+          <h3 style={{ marginTop: 56, color: 'var(--gold)' }}>Thank you — questions?</h3>
+        </Reveal>
+      </section>
+
+      <footer className="footer">
+        Diya Meditation Kiosk · internship report<br />
+        Screenshots are captured from the running application. The report PDF shown is
+        representative — the real one is produced by the hardware team’s meditation-app.<br />
+        Animated components from <a href="https://reactbits.dev" style={{ color: 'var(--gold)' }}>React Bits</a>.
+      </footer>
+    </ClickSpark>
   );
 }
