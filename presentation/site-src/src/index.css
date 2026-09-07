@@ -259,7 +259,10 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 /* 6 — Demo */
 .demo-slide .demo-head { display: grid; grid-template-columns: auto 1fr; gap: 4vw; align-items: end; margin-bottom: 22px; }
 .demo-head .lede { margin-top: 0; padding-bottom: 6px; }
-.clip.feature { aspect-ratio: 848 / 478; height: 57vh; width: auto; margin: 0 auto; background: #000; }
+/* Contained, not cropped: the placeholder photo is a wider crop than the
+   video, so covering it would cut the left of the kiosk screen off. */
+.clip.feature { aspect-ratio: 848 / 478; height: 40vh; width: auto; margin: 0 auto; background: #fff; }
+.clip.feature video, .clip.feature > img { object-fit: contain; }
 .play-hint {
   margin-top: 14px;
   text-align: center;
@@ -351,8 +354,7 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
   .clip.phone, .web-shot { height: 3.5in; }
   .phone-frame figcaption { font-size: 10.5px; max-width: 2.2in; }
   .clip.strip { max-width: 4.1in; margin-top: .16in; }
-  /* The print still is 1600x1000, so match it and avoid letterboxing. */
-  .clip.feature { height: 3.7in; aspect-ratio: 1600 / 1000; background: #fff; }
+  .clip.feature { height: 2.65in; background: #fff; }
   .clip.feature > .print-still { object-fit: contain; }
   .play-hint { margin-top: .12in; font-size: 11px; }
   h2 { font-size: 40px; }

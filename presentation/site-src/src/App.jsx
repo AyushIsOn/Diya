@@ -51,15 +51,15 @@ function useFirstAvailable(paths) {
     let cancelled = false;
     (async () => {
       for (const path of key.split('|')) {
-        const ok = await new Promise(resolve => {
+        const result = await new Promise(resolve => {
           const probe = new Image();
-          probe.onload = () => resolve(true);
-          probe.onerror = () => resolve(false);
+          probe.onload = () => resolve({ src: path, w: probe.naturalWidth, h: probe.naturalHeight });
+          probe.onerror = () => resolve(null);
           probe.src = path;
         });
         if (cancelled) return;
-        if (ok) {
-          setFound(path);
+        if (result) {
+          setFound(result);
           return;
         }
       }
@@ -74,10 +74,15 @@ function useFirstAvailable(paths) {
    `stills` is tried in order, so the first one present wins. */
 function Clip({ src, stills, alt, className = '', ...rest }) {
   const [failed, setFailed] = useState(false);
-  const still = useFirstAvailable(stills) ?? stills[stills.length - 1];
+  const found = useFirstAvailable(stills);
+  const still = found?.src ?? stills[stills.length - 1];
+
+  /* Take the frame's shape from the still itself, so whatever is dropped in
+     fills it exactly: no letterbox bars, and nothing cropped away. */
+  const shape = found?.w ? { aspectRatio: `${found.w} / ${found.h}` } : undefined;
 
   return (
-    <div className={`clip ${className}`}>
+    <div className={`clip ${className}`} style={shape}>
       {failed ? (
         <img src={still} alt={alt} />
       ) : (
