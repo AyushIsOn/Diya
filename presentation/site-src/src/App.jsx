@@ -98,7 +98,7 @@ export default function App() {
           noiseScale={2}
           grainAmount={0.32}
           grainScale={2}
-          grainAnimated
+          grainAnimated={false}
           contrast={1.15}
           gamma={2.4}
           saturation={0.62}
@@ -204,11 +204,11 @@ export default function App() {
                   playsInline
                   preload="auto"
                 />
-                <figcaption>The scan, filmed on the real setup — plays in full</figcaption>
+                <figcaption>The scan itself, on the real setup</figcaption>
               </figure>
               <figure className="phone-frame">
-                <img className="web-shot" src="shots/web-02-login.png" alt="The website open on the visitor's phone, greeting them by name before they scan" />
-                <figcaption>The website on their phone — it greets them by name, then opens the camera</figcaption>
+                <img className="web-shot" src="shots/real-greeting.png" alt="The website open on the visitor's phone during the live run, greeting them by name before they scan" />
+                <figcaption>The site greets them, then opens the camera</figcaption>
               </figure>
             </div>
           </div>

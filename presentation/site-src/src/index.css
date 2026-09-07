@@ -131,7 +131,7 @@ h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.0
 .caption { margin-top: 10px; color: var(--grey); font-size: 12.5px; line-height: 1.45; }
 .qr-media { display: contents; }
 .phone-frame { margin: 0; }
-.phone-frame figcaption { max-width: 260px; margin-top: 10px; color: var(--grey); font-size: 12px; line-height: 1.45; }
+.phone-frame figcaption { margin-top: 10px; color: var(--grey); font-size: 12px; line-height: 1.45; }
 /* Both phone panes share the same height so the pair reads as one row. */
 .web-shot { height: 54vh; width: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
 .ticks { margin-top: 24px; list-style: none; }
