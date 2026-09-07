@@ -96,12 +96,12 @@ export default function App() {
           blendSoftness={0.05}
           rotationAmount={500}
           noiseScale={2}
-          grainAmount={0.1}
+          grainAmount={0.32}
           grainScale={2}
-          grainAnimated={false}
-          contrast={1.5}
-          gamma={1}
-          saturation={1}
+          grainAnimated
+          contrast={1.15}
+          gamma={2.4}
+          saturation={0.62}
           centerX={0}
           centerY={0}
           zoom={0.9}
