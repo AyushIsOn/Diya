@@ -8,6 +8,7 @@ use the arrow keys. Seven slides. No install, no server, no build step.
 | **The deck** (primary) | `site/index.html` — 7 slides, white and black over a blue Grainient background |
 | **The deck as a PDF** | `Diya-Presentation.pdf` — 7 pages, 16:9, for handing out or presenting without a browser |
 | **Real report screenshot** | drop one in at `site/shots/real-report.png` and slide 4 uses it automatically |
+| **Video placeholder** | drop one in at `site/shots/real-welcome.png` and slide 6 uses it automatically |
 | **Your demo video** | drop it at `site/video/demo.mp4` — see `site/video/README.md` |
 | Source, to edit or rebuild | `site-src/` — see its README |
 | Slide deck (older, still valid) | `Diya-Internship-Report.pdf` / `.pptx` |
@@ -61,6 +62,15 @@ cp your-report-screenshot.png presentation/site/shots/real-report.png
 ```
 
 Then regenerate the PDF if you hand that out too (see `site-src/README.md`).
+
+The same trick covers the video placeholder on slide 6, which is the frame shown before
+anyone presses play:
+
+```bash
+cp your-kiosk-photo.png presentation/site/shots/real-welcome.png
+```
+
+It falls back to `site/shots/app-02-authenticated.png` when that file is absent.
 
 ## Running order
 
