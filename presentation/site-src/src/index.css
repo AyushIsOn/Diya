@@ -1,185 +1,278 @@
-:root{
-  --ink:#08060F;
-  --ink2:#0E0A1C;
-  --panel:#141026;
-  --panel2:#1C1533;
-  --line:#251D42;
-  --gold:#E9B872;
-  --gold2:#F5D9A8;
-  --lilac:#B4A9D6;
-  --faint:#7E739F;
-  --green:#7EE0A0;
-  --amber:#F0A868;
-  --white:#F6F4FF;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{
-  background:var(--ink);color:var(--white);
-  font-family:'Inter',system-ui,-apple-system,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
-.mono{font-family:'JetBrains Mono',monospace}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* ---------- layout ---------- */
-.sec{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:center;
-  padding:120px 8vw;max-width:1680px;margin:0 auto;width:100%}
-.sec.tight{min-height:auto;padding:110px 8vw}
-.kick{font-size:clamp(11px,.85vw,14px);font-weight:700;letter-spacing:3px;text-transform:uppercase;
-  color:var(--gold);margin-bottom:22px;display:flex;align-items:center;gap:14px}
-.kick::before{content:'';width:34px;height:2px;background:var(--gold);border-radius:2px}
-h1{font-size:clamp(48px,7.6vw,132px);font-weight:800;letter-spacing:-.04em;line-height:.94}
-h2{font-size:clamp(32px,4.4vw,74px);font-weight:800;letter-spacing:-.03em;line-height:1.04}
-h3{font-size:clamp(20px,1.6vw,30px);font-weight:700;letter-spacing:-.015em;line-height:1.2}
-.lede{font-size:clamp(17px,1.35vw,25px);line-height:1.6;color:var(--lilac);max-width:66ch;font-weight:400}
-.small{font-size:clamp(14px,1vw,17px);line-height:1.6;color:var(--faint)}
-.rule{width:88px;height:5px;background:var(--gold);border-radius:3px;margin:34px 0}
-
-/* ---------- hero ---------- */
-.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
-.hero-aurora{position:absolute;inset:0;opacity:.62}
-.hero-fade{position:absolute;inset:0;
-  background:radial-gradient(120% 90% at 20% 10%,transparent 30%,var(--ink) 78%)}
-.hero-in{position:relative;z-index:2;padding:0 8vw;max-width:1680px;margin:0 auto;width:100%}
-.hero-meta{display:flex;flex-wrap:wrap;gap:12px 34px;margin-top:44px;font-size:clamp(14px,1.05vw,19px);color:var(--lilac)}
-.hero-meta b{color:#fff;font-weight:600}
-.scrollcue{position:absolute;bottom:38px;left:50%;transform:translateX(-50%);z-index:3;
-  font-size:12px;letter-spacing:2.4px;color:var(--faint);text-transform:uppercase;
-  display:flex;flex-direction:column;align-items:center;gap:10px}
-.scrollcue span{display:block;width:1px;height:44px;
-  background:linear-gradient(var(--faint),transparent);animation:cue 2.1s ease-in-out infinite}
-@keyframes cue{0%,100%{opacity:.25;transform:scaleY(.65)}50%{opacity:1;transform:scaleY(1)}}
-
-/* ---------- cards ---------- */
-.grid{display:grid;gap:26px}
-.g2{grid-template-columns:repeat(2,1fr)}
-.g3{grid-template-columns:repeat(3,1fr)}
-.g4{grid-template-columns:repeat(4,1fr)}
-.card-spotlight{background:var(--panel)!important;border:1px solid var(--line)!important;
-  border-radius:20px!important;padding:34px 32px!important;height:100%}
-.cardnum{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;letter-spacing:1.6px;
-  color:var(--gold);margin-bottom:16px}
-.card-spotlight h3{margin-bottom:12px}
-.card-spotlight p{font-size:clamp(14px,1.05vw,18px);line-height:1.58;color:var(--lilac)}
-.card-spotlight .mono{font-size:clamp(12px,.85vw,15px);color:var(--amber);line-height:1.9;
-  display:block;margin-top:16px}
-.hi{border-color:rgba(233,184,114,.5)!important;
-  background:linear-gradient(165deg,#241A33,#171126)!important}
-.hi .cardnum{color:var(--gold2)}
-
-/* ---------- chips ---------- */
-.chips{display:flex;flex-wrap:wrap;gap:11px;margin-top:34px}
-.chip{font-size:clamp(13px,1vw,17px);padding:11px 20px;border-radius:999px;background:var(--panel);
-  border:1px solid var(--line);color:var(--lilac);font-weight:500}
-.chip.m{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,.9vw,15px);
-  color:var(--gold);border-color:rgba(233,184,114,.28)}
-
-/* ---------- figures ---------- */
-figure{margin:0}
-.shot{width:100%;display:block;border-radius:14px;border:1px solid var(--line);
-  box-shadow:0 40px 80px -30px rgba(0,0,0,.85)}
-.cap{font-size:clamp(13px,1vw,16.5px);line-height:1.55;color:var(--faint);margin-top:15px}
-.cap b{color:var(--white);font-weight:600}
-.wide{width:100%;border-radius:16px;border:1px solid var(--line);background:#fff;display:block}
-.phoneshot{width:100%;max-width:310px;border-radius:22px;border:1px solid var(--line);
-  box-shadow:0 34px 70px -28px rgba(0,0,0,.85);display:block;margin:0 auto}
-
-/* ---------- terminal ---------- */
-.term{background:#05040A;border:1px solid var(--line);border-radius:18px;overflow:hidden;
-  box-shadow:0 40px 80px -30px rgba(0,0,0,.9)}
-.termbar{display:flex;gap:8px;padding:15px 20px;border-bottom:1px solid var(--line);background:#0B0916}
-.termbar i{width:11px;height:11px;border-radius:50%;display:block}
-.termbody{padding:28px 30px;font-family:'JetBrains Mono',monospace;
-  font-size:clamp(12.5px,1.02vw,17px);line-height:2.05}
-.p{color:#5A5080}.k{color:var(--gold)}.ok{color:var(--green)}.c{color:#6E6494}
-
-/* ---------- stats ---------- */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:52px}
-.stat{border-top:2px solid var(--line);padding-top:22px}
-.statn{font-size:clamp(34px,4vw,64px);font-weight:800;letter-spacing:-.03em;color:var(--gold);
-  line-height:1;font-variant-numeric:tabular-nums}
-.statl{font-size:clamp(13px,1vw,16px);color:var(--faint);margin-top:11px;line-height:1.45}
-
-/* ---------- nav ---------- */
-.dots{position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:60;
-  display:flex;flex-direction:column;gap:13px}
-.dot{width:9px;height:9px;border-radius:50%;background:#2E2650;border:none;cursor:pointer;
-  padding:0;transition:all .32s cubic-bezier(.4,0,.2,1);position:relative}
-.dot:hover{background:var(--faint);transform:scale(1.35)}
-.dot.on{background:var(--gold);height:26px;border-radius:5px}
-.bar{position:fixed;top:0;left:0;height:2.5px;background:linear-gradient(90deg,var(--gold),var(--gold2));
-  z-index:70;transform-origin:0 50%}
-
-/* ---------- misc ---------- */
-.callout{margin-top:40px;border-left:3px solid var(--gold);padding:6px 0 6px 26px}
-.callout p{font-size:clamp(15px,1.15vw,21px);line-height:1.6;color:var(--lilac)}
-.callout b{color:#fff;font-weight:600}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
-.footer{padding:70px 8vw 60px;border-top:1px solid var(--line);text-align:center;color:var(--faint);
-  font-size:14.5px;line-height:1.8;max-width:1680px;margin:0 auto}
-
-@media(max-width:1080px){
-  .g4,.g3{grid-template-columns:repeat(2,1fr)}
-  .split,.g2{grid-template-columns:1fr;gap:40px}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .dots{display:none}
-}
-@media(max-width:640px){
-  .g4,.g3,.g2{grid-template-columns:1fr}
-  .sec{padding:88px 6vw}
+/* Palette lifted from the kiosk app itself: white surfaces, near-black text,
+   grey supporting text, hairline borders. Blue is the only accent. */
+:root {
+  --ink: #111827;
+  --ink-2: #1f2a37;
+  --grey: #6b7280;
+  --grey-2: #9ca3af;
+  --line: #e5e7eb;
+  --wash: #f9fafb;
+  --blue: #2563eb;
+  --blue-soft: #eff6ff;
 }
 
-/* React Bits TiltedCard crops with object-fit:cover; our screenshots must be whole */
-.tilted-card-img{object-fit:contain!important;background:#0B0916;border-radius:14px}
-.tilted-card-caption{font-family:'Inter',sans-serif!important;font-size:13px!important}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #fff;
+  color: var(--ink);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img, video { display: block; max-width: 100%; }
+.mono { font-family: 'JetBrains Mono', monospace; font-size: .92em; }
 
-/* ---------- demo video ---------- */
-.videowrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;
-  border:1px solid var(--line);background:#05040A;
-  box-shadow:0 50px 100px -34px rgba(0,0,0,.92)}
-.videowrap video,.videowrap iframe{width:100%;height:100%;display:block;border:0;
-  object-fit:contain;background:#05040A}
-.videowrap.missing{display:flex;align-items:center;justify-content:center;text-align:center;
-  padding:8%;border-style:dashed;border-color:#2E2650;background:
-  repeating-linear-gradient(45deg,#0B0916,#0B0916 14px,#0E0B1C 14px,#0E0B1C 28px)}
-.videowrap.missing h3{color:var(--gold);margin-bottom:14px}
-.videowrap.missing p{color:var(--faint);font-size:clamp(13px,1.05vw,17px);line-height:1.65;
-  max-width:56ch;margin:0 auto}
-.videowrap.missing .mono{color:var(--lilac)}
+/* Blue Grainient wash behind everything, kept very light so the page still
+   reads as white paper and black text stays crisp. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: .3;
+  pointer-events: none;
+}
+.backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, .78));
+}
+main { position: relative; z-index: 1; }
 
-/* ---------- hero particle layer ---------- */
-.hero-particles{position:absolute;inset:0;opacity:.55;pointer-events:none}
+/* Slide shell */
+main { scroll-snap-type: y mandatory; }
+.slide {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  scroll-snap-align: start;
+  padding: 74px 6vw 66px;
+  max-width: 1500px;
+  margin: 0 auto;
+  width: 100%;
+}
+.slide-body { width: 100%; }
+.slide-foot {
+  position: absolute;
+  left: 6vw;
+  right: 6vw;
+  bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  color: var(--grey);
+  font-size: 11.5px;
+  letter-spacing: .04em;
+}
+.slide-num { font-family: 'JetBrains Mono', monospace; }
 
-/* ---------- scan footage ---------- */
-.demogrid{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:56px;
-  margin-top:52px;align-items:start}
-.clipwrap{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#05040A;
-  box-shadow:0 44px 90px -32px rgba(0,0,0,.92)}
-.clipwrap video{width:100%;height:auto;display:block}
-.clipwrap.portrait{border-radius:26px}
+/* Type */
+.kicker {
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+h1 { font-size: clamp(70px, 9vw, 148px); font-weight: 800; letter-spacing: -.055em; line-height: .92; }
+h2 { max-width: 20ch; font-size: clamp(34px, 3.9vw, 62px); font-weight: 700; letter-spacing: -.035em; line-height: 1.06; }
+h3 { font-size: clamp(17px, 1.35vw, 22px); font-weight: 600; letter-spacing: -.015em; }
+.lede { max-width: 62ch; margin-top: 20px; color: var(--grey); font-size: clamp(15.5px, 1.2vw, 20px); line-height: 1.62; }
 
-/* ---------- moving tech band ---------- */
-.velo{margin-top:40px;padding:22px 0;border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);overflow:hidden;
-  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.veloline{font-family:'JetBrains Mono',monospace;font-size:clamp(20px,2.4vw,40px);
-  font-weight:400;color:#2E2650;letter-spacing:-.01em;white-space:nowrap}
+/* 1 — Title */
+.title-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 5vw; align-items: center; }
+.title-slide .sub { margin-top: 14px; color: var(--ink-2); font-size: clamp(20px, 2vw, 34px); font-weight: 500; letter-spacing: -.02em; }
+.line { width: 72px; height: 4px; margin: 32px 0; background: var(--blue); border-radius: 2px; }
+.who { display: flex; flex-wrap: wrap; gap: 18px 60px; }
+.who span { display: block; color: var(--grey); font-size: 11.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.shot-card { margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.shot-card img { width: 100%; border-radius: 4px; }
+.shot-card figcaption { padding: 12px 4px 2px; color: var(--grey); font-size: 12.5px; }
+.who b { display: block; margin-top: 8px; font-size: clamp(19px, 1.6vw, 26px); font-weight: 600; letter-spacing: -.02em; }
+.who small { display: block; margin-top: 4px; color: var(--grey); font-size: 13px; }
 
-/* ---------- StarBorder card ---------- */
-.shipped{width:100%;height:100%;text-align:left}
-.shipped .star-border-inner,.shipped > div:last-child{text-align:left}
-.star-border-container{width:100%;display:block}
-.shipped h3{margin-bottom:12px;color:#fff}
-.shipped p{font-size:clamp(14px,1.05vw,18px);line-height:1.58;color:var(--lilac)}
-.shipped .mono{font-size:clamp(12px,.85vw,15px);color:var(--gold);line-height:1.9;
-  display:block;margin-top:16px}
+/* 2 — Cards */
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 42px; }
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 24px 22px;
+}
+.tag {
+  display: inline-block;
+  margin-bottom: 28px;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: .06em;
+}
+.card h3 { margin-bottom: 9px; }
+.card p { color: var(--grey); font-size: 14.5px; line-height: 1.55; }
 
-/* ---------- magnet wrapper must not break the grid ---------- */
-.stats > div{height:100%}
+/* 3 — QR system */
+.qr-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 4vw; align-items: center; }
+.caption { margin-top: 10px; color: var(--grey); font-size: 12.5px; line-height: 1.45; }
+.qr-video { text-align: center; }
+.ticks { margin-top: 24px; list-style: none; }
+.ticks li { position: relative; padding-left: 26px; margin-bottom: 11px; color: var(--ink-2); font-size: 15.5px; line-height: 1.5; }
+.ticks li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 7px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+.clip {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--wash);
+}
+/* Each frame is given the clip's real aspect ratio, so nothing is cropped
+   or letterboxed: phone clip 540x958, kiosk strip 1000x484, demo 848x478. */
+.clip video, .clip > img { width: 100%; height: 100%; object-fit: cover; }
+.clip.phone { aspect-ratio: 540 / 958; height: 58vh; width: auto; margin: 0 auto; }
+.clip.strip { aspect-ratio: 1000 / 484; width: 100%; max-width: 620px; margin-top: 24px; }
+.print-still { display: none; }
 
-@media(max-width:1080px){
-  .demogrid{grid-template-columns:1fr;gap:40px}
-  .clipwrap.portrait{max-width:340px}
+/* 4 — Flow */
+.flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-top: 44px; border-top: 2px solid var(--line); }
+.step { position: relative; padding: 26px 26px 24px 0; }
+.step::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: 0;
+  width: 62px; height: 2px;
+  background: var(--blue);
+}
+.step-n { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--blue); }
+.step h3 { margin: 12px 0 9px; }
+.step p { color: var(--grey); font-size: 14.5px; line-height: 1.55; }
+.note {
+  margin-top: 34px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--blue);
+  background: var(--wash);
+  border-radius: 0 8px 8px 0;
+  color: var(--ink-2);
+  font-size: 15.5px;
+  line-height: 1.55;
+}
+
+/* 5 — Problems */
+.problems { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 36px; }
+.problem { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 26px; }
+.problem h3 { margin-bottom: 12px; font-size: clamp(18px, 1.5vw, 24px); }
+.problem > p { color: var(--grey); font-size: 15px; line-height: 1.6; }
+.fix { margin-top: 18px; padding: 16px 18px; background: var(--blue-soft); border-radius: 8px; color: var(--ink-2); font-size: 14.5px; line-height: 1.6; }
+.fix b { display: block; margin-bottom: 6px; color: var(--blue); font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+
+/* 6 — Demo */
+.demo-slide .demo-head { display: grid; grid-template-columns: auto 1fr; gap: 4vw; align-items: end; margin-bottom: 22px; }
+.demo-head .lede { margin-top: 0; padding-bottom: 6px; }
+.clip.feature { aspect-ratio: 848 / 478; height: 60vh; width: auto; margin: 0 auto; background: #000; }
+.clip.feature > .print-still { object-fit: contain; }
+
+/* 7 — Thanks */
+.thanks-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 340px)); gap: 16px; margin-top: 38px; }
+.thanks-card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 22px; }
+.thanks-card span { color: var(--grey-2); font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.thanks-card b { display: block; margin: 9px 0 7px; font-size: 21px; font-weight: 600; letter-spacing: -.02em; }
+.thanks-card p { color: var(--grey); font-size: 14px; line-height: 1.5; }
+.closing { margin-top: 36px; color: var(--ink); font-size: clamp(19px, 1.7vw, 27px); font-weight: 600; letter-spacing: -.02em; }
+
+/* Slide rail */
+.rail { position: fixed; z-index: 30; right: 22px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
+.rail button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: #d1d5db; cursor: pointer; transition: all .25s ease; }
+.rail button:hover { background: var(--grey); }
+.rail button.on { background: var(--blue); height: 22px; border-radius: 4px; }
+
+/* Responsive */
+@media screen and (max-width: 1080px) {
+  .cards, .flow { grid-template-columns: 1fr 1fr; }
+  .step { padding-right: 18px; }
+  .title-grid, .qr-grid, .problems, .demo-slide .demo-head { grid-template-columns: 1fr; }
+  .demo-head .lede { padding-bottom: 0; }
+  .rail { display: none; }
+  .clip.phone { height: 44vh; }
+  .clip.feature { height: 46vh; }
+  .shot-card { max-width: 520px; }
+}
+@media screen and (max-width: 680px) {
+  main { scroll-snap-type: none; }
+  .slide { min-height: auto; padding: 60px 7vw 74px; }
+  .cards, .flow, .thanks-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 21vw; }
+  .clip.phone { height: auto; width: 100%; max-width: 300px; }
+  .clip.feature { height: auto; width: 100%; }
+}
+
+/* Print — one slide per 16:9 page, videos swapped for stills */
+@page { size: 13.333in 7.5in; margin: 0; }
+@media print {
+  html, body { width: 13.333in; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  main { scroll-snap-type: none; }
+  .rail { display: none !important; }
+  .backdrop { position: absolute; height: 100%; }
+  /* Block layout, not flex: percentage and fr widths resolve reliably against
+     the page box, so the grids keep their columns when printed. */
+  .slide {
+    display: block;
+    width: 13.333in;
+    height: 7.5in;
+    min-height: 7.5in;
+    max-height: 7.5in;
+    padding: .62in .75in .55in;
+    overflow: hidden;
+    break-after: page;
+    page-break-after: always;
+  }
+  .slide-body { width: 100%; }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+  .slide-foot { left: .75in; right: .75in; bottom: .3in; }
+  video { display: none !important; }
+  .print-still { display: block !important; }
+  .clip.phone { height: 3.5in; }
+  .clip.strip { max-width: 4.1in; margin-top: .16in; }
+  /* The print still is 1600x1000, so match it and avoid letterboxing. */
+  .clip.feature { height: 3.75in; aspect-ratio: 1600 / 1000; background: #fff; }
+  .clip.feature > .print-still { object-fit: cover; }
+  .shot-card img { max-height: 2.6in; object-fit: contain; }
+  h2 { font-size: 40px; }
+  .lede { font-size: 13.5px; margin-top: .14in; }
+  .ticks li { font-size: 13px; margin-bottom: 7px; }
+  .caption, .shot-card figcaption { font-size: 11px; }
+  .problem { padding: 18px; }
+  .problem > p, .fix { font-size: 12.5px; }
+  .fix { margin-top: .12in; padding: 12px 14px; }
+  .step p, .card p { font-size: 12.5px; }
+  .note { font-size: 13px; padding: 12px 16px; }
+  .thanks-card { padding: 16px; }
+  .closing { margin-top: .24in; font-size: 20px; }
+  .cards { margin-top: .3in; }
+  .card { padding: 18px; }
+  .tag { margin-bottom: 20px; }
+  .flow { margin-top: .32in; }
+  .note { margin-top: .26in; }
+  .problems { margin-top: .26in; }
+  .thanks-grid { margin-top: .28in; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
