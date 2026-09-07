@@ -83,17 +83,28 @@ export default function App() {
     <>
       <div className="backdrop" aria-hidden="true">
         <Grainient
-          color1="#2563eb"
-          color2="#7dd3fc"
-          color3="#1d4ed8"
-          lightMode
-          timeSpeed={0.12}
-          warpSpeed={0.9}
-          grainAmount={0.16}
-          grainScale={2.6}
-          contrast={1.05}
-          saturation={0.85}
-          zoom={0.8}
+          color1="#FF9FFC"
+          color2="#5227FF"
+          color3="#B497CF"
+          timeSpeed={0.25}
+          colorBalance={0}
+          warpStrength={1}
+          warpFrequency={5}
+          warpSpeed={2}
+          warpAmplitude={50}
+          blendAngle={0}
+          blendSoftness={0.05}
+          rotationAmount={500}
+          noiseScale={2}
+          grainAmount={0.1}
+          grainScale={2}
+          grainAnimated={false}
+          contrast={1.5}
+          gamma={1}
+          saturation={1}
+          centerX={0}
+          centerY={0}
+          zoom={0.9}
         />
       </div>
 
@@ -112,28 +123,20 @@ export default function App() {
       <main>
         {/* 1 — TITLE */}
         <Slide id="title" n={1} className="title-slide">
-          <div className="title-grid">
+          <p className="kicker">Internship Project Report</p>
+          <h1>Diya</h1>
+          <p className="sub">An unattended meditation kiosk</p>
+          <div className="line" />
+          <div className="who">
             <div>
-              <p className="kicker">Internship Project Report</p>
-              <h1>Diya</h1>
-              <p className="sub">An unattended meditation kiosk</p>
-              <div className="line" />
-              <div className="who">
-                <div>
-                  <span>Presented by</span>
-                  <b>Ayush Gupta</b>
-                </div>
-                <div>
-                  <span>Under the guidance of</span>
-                  <b>Eshwar Teja</b>
-                  <small>Mentor</small>
-                </div>
-              </div>
+              <span>Presented by</span>
+              <b>Ayush Gupta</b>
             </div>
-            <figure className="shot-card">
-              <img src="shots/app-01-idle-qr.png" alt="The kiosk idle screen showing its session QR code" />
-              <figcaption>The kiosk, waiting for a visitor to scan it</figcaption>
-            </figure>
+            <div>
+              <span>Under the guidance of</span>
+              <b>Eshwar Teja</b>
+              <small>Mentor</small>
+            </div>
           </div>
         </Slide>
 
@@ -186,32 +189,27 @@ export default function App() {
                 <li>The phone is the camera and the keyboard</li>
                 <li>Phone and kiosk never talk directly — only through the backend</li>
               </ul>
-              <Clip
-                className="strip"
-                src="clips/kiosk-authed.mp4"
-                still="shots/real-kiosk.png"
-                alt="The kiosk after the visitor is identified"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-              />
-              <p className="caption">The kiosk identifies the visitor and starts on its own</p>
             </div>
-            <div className="qr-video">
-              <Clip
-                className="phone"
-                src="clips/scan-phone.mp4"
-                still="shots/real-scan.png"
-                alt="A phone scanning the QR code shown on the kiosk"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-              />
-              <p className="caption">The scan, filmed on the real setup</p>
+            <div className="qr-media">
+              <figure className="phone-frame">
+                <Clip
+                  className="phone"
+                  src="clips/scan-phone.mp4"
+                  still="shots/real-scan.png"
+                  alt="A phone scanning the QR code shown on the kiosk"
+                  autoPlay
+                  muted
+                  loop
+                  controls
+                  playsInline
+                  preload="auto"
+                />
+                <figcaption>The scan, filmed on the real setup — plays in full</figcaption>
+              </figure>
+              <figure className="phone-frame">
+                <img className="web-shot" src="shots/web-01-register.png" alt="The registration website that opens on the visitor's phone after scanning the QR code" />
+                <figcaption>Scanning the code opens this page on the visitor's phone</figcaption>
+              </figure>
             </div>
           </div>
         </Slide>
