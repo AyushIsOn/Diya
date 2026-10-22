@@ -1,35 +1,33 @@
-# Internship report
+# Internship report (Manipal University Jaipur format)
 
 | File | What |
 |---|---|
-| `Diya-Internship-Report.pdf` | The report, ready to print (A4, 52 pages) |
-| `Diya-Internship-Report.docx` | The same report in Word, for editing |
-| `figures/` | Diagrams generated for the report |
-| `images/` | Screenshots, wireframes and demo stills used in the report |
-| `src/` | Source: `content.py` holds all the text; `build.py` produces both files |
+| `Diya-Internship-Report.docx` | The report, built on the college template |
+| `Diya-Internship-Report.pdf` | The same document converted to PDF (page for page) |
+| `template/MUJ-format.docx` | The college format file the report is built on |
+| `figures/`, `images/` | Diagrams, screenshots, wireframes, demo stills, the IITH certificate scan |
+| `src/` | `content_muj.py` holds the text; `render_muj.py` builds both files |
+
+The cover page (MUJ logo and layout), styles, page size and margins come straight from
+`template/MUJ-format.docx`. The chapters and the Contents table follow the template's structure:
+Introduction, Background Material, Methodology, Implementation, Results and Analysis,
+Conclusions & Future Scope, References, Annexures.
 
 ## Before submitting
 
-Fill in everything shown with a **yellow highlight** (`[...]`): registration number, faculty
-guide, campus, date and place.
-
-Replace these placeholders:
-- **Certificate page:** the scanned IIT Hyderabad certificate.
-- **Title page:** the university logo.
-- **Figures 4.2–4.7:** photographs of the apparatus. In Word, click the dashed box, delete it,
-  and insert the photo. The captions stay as they are.
-
-When Word asks to update fields on opening, choose **Yes**, so the contents, figures and tables
-lists pick up the final page numbers. If it doesn't ask, right-click the contents list and choose
-**Update Field → Update entire table**.
+- Fill in the two yellow-highlighted fields: the **subject code** (cover page) and your
+  **faculty guide's name** (Acknowledgments).
+- Replace the six **PLACE PHOTOGRAPH HERE** boxes in Section 4.2 (Figures 9–14) with photos of the
+  apparatus. In Word: click inside the box, select the table, delete it, insert the photo. Keep the
+  caption below it.
+- If adding photos moves pages, update the page numbers in the Contents, List of Figures and List
+  of Tables tables (they are ordinary tables, not Word fields) — or ask for a rebuild.
 
 ## Rebuilding
 
-```bash
-pip install python-docx reportlab matplotlib Pillow
-python src/diagrams.py    # regenerate figures/
-python src/build.py       # regenerate the PDF and DOCX
-```
+Requires Python (`python-docx`, `Pillow`, `pypdfium2`, `matplotlib`) and LibreOffice:
 
-Fonts: the PDF uses Liberation Serif and Liberation Mono (in `fonts/`, SIL Open Font License),
-which have the same metrics as Times New Roman. The DOCX uses Times New Roman.
+```bash
+python src/diagrams.py                       # regenerate figures/
+SOFFICE=soffice python src/render_muj.py     # rebuild DOCX + PDF, page numbers filled automatically
+```
