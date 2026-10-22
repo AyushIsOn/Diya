@@ -31,9 +31,9 @@ SOFFICE = os.environ.get("SOFFICE", "soffice")
 
 FONT = "Times New Roman"
 BODY = 14            # template body text size
-LEFT, RIGHT, TOP, BOTTOM = 660, 900, 1260, 1000      # twips (template: left 660)
+LEFT, RIGHT, TOP, BOTTOM = 1000, 1000, 1260, 1000    # twips, symmetric
 TEXT_W_TW = 11900 - LEFT - RIGHT
-TABLE_W_TW = TEXT_W_TW - 240 - 100                    # template tables are indented 240
+TABLE_W_TW = TEXT_W_TW - 200                          # tables are centred
 TEXT_W_IN = TEXT_W_TW / 1440
 
 PPR_AFTER_SHD = ("w:tabs", "w:suppressAutoHyphens", "w:kinsoku", "w:wordWrap", "w:overflowPunct",
@@ -182,9 +182,8 @@ def template_tblpr(tbl, indent=240):
     xml = (f'<w:tblW xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" w:w="0" w:type="auto"/>')
     from lxml import etree
     w = etree.fromstring(xml)
-    ind = OxmlElement("w:tblInd")
-    ind.set(qn("w:w"), str(indent))
-    ind.set(qn("w:type"), "dxa")
+    ind = OxmlElement("w:jc")
+    ind.set(qn("w:val"), "center")
     borders = OxmlElement("w:tblBorders")
     for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
         e = OxmlElement(f"w:{edge}")
@@ -206,7 +205,11 @@ def no_borders(tbl):
         e = OxmlElement(f"w:{edge}")
         e.set(qn("w:val"), "nil")
         b.append(e)
-    tblPr.append(b)
+    insert_ordered(tblPr, b, ("w:shd", "w:tblLayout", "w:tblCellMar", "w:tblLook"))
+    jc = OxmlElement("w:jc")
+    jc.set(qn("w:val"), "center")
+    insert_ordered(tblPr, jc, ("w:tblCellSpacing", "w:tblInd", "w:tblBorders", "w:shd", "w:tblLayout",
+                               "w:tblCellMar", "w:tblLook"))
 
 
 def page_field(p):
@@ -268,8 +271,7 @@ class Builder:
         r0, r1, r2 = [r._r for r in p7.runs[:3]]
         set_runs(p7, [("carried out as part of the ", False)], proto=r0)
         tmp = copy.deepcopy(p7._p)
-        set_runs(Paragraph(tmp, self.doc), [("Industrial Training (", False), ("[Subject Code]", True),
-                                            (")", False)], proto=r1)
+        set_runs(Paragraph(tmp, self.doc), [(f"Industrial Training ({meta['subject']})", False)], proto=r1)
         for r in tmp.findall(qn("w:r")):
             p7._p.append(r)
         set_runs(Paragraph(tmp, self.doc), [(" Submitted", False)], proto=r2)
@@ -278,6 +280,33 @@ class Builder:
         set_runs(P(11), [(meta["student"], False)])
         set_runs(P(12), [(meta["regno"], False)])
         set_runs(P(30), [(meta["month"], False)])
+        # The template centres "of", "BACHELOR OF TECHNOLOGY", "in" and the department with leading
+        # spaces, which drifts off-centre. Strip the spaces and centre the paragraphs instead.
+        for i in range(0, 31):
+            if els[i].tag != qn("w:p"):
+                continue
+            p = P(i)
+            if not (p.text or "").strip():
+                continue
+            for r in p.runs:
+                r.text = r.text.replace("\u00a0", " ")
+            runs_ = [r for r in p.runs]
+            # trim leading whitespace across runs
+            for r in runs_:
+                if r.text.strip():
+                    r.text = r.text.lstrip()
+                    break
+                r.text = ""
+            for r in reversed(runs_):
+                if r.text.strip():
+                    r.text = r.text.rstrip()
+                    break
+                r.text = ""
+            pf = p.paragraph_format
+            pf.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            pf.left_indent = Twips(0)
+            pf.right_indent = Twips(0)
+            pf.first_line_indent = Twips(0)
         # Drop everything after the cover; keep the final section properties.
         sect = body.find(qn("w:sectPr"))
         for el in els[31:]:
@@ -497,7 +526,7 @@ class Builder:
         """Rebuild the template's Contents table, row prototypes and all, with our entries."""
         tpl = Document(TEMPLATE).tables[1]._tbl
         rows = tpl.findall(qn("w:tr"))
-        proto = {"title": rows[0], "pageno": rows[1], "front": rows[2], "chapter": rows[6],
+        proto = {"title": rows[0], "pageno": rows[1], "front": rows[27], "chapter": rows[6],
                  "section": rows[7], "end": rows[27]}
         new = copy.deepcopy(tpl)
         for tr in new.findall(qn("w:tr")):
@@ -526,7 +555,7 @@ class Builder:
                  "lot": "List Of Tables", "abbr": "List of Abbreviations"}
         for e in self.toc:
             if e[0] == "front":
-                row("front", [names[e[1]], "", self.page(e[1])])
+                row("front", [names[e[1]], self.page(e[1])])
             elif e[0] == "chapter":
                 label = f"Chapter {e[3]}"
                 row("chapter", [label, None, self.page(e[1])])
@@ -540,6 +569,39 @@ class Builder:
                 row("section", ["", e[3], e[2], self.page(e[1])])
             elif e[0] == "end":
                 row("end", [e[2], self.page(e[1])], bold=True)
+        # scale the template grid to our text width
+        grid = new.find(qn("w:tblGrid"))
+        cols = [int(g.get(qn("w:w"))) for g in grid.findall(qn("w:gridCol"))]
+        k = TABLE_W_TW / sum(cols)
+        for g in grid.findall(qn("w:gridCol")):
+            g.set(qn("w:w"), str(int(int(g.get(qn("w:w"))) * k)))
+        for tcw in new.iter(qn("w:tcW")):
+            tcw.set(qn("w:w"), str(int(int(tcw.get(qn("w:w"))) * k)))
+        tblPr = new.find(qn("w:tblPr"))
+        ind = tblPr.find(qn("w:tblInd"))
+        if ind is not None:
+            tblPr.remove(ind)
+        jc = OxmlElement("w:jc")
+        jc.set(qn("w:val"), "center")
+        insert_ordered(tblPr, jc, ("w:tblCellSpacing", "w:tblBorders", "w:shd", "w:tblLayout",
+                                   "w:tblCellMar", "w:tblLook"))
+        for tr in new.findall(qn("w:tr")):
+            for tc in tr.findall(qn("w:tc")):
+                tcPr = tc.find(qn("w:tcPr"))
+                va = OxmlElement("w:vAlign")
+                va.set(qn("w:val"), "center")
+                insert_ordered(tcPr, va, ("w:hideMark",))
+                for p in tc.findall(qn("w:p")):
+                    pPr = p.find(qn("w:pPr"))
+                    sp = pPr.find(qn("w:spacing")) if pPr is not None else None
+                    if sp is not None:
+                        pPr.remove(sp)
+                    para = Paragraph(p, self.doc)
+                    para.paragraph_format.space_before = Pt(1)
+                    para.paragraph_format.space_after = Pt(1)
+        for tr in new.findall(qn("w:tr"))[:2]:          # "Contents" and "Page No" header rows
+            for ind in tr.iter(qn("w:ind")):
+                ind.getparent().remove(ind)
         for tr in new.findall(qn("w:tr"))[1:]:
             tc = tr.findall(qn("w:tc"))[-1]
             Paragraph(tc.find(qn("w:p")), self.doc).alignment = WD_ALIGN_PARAGRAPH.CENTER

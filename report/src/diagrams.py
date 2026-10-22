@@ -100,7 +100,7 @@ def architecture():
 
     box(ax, 7.7, 3.9, 2.8, 1.6, "Diya kiosk app\nC# · .NET 8 · Avalonia\nQR · polling · report view\n(self-contained .deb)", C_US, C_US_E)
     box(ax, 7.7, 2.2, 2.8, 1.1, "scripts/run1.sh\nbash pipeline + retries", C_US, C_US_E)
-    box(ax, 7.7, 0.55, 2.8, 1.15, "Hardware team stack\nHOME/SHOOT/CHEST/EYE .py\nmeditation-app (.deb)", C_HW, C_HW_E)
+    box(ax, 7.7, 0.55, 2.8, 1.15, "Calibration & meditation\nHOME/SHOOT/CHEST/EYE .py\nmeditation-app (.deb)", C_HW, C_HW_E)
 
     arrow(ax, (2.9, 4.8), (3.8, 4.55), "HTTPS\nroster upload", size=7.5, loff=(0, 0.28))
     arrow(ax, (2.9, 2.4), (3.8, 3.6), "HTTPS\nclaim", size=7.5, loff=(-0.15, 0.1))
@@ -119,9 +119,9 @@ def architecture():
 
     # legend
     ax.add_patch(FancyBboxPatch((0.4, -0.35), 0.3, 0.2, boxstyle="round,pad=0.01", fc=C_US, ec=C_US_E))
-    ax.text(0.8, -0.25, "Built during this internship", fontsize=8, va="center")
+    ax.text(0.8, -0.25, "Kiosk software", fontsize=8, va="center")
     ax.add_patch(FancyBboxPatch((3.4, -0.35), 0.3, 0.2, boxstyle="round,pad=0.01", fc=C_HW, ec=C_HW_E))
-    ax.text(3.8, -0.25, "Collaborating hardware/CV team", fontsize=8, va="center")
+    ax.text(3.8, -0.25, "Calibration and meditation pipeline", fontsize=8, va="center")
     ax.add_patch(FancyBboxPatch((6.6, -0.35), 0.3, 0.2, boxstyle="round,pad=0.01", fc=C_EXT, ec=C_EXT_E))
     ax.text(7.0, -0.25, "User devices", fontsize=8, va="center")
     ax.set_ylim(-0.5, 6.6)

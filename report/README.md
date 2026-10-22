@@ -15,13 +15,9 @@ Conclusions & Future Scope, References, Annexures.
 
 ## Before submitting
 
-- Fill in the two yellow-highlighted fields: the **subject code** (cover page) and your
-  **faculty guide's name** (Acknowledgments).
-- Replace the six **PLACE PHOTOGRAPH HERE** boxes in Section 4.2 (Figures 9–14) with photos of the
-  apparatus. In Word: click inside the box, select the table, delete it, insert the photo. Keep the
-  caption below it.
-- If adding photos moves pages, update the page numbers in the Contents, List of Figures and List
-  of Tables tables (they are ordinary tables, not Word fields) — or ask for a rebuild.
+Nothing is left to fill in. If you edit pages in Word and they move, update the page numbers in the
+Contents, List of Figures and List of Tables tables (they are ordinary tables, as in the template),
+or rebuild with the command below.
 
 ## Rebuilding
 
