@@ -3,7 +3,7 @@
 META = {
     "report_type": "An Industrial Training Report",
     "title": "DIYA: DESIGN AND DEVELOPMENT OF AN UNATTENDED MEDITATION KIOSK",
-    "subject": "[[Subject Code]]",
+    "subject": "DSE4170",
     "student": "Ayush Gupta",
     "regno": "23FE10CDS00349",
     "department": "Department of Data Science and Engineering",
@@ -57,17 +57,38 @@ class B:
     def numbered(self, items):
         self.add("numbered", items=[" ".join(i.split()) for i in items])
 
-    def fig(self, path, caption, width=6.3):
-        self.add("figure", path=path, caption=caption, width=width)
+    def fig(self, path, caption, width=6.3, key=None):
+        self.add("figure", path=path, caption=caption, width=width, key=key)
 
-    def figrow(self, items, caption, height=3.4):
-        self.add("figrow", items=items, caption=caption, height=height)
+    def figrow(self, items, caption, height=3.4, key=None):
+        self.add("figrow", items=items, caption=caption, height=height, key=key)
 
     def placeholder(self, caption, hint, height=3.2):
         self.add("placeholder", caption=caption, hint=hint, height=height)
 
-    def table(self, caption, header, rows, widths):
-        self.add("table", caption=caption, header=header, rows=rows, widths=widths)
+    def table(self, caption, header, rows, widths, key=None):
+        self.add("table", caption=caption, header=header, rows=rows, widths=widths, key=key)
+
+    def resolve(self):
+        """Replace {fig:key} and {tab:key} with the final figure/table numbers."""
+        import re
+        nums, f, t = {}, 0, 0
+        for b in self.blocks:
+            if b["kind"] in ("figure", "figrow", "placeholder"):
+                f += 1
+                if b.get("key"):
+                    nums["fig:" + b["key"]] = f
+            elif b["kind"] == "table" and b.get("caption"):
+                t += 1
+                if b.get("key"):
+                    nums["tab:" + b["key"]] = t
+        sub = lambda s: re.sub(r"\{((?:fig|tab):[\w-]+)\}", lambda m: str(nums[m.group(1)]), s)
+        for b in self.blocks:
+            if "text" in b:
+                b["text"] = sub(b["text"])
+            if "items" in b and b["kind"] in ("bullets", "numbered"):
+                b["items"] = [sub(i) for i in b["items"]]
+        return self
 
     def code(self, t):
         self.add("code", text=t.strip("\n"))
@@ -84,20 +105,21 @@ def build():
 
     # ------------------------------------------------------------ front matter
     r.front("ACKNOWLEDGMENTS", "ack")
-    r.p("""I would like to express my heartfelt gratitude to **Dr. Prasad S. Onkar**, Associate Professor,
-    Department of Design, Indian Institute of Technology Hyderabad, for giving me the opportunity to work
-    at the INDReA Lab and for his supervision and encouragement throughout my internship from 1 June 2026
-    to 31 July 2026.""")
-    r.p("""I am deeply thankful to **Mr. Eshwar Teja**, under whose day-to-day guidance this project was carried
-    out. His design discussions, his testing of every build on the real kiosk and his patience while the
-    system was taking shape were instrumental in the successful completion of my work. I also thank
-    **Kalyan Sir** for his support and valuable feedback, and the members of the hardware and
-    computer-vision team for their cooperation in defining clear interfaces between our parts of the
-    system.""")
-    r.p("""I sincerely thank my faculty guide, **[[Faculty guide name]]**, and the Department of Data Science and
-    Engineering, School of Computer Science and Engineering, **Manipal University Jaipur**, for their
-    guidance and for providing me with the opportunity to undertake this industrial training.""")
-    r.p("""Finally, I am grateful to my family and friends for their constant encouragement and support
+    r.p("""I would like to express my heartfelt gratitude to **Mr. Santosh Rajak**, Assistant Professor,
+    Department of Data Science and Engineering, Manipal University Jaipur, for his invaluable support,
+    mentorship, and guidance throughout this internship. His deep expertise and practical insights
+    significantly contributed to the successful completion of my work on the Diya meditation kiosk.""")
+    r.p("""Mr. Rajak’s constructive feedback and readiness to address my queries created a conducive learning
+    environment that greatly enhanced my technical understanding and problem-solving skills. His
+    encouragement and guidance in addressing industry-level challenges have been instrumental in my
+    professional growth during this project.""")
+    r.p("""I am sincerely thankful to **Dr. Prasad S. Onkar**, Associate Professor, Department of Design, Indian
+    Institute of Technology Hyderabad, for giving me the opportunity to work at the INDReA Lab from 1 June
+    2026 to 31 July 2026, and to **Mr. Eshwar Teja** and **Kalyan Sir** for their day-to-day guidance,
+    for testing every build on the kiosk, and for their valuable feedback.""")
+    r.p("""I also thank the Department of Data Science and Engineering, School of Computer Science and
+    Engineering, **Manipal University Jaipur**, for providing me with the opportunity to undertake this
+    industrial training. Finally, I am grateful to my family for their constant encouragement and support
     throughout the internship.""")
 
     r.front("ABSTRACT", "abstract")
@@ -109,18 +131,18 @@ def build():
     r.p("""During this eight-week internship I designed and built the software side of the kiosk: a full-screen
     desktop application in C# on .NET 8 with the Avalonia UI framework for Ubuntu (GNOME on Wayland); a
     Node.js/Express and PostgreSQL backend hosted on Render; phone-facing web pages for registration,
-    roster administration and login; an integration layer that runs the hardware team’s calibration and
+    roster administration and login; an integration layer that runs the kiosk’s calibration and
     meditation pipeline and displays the PDF report it produces; and packaging that ships the kiosk as a
     self-contained Debian package that starts on boot and restarts after a crash.""")
     r.p("""The key design decision was to **invert the usual QR-code flow**. The kiosk had no scanner, so the
     kiosk displays a short-lived session QR code and the visitor’s own phone scans it through a private,
     per-person login link. This removed a hardware dependency, needed no app installation and made the
-    scan a proof of who arrived. A second decision was to integrate with the hardware team through a
-    process and a file on disk rather than an API, which let both teams work independently.""")
+    scan a proof of who arrived. A second decision was to connect the kiosk to the meditation pipeline
+    through a process and a file on disk rather than an API, which kept the two parts independent.""")
     r.p("""The system went through seven released versions (v1.0 to v1.6) and was demonstrated end to end with a
     real phone scanning the kiosk. The report also discusses the problems faced, in particular the window
     restrictions of Wayland, and the remaining work: a consent screen, an inactivity reset, continuous
-    integration and replacing the placeholder calibration scripts with the hardware team’s real stages.""")
+    integration and replacing the placeholder calibration scripts with the full motor-control stages.""")
 
     r.raw("lof")
     r.raw("lot")
@@ -132,7 +154,6 @@ def build():
         ["CV", "Computer Vision"], [".deb", "Debian software package"],
         ["GNOME", "GNU Network Object Model Environment (Linux desktop)"],
         ["HTTPS", "Hypertext Transfer Protocol Secure"], ["IITH", "Indian Institute of Technology Hyderabad"],
-        ["INDReA", "Interaction Design Research Lab (IITH Department of Design)"],
         ["JSON", "JavaScript Object Notation"], ["LTS", "Long-Term Support"],
         ["PDF", "Portable Document Format"], ["PR", "Pull Request"],
         ["QR", "Quick Response code"], ["REST", "Representational State Transfer"],
@@ -156,32 +177,22 @@ def build():
     with no attendant.""")
     r.p("""My work covered the complete software path that a visitor experiences: the full-screen kiosk
     application, the visitor identification system (backend, database and phone web pages), the layer that
-    launches the hardware team’s pipeline and shows its report, and the packaging and deployment of the
-    kiosk. The camera and motor control scripts and the meditation application were built by a collaborating
-    hardware and computer-vision team (Table 1).""")
-    r.table("Division of responsibilities", ["Party", "Owns", "Interface to the kiosk app"], [
-        ["Me (this internship)", "Kiosk desktop app, backend API and database, web pages for registration, "
-         "admin and login, pipeline launcher, report display, packaging", "—"],
-        ["Hardware / CV team", "Camera calibration and motor scripts (HOME, SHOOT, CHEST, EYE) and the "
-         "`meditation-app` that runs the session and writes the PDF report",
-         "Script `run1.sh` and the folder `/opt/meditation-app/data`"],
-        ["Lab / supervisors", "Concept, experience design, hardware rig, testing on the real kiosk",
-         "Requirements and review"],
-    ], [1.5, 3.5, 2.0])
+    launches the calibration and meditation pipeline and shows its report, and the packaging and deployment
+    of the kiosk.""")
     r.p("""**Motivation:** An unattended kiosk has to do on its own what an attendant would normally do: greet
     the visitor, find out who they are, start the right process, recover when something fails and get ready
     for the next person. For Diya this had to work on a Linux machine with several cameras attached,
-    alongside software written by another team, and without a QR scanner or keyboard for the visitor.""")
+    alongside the camera and meditation software, and without a QR scanner or keyboard for the visitor.""")
     r.p("""**Applications:** The same software pattern applies to museum and exhibition installations, wellness
     and meditation booths, self-service health check-up kiosks, and any setting where a person must be
     identified at a shared screen and a local hardware process must then run for them.""")
     r.p("""**Advantages:** Identification needs nothing but the visitor’s own phone; the kiosk recovers from
     crashes by itself and installs on a fresh machine with one command; and the clean boundary with the
-    hardware software allows the two teams to change their internals independently.""")
+    meditation pipeline allows the kiosk and the pipeline to change independently.""")
 
     r.section("Project Statement / Objectives of the Project")
     r.p("""**Project statement:** *To design and build reliable, self-recovering kiosk software that identifies a
-    visitor without dedicated hardware, runs the hardware team’s calibration and meditation pipeline, shows
+    visitor without dedicated hardware, runs the kiosk’s calibration and meditation pipeline, shows
     the resulting report and resets automatically for the next visitor, while remaining easy to install and
     update on the kiosk machine.*""")
     r.p("The objectives of the project were:")
@@ -191,15 +202,14 @@ def build():
         "**Visitor identification:** a method that needs no scanner or keyboard at the kiosk.",
         "**Backend and web pages:** visitor registration, roster upload by an administrator and phone-based "
         "login.",
-        "**Pipeline integration:** run the hardware team’s calibration scripts and meditation application "
-        "without depending on their internal code.",
+        "**Pipeline integration:** run the calibration and meditation pipeline from the kiosk through a "
+        "simple, stable interface.",
         "**Report display:** show the generated PDF report inside the kiosk and reset for the next visitor.",
         "**Packaging and documentation:** install on a fresh machine with a single command, with documented "
         "installation, operation and troubleshooting.",
     ])
-    r.p("""Building the camera and motor control logic and the meditation content was outside the scope of this
-    internship; these were provided by the hardware team and are described only where the kiosk software
-    had to be designed around them.""")
+    r.p("""This report focuses on the kiosk software. The camera, motor and analysis stages of the pipeline are
+    described at the level needed to understand how the complete system works.""")
 
     r.section("Organization of Report")
     r.p("""This report has been structured to give a systematic account of the work done during the
@@ -231,10 +241,10 @@ def build():
     failure must either be recovered automatically or be shown clearly enough for staff to act on it.""")
     r.sub("2. Visitor identification and QR codes")
     r.p("""A QR code is a two-dimensional barcode that can carry a short text such as a URL, and every modern
-    phone camera can read it. Several ways of identifying a visitor were compared (Table 2). Because the kiosk
+    phone camera can read it. Several ways of identifying a visitor were compared (Table {tab:ident}). Because the kiosk
     had no scanner and its cameras were reserved for the meditation pipeline, the chosen approach was for the
     **kiosk to show** a QR code and the **phone to scan** it.""")
-    r.table("Comparison of visitor identification approaches",
+    r.table("Comparison of visitor identification approaches", 
             ["Approach", "Hardware at kiosk", "Visitor effort", "Remarks"], [
         ["Printed pass + USB scanner", "QR scanner", "Carry and present a pass",
          "Extra hardware and printing; explored as an offline variant"],
@@ -243,7 +253,7 @@ def build():
          "Kiosk cameras are needed by the CV pipeline"],
         ["**Kiosk shows QR, phone scans**", "None", "Low: open link, tap, scan", "**Chosen**"],
         ["Face recognition", "Camera", "None", "Future option; needs enrolment and privacy care"],
-    ], [1.9, 1.4, 1.6, 2.1])
+    ], [1.9, 1.4, 1.6, 2.1], key="ident")
     r.sub("3. Client–server communication and polling")
     r.p("""The kiosk and the phone never talk directly. Both talk to a REST API over HTTPS. The kiosk creates a
     *session* and then **polls** the server every two seconds to learn whether a phone has claimed it.
@@ -254,10 +264,10 @@ def build():
     itself. This improves security but limits what kiosk software can do, and several design decisions
     followed from it.""")
     r.sub("5. Process-based integration")
-    r.p("""Instead of an API between the kiosk and the hardware software, the integration uses two operating-system
+    r.p("""Instead of an API between the kiosk and the meditation pipeline, the integration uses two operating-system
     primitives: a **child process** (the kiosk runs a shell script and waits for it to exit) and a **file
-    on disk** (the meditation application writes a PDF that the kiosk reads). This loose coupling lets each
-    team change its internals without breaking the other.""")
+    on disk** (the meditation application writes a PDF that the kiosk reads). This loose coupling lets the
+    kiosk and the pipeline change independently.""")
     r.sub("6. Packaging, services and fault recovery")
     r.p("""A self-contained Debian package bundles the application with its runtime, so nothing has to be
     installed first. A **systemd user service** starts the kiosk with the desktop session and restarts it
@@ -292,31 +302,31 @@ def build():
     ])
     r.sub("4. Pipeline, packaging and tools")
     r.bullets([
-        "**Bash and Python 3.10:** the pipeline script and the hardware team’s calibration scripts.",
+        "**Bash and Python 3.10:** the pipeline script and the calibration scripts.",
         "**dotnet publish, dpkg-deb and systemd:** the Debian package, auto-start and restart.",
         "**Git and GitHub:** one branch and pull request per change.",
         "**Docker, Xvfb and noVNC:** preview of the UI in a browser during development.",
     ])
-    r.p("Table 3 compares the UI frameworks that were considered for the kiosk.")
+    r.p("Table {tab:ui} compares the UI frameworks that were considered for the kiosk.")
     r.table("Comparison of desktop UI frameworks", ["Option", "Linux support", "Native access", "Verdict"], [
         ["**C# / .NET 8 + Avalonia**", "Official (X11 and Wayland)", "Full", "**Chosen**"],
         [".NET MAUI", "No Linux target", "Full", "Rejected"],
         ["Electron", "Good", "Needs a native helper", "Heavier; two processes"],
         ["Web app in a browser", "Good", "None (sandbox)", "Cannot launch the pipeline"],
         ["C++ with Qt", "Good", "Full", "No benefit for this UI; manual memory"],
-    ], [2.0, 1.7, 1.6, 1.7])
+    ], [2.0, 1.7, 1.6, 1.7], key="ui")
 
     # ------------------------------------------------------------ chapter 3
     r.chapter("METHODOLOGY")
     r.section("Detailed methodology that will be adopted")
     r.sub("1. Requirement Analysis")
     r.bullets([
-        "**Discussions with the lab:** understood the visitor experience, the hardware rig and what the hardware "
-        "team would provide.",
+        "**Discussions with the lab:** understood the visitor experience, the hardware rig and the camera and "
+        "meditation pipeline.",
         "**Constraints identified:** no QR scanner or keyboard at the kiosk; cameras reserved for the pipeline; "
         "Ubuntu with GNOME on Wayland; unattended operation.",
-        "**Requirements written down:** functional requirements (Table 4) and non-functional requirements "
-        "(Table 5).",
+        "**Requirements written down:** functional requirements (Table {tab:fr}) and non-functional requirements "
+        "(Table {tab:nfr}).",
     ])
     r.table("Functional requirements", ["ID", "Requirement"], [
         ["FR1", "On start-up the kiosk opens fullscreen and shows a welcome screen with a QR code."],
@@ -329,7 +339,7 @@ def build():
         ["FR8", "When the pipeline ends, the kiosk shows the new report and a thank-you message."],
         ["FR9", "A Return button resets the kiosk and creates a new session."],
         ["FR10", "A manual name entry lets staff start a session without a phone or server."],
-    ], [0.8, 6.2])
+    ], [0.8, 6.2], key="fr")
     r.table("Non-functional requirements", ["Category", "Requirement"], [
         ["Reliability", "Auto-start on boot; restart within seconds after a crash; no state between visitors."],
         ["Recoverability", "Network failures show a clear message and a retry action."],
@@ -337,13 +347,13 @@ def build():
         ["Privacy", "Aadhaar never returned by public endpoints; unguessable tokens."],
         ["Usability", "At most three taps on the phone; nothing to type at the kiosk."],
         ["Maintainability", "Editable pipeline script; paths overridable by environment variables."],
-    ], [1.6, 5.4])
+    ], [1.6, 5.4], key="nfr")
     r.sub("2. System Design")
     r.bullets([
         "Designed the architecture, the visitor flow as a state machine, the database schema and the REST API "
         "(Section 3.2).",
         "Designed the screens as wireframes before coding them (Annexure C).",
-        "Agreed the integration contract with the hardware team: one script to run and one folder to read the "
+        "Defined the integration contract with the pipeline: one script to run and one folder to read the "
         "report from.",
     ])
     r.sub("3. Iterative Development")
@@ -355,9 +365,9 @@ def build():
         "Explored alternatives on separate branches (an offline people-list mode and an in-app meditation flow) "
         "before choosing the final direction.",
     ])
-    r.sub("4. Integration with the Hardware Pipeline")
+    r.sub("4. Integration with the Meditation Pipeline")
     r.bullets([
-        "Wrapped the hardware team’s stages in an editable script with retry rules.",
+        "Wrapped the calibration stages in an editable script with retry rules.",
         "Displayed only reports written after the session started, so a previous visitor’s report can never be "
         "shown.",
     ])
@@ -378,40 +388,40 @@ def build():
     r.sub("1. Overall System Architecture")
     r.p("""**Block diagram elements:** the administrator’s PC and the visitor’s phone (browsers); the backend API
     and PostgreSQL database on Render; and, on the kiosk machine, the Diya application, the pipeline script
-    and the hardware team’s stack (Figure 1).""")
+    and the calibration and meditation pipeline (Figure {fig:arch}).""")
     r.p("""**Flow:** Admin PC → Backend (roster) · Kiosk → Backend (create session, poll) · Phone camera reads
-    kiosk QR → Backend (claim) · Kiosk → run1.sh → hardware stack → report PDF → Kiosk.""")
-    r.fig("figures/fig_architecture.png", "Overall system architecture of the Diya kiosk")
-    r.p("""The kiosk and the hardware stack never call each other over an API; the only contract is a script to
+    kiosk QR → Backend (claim) · Kiosk → run1.sh → calibration and meditation pipeline → report PDF → Kiosk.""")
+    r.fig("figures/fig_architecture.png", "Overall system architecture of the Diya kiosk", key="arch")
+    r.p("""The kiosk and the pipeline never call each other over an API; the only contract is a script to
     run and a folder to watch.""")
     r.sub("2. Hardware Block Diagram")
     r.p("""**Block diagram elements:** four USB cameras (Logitech C920, Intel RealSense D435, Arducam 8MP and a
     thermal camera), the display, an Arduino controller driving motors M1 (chest axis) and M2 (eye axis), the
-    limit switches and proximity sensors, and an LD2410 radar that detects a seated person (Figure 2).""")
+    limit switches and proximity sensors, and an LD2410 radar that detects a seated person (Figure {fig:hw}).""")
     r.p("""**Flow:** Cameras → Kiosk PC (V4L2) · Kiosk PC ⇄ Arduino (USB serial, 115200 baud) → Motors ·
     Safety inputs → Arduino · Radar → Kiosk PC (USB serial, 256000 baud) · Kiosk PC → Display (HDMI).""")
-    r.fig("figures/fig_hardware_block.png", "Hardware block diagram of the kiosk")
+    r.fig("figures/fig_hardware_block.png", "Hardware block diagram of the kiosk", key="hw")
     r.sub("3. Visitor Flow")
     r.p("""**Flow:** Idle (QR on screen) → Claimed (name and photo) → Session (pipeline running) → Report
-    (PDF and thank-you) → Return → Idle. A manual name entry skips straight to Claimed (Figure 3).""")
-    r.fig("figures/fig_visitor_flow.png", "Visitor flow of the kiosk as a state machine")
+    (PDF and thank-you) → Return → Idle. A manual name entry skips straight to Claimed (Figure {fig:flow}).""")
+    r.fig("figures/fig_visitor_flow.png", "Visitor flow of the kiosk as a state machine", key="flow")
     r.sub("4. Interaction Sequence")
-    r.p("""Figure 4 shows every message for one visitor. Solid arrows are HTTP requests, dashed arrows are
+    r.p("""Figure {fig:seq} shows every message for one visitor. Solid arrows are HTTP requests, dashed arrows are
     responses, and dotted arrows do not use the API at all: the link shared with the visitor, the phone camera
     reading the screen, and the local pipeline with its PDF output.""")
     r.fig("images/diagram-timeline.png", "Sequence of interactions between admin, phone, kiosk, backend and "
-          "meditation-app", 6.5)
+          "meditation-app", 6.5, key="seq")
     r.sub("5. Database Design")
     r.p("""**people** holds the uploaded roster; each row has an unguessable token that forms the private link
     `/p/<token>`. **sessions** holds one row per QR code shown on the kiosk, with status pending or claimed.
     **visitors** holds the identity linked to a session; on a claim the roster details are copied into a visitor
-    row (Figure 5).""")
-    r.fig("figures/fig_er_diagram.png", "Database schema (entity–relationship view)")
+    row (Figure {fig:er}).""")
+    r.fig("figures/fig_er_diagram.png", "Database schema (entity–relationship view)", key="er")
     r.sub("6. Pipeline Flowchart")
     r.p("""**Flow:** HOME1 (home the axes) → SHOOT1 (deploy actuators) → CHEST1 (align chest camera) → EYE1
     (align eye camera) → meditation-app (session and PDF report). Homing and deployment retry themselves;
-    a failure in chest or eye alignment restarts the whole sequence from homing (Figure 6).""")
-    r.fig("figures/fig_pipeline.png", "Retry logic of the pipeline script run1.sh")
+    a failure in chest or eye alignment restarts the whole sequence from homing (Figure {fig:pipe}).""")
+    r.fig("figures/fig_pipeline.png", "Retry logic of the pipeline script run1.sh", key="pipe")
     r.sub("7. Build and Deployment")
     r.fig("figures/fig_deployment.png", "Build and deployment of the kiosk and the backend")
 
@@ -495,8 +505,8 @@ def build():
     r.section("Prototype")
     r.sub("1. Kiosk Apparatus")
     r.p("""The prototype is a physical installation: a seat, a display, and a sensor assembly carrying the cameras,
-    moved by two motorised axes and guarded by limit switches, proximity sensors and a radar. The apparatus
-    and its control scripts were built by the hardware team; Table 8 lists the components.""")
+    moved by two motorised axes and guarded by limit switches, proximity sensors and a radar. Table {tab:hwc}
+    lists the components.""")
     r.table("Hardware components of the kiosk", ["Component", "Role", "Interface"], [
         ["Kiosk PC (Ubuntu)", "Runs the kiosk app, CV scripts and meditation-app", "—"],
         ["Display", "Kiosk UI, meditation video, report", "HDMI"],
@@ -508,31 +518,41 @@ def build():
         ["Motors M1 and M2", "Chest axis and eye axis; homing and actuator", "Via Arduino"],
         ["Limit switches, proximity sensors", "Home position, collision detection", "Via Arduino"],
         ["LD2410 mmWave radar", "Seated person, 650–1050 mm", "USB serial, 256000 baud"],
-    ], [2.2, 2.9, 1.9])
-    r.placeholder("Front view of the Diya meditation kiosk",
-                  "Insert photograph: the complete kiosk as a visitor sees it.")
-    r.placeholder("Side view showing the seat and sensor arm",
-                  "Insert photograph: seating position relative to the cameras.")
-    r.placeholder("Camera assembly", "Insert photograph: close-up of the camera mounts.")
-    r.placeholder("Motorised chest and eye axes", "Insert photograph: motors, axes and limit switches.")
-    r.placeholder("Arduino controller and wiring", "Insert photograph: controller board and wiring.")
-    r.placeholder("LD2410 radar sensor and mounting", "Insert photograph: radar module and its position.")
-    r.sub("2. Screens of the Final Application")
-    r.p("""Figures 15 to 18 are genuine frames of the kiosk application rendered with the same layout, fonts and
-    QR encoder as on the kiosk. The visitor is fictional and the report is a representative sample, since the
-    real report comes from the hardware team’s software.""")
-    r.fig("images/app-01-idle-qr.png", "Kiosk idle: session created and QR code displayed", 5.6)
+    ], [2.2, 2.9, 1.9], key="hwc")
+    r.sub("2. Capture and Analysis During a Session")
+    r.p("""While the visitor meditates, the cameras record them and the pipeline compares their posture with a
+    reference meditation posture. Figure {fig:front} shows the front view: the reference posture on the left,
+    and on the right the visitor’s live image with face and torso landmarks and the resulting similarity
+    score. Figure {fig:side} shows the side view with landmark coordinates and the depth map from the
+    RealSense camera, and Figure {fig:thermal} shows the thermal capture of the visitor.""")
+    r.fig("images/session-front-posture.png", "Front-view posture comparison with the reference posture and "
+          "similarity score", 6.0, key="front")
+    r.fig("images/session-side-posture-depth.png", "Side-view posture comparison with landmarks and the "
+          "depth map", 6.0, key="side")
+    r.fig("images/session-thermal.png", "Thermal capture of the visitor during the session", 5.4, key="thermal")
+    r.sub("3. Generated Meditation Report")
+    r.p("""At the end of the session a PDF report is generated and the kiosk displays it on screen. Figure
+    {fig:report} shows a generated report: its posture analysis section lists frames from the session, each
+    with its similarity score to the reference posture.""")
+    r.fig("images/session-report.png", "Meditation report generated at the end of a session (posture analysis)",
+          5.0, key="report")
+    r.sub("4. Screens of the Final Application")
+    r.p("""Figures {fig:scr1} to {fig:scr4} are frames of the kiosk application rendered with the same layout,
+    fonts and QR encoder as on the kiosk. The visitor shown is fictional and the report screen uses sample
+    data.""")
+    r.fig("images/app-01-idle-qr.png", "Kiosk idle: session created and QR code displayed", 5.6, key="scr1")
     r.fig("images/app-02-authenticated.png", "Kiosk after the phone has claimed the session", 5.6)
     r.fig("images/app-03-session-running.png", "Pipeline running with the live status line", 5.6)
-    r.fig("images/app-04-report.png", "Report displayed with the thank-you message and Return", 5.6)
-    r.sub("3. Live Demonstration")
-    r.p("""Figures 19 and 20 are frames from a recorded run with the deployed backend: the personal link greets the
-    visitor, the phone scans the kiosk QR, and the kiosk advances by itself. The recording used an earlier build,
-    so some labels differ slightly from the final version.""")
+    r.fig("images/app-04-report.png", "Report displayed with the thank-you message and Return", 5.6, key="scr4")
+    r.sub("5. Live Demonstration")
+    r.p("""Figures {fig:demo1} and {fig:demo2} are frames from a recorded run with the deployed backend: the
+    personal link greets the visitor, the phone scans the kiosk QR, and the kiosk advances by itself. The
+    recording used an earlier build, so some labels differ slightly from the final version.""")
     r.figrow([("images/real-greeting.png", "(a) Personal link greets the visitor"),
               ("images/real-scan.png", "(b) Phone scanning the kiosk QR")],
-             "Live demonstration: the visitor’s phone", 3.8)
-    r.fig("images/real-kiosk.png", "Live demonstration: the kiosk after the claim (email blurred)", 5.6)
+             "Live demonstration: the visitor’s phone", 3.8, key="demo1")
+    r.fig("images/real-kiosk.png", "Live demonstration: the kiosk after the claim (email blurred)", 5.6,
+          key="demo2")
 
     # ------------------------------------------------------------ chapter 5
     r.chapter("RESULTS AND ANALYSIS")
@@ -554,22 +574,24 @@ def build():
     ])
     r.p("""**Analysis:** Building on the platform’s own mechanisms (systemd, self-contained publishing) gave
     reliability with very little custom code, which suits a machine that runs without supervision.""")
-    r.sub("3. Integration with the Hardware Team")
+    r.sub("3. Integration with the Meditation Pipeline")
     r.p("**Results:**")
     r.bullets([
         "The complete journey (identify, claim, pipeline, report, reset) works end to end.",
         "A previous visitor’s report is never shown, and no terminal or viewer window appears from the kiosk.",
+        "Each session produces posture, depth and thermal analysis and a personalised report (Figures "
+        "{fig:front}–{fig:report}).",
     ])
-    r.p("""**Analysis:** A contract of one script and one folder was enough, and it let both teams develop and
-    test independently.""")
+    r.p("""**Analysis:** A contract of one script and one folder was enough, and it let the kiosk and the pipeline be
+    developed and tested independently.""")
     r.sub("4. Evolution of the Design")
-    r.p("""The design changed most in how visitors are identified (Figure 21, Table 9). The first version put the
+    r.p("""The design changed most in how visitors are identified (Figure {fig:evo}, Table {tab:ver}). The first version put the
     visitor’s data inside the QR; this was readable by anyone and could not be revoked, so version 1.2 stored the
     data online and kept only an ID in the code. Version 1.3 reversed the flow so the kiosk shows the QR, and the
     admin roster added in July made each scan prove identity. In late July the kiosk was made to minimise itself
     during the session, but Wayland does not let an application restore itself, so the change was rolled back to
     the last stable baseline and the useful parts were re-implemented in version 1.6.0.""")
-    r.fig("figures/fig_evolution.png", "Timeline of the main versions")
+    r.fig("figures/fig_evolution.png", "Timeline of the main versions", key="evo")
     r.table("Version history", ["Version", "Date", "Change"], [
         ["1.0.x", "11–13 Jun", "Fullscreen kiosk shell, Wayland fixes, .deb for amd64 and arm64"],
         ["1.1.0", "17 Jun", "Offline QR pass: visitor details inside the QR"],
@@ -578,7 +600,7 @@ def build():
         ["1.4.0", "26 Jun – 9 Jul", "Calibration launch, admin roster, phone login, visitor photo"],
         ["1.5.0", "11 Jul", "Login runs the pipeline and shows the PDF report"],
         ["1.6.0", "31 Jul", "Report-ready flow, live status, thank-you, no-camera test kit"],
-    ], [1.0, 1.5, 4.5])
+    ], [1.0, 1.5, 4.5], key="ver")
 
     r.section("Testing and Validation")
     r.table("Summary of test cases", ["#", "Scenario", "Expected result", "Outcome"], [
@@ -606,7 +628,7 @@ def build():
         ["Fullscreen did not stick on Wayland", "Resizable window, fullscreen applied in code and re-asserted"],
         ["Package failed on some Ubuntu versions", "Bundle the runtime; drop the ICU dependency"],
         ["No QR scanner at the kiosk", "Kiosk shows the QR; the phone scans it"],
-        ["Integrating another team’s software", "Script plus report folder; only PDFs newer than the session"],
+        ["Integrating the meditation application", "Script plus report folder; only PDFs newer than the session"],
         ["Free server sleeps when idle", "Long client timeout and a “waking up” message"],
         ["Phone camera blocked on plain HTTP", "Serve all pages over HTTPS"],
         ["Kiosk could not restore itself", "Roll back; avoid self-managing windows on Wayland"],
@@ -614,7 +636,8 @@ def build():
     r.p("**Learnings:**")
     r.bullets([
         "**Constraints can simplify a design:** the missing scanner led to an easier flow for visitors.",
-        "**Integrate through the narrowest contract:** a script and a folder let two teams move independently.",
+        "**Integrate through the narrowest contract:** a script and a folder kept the kiosk and the pipeline "
+        "independent.",
         "**Know the platform’s rules first:** fighting Wayland’s window policy cost two releases.",
         "**Rolling back is a valid decision:** returning to a known-good baseline was faster than patching.",
         "**Write things down:** keeping the setup guide updated let the lab install each build without me.",
@@ -636,10 +659,11 @@ def build():
         "from crashes.",
         "**Significance:** the kiosk can run all day in a public space without an attendant.",
     ])
-    r.sub("3. Clean integration across teams")
+    r.sub("3. Clean integration with the meditation pipeline")
     r.bullets([
-        "**Outcomes:** the hardware team’s pipeline runs from the kiosk and its report is shown in the app.",
-        "**Significance:** a minimal contract let both teams evolve their parts without breaking each other.",
+        "**Outcomes:** the calibration and meditation pipeline runs from the kiosk and its report is shown in "
+        "the app.",
+        "**Significance:** a minimal contract lets both parts evolve without breaking each other.",
     ])
     r.sub("4. Documented, maintainable system")
     r.bullets([
@@ -662,7 +686,7 @@ def build():
     ])
     r.sub("3. Real Calibration Stages")
     r.bullets([
-        "**Objective:** replace the placeholder scripts called by run1.sh with the hardware team’s motor-control "
+        "**Objective:** replace the placeholder scripts called by run1.sh with the full motor-control "
         "and radar stages.",
         "**Significance:** the visitor will be physically aligned to the sensors, improving data quality.",
     ])
@@ -776,4 +800,4 @@ diya-meditation
 curl https://diya-registration.onrender.com/api/health
 cd DiyaMeditation && ./deploy/build-deb.sh 1.6.0 amd64
 """)
-    return r
+    return r.resolve()
